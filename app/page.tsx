@@ -1,12 +1,28 @@
+import Image from "next/image";
 import Link from "next/link";
 
 export default function HomePage() {
   return (
     <main className="min-h-[calc(100vh-81px)]">
       <section className="max-w-4xl mx-auto px-6 pt-24 pb-16">
-        <p className="text-sm font-semibold tracking-[0.2em] text-gray-500 uppercase mb-4">
-          Portfolio Blog
-        </p>
+        <div className="flex items-center gap-4 mb-6">
+          <Image
+            src="/profile.jpg"
+            alt="Yeowon profile"
+            width={56}
+            height={56}
+            className="rounded-full object-cover"
+          />
+
+          <div>
+            <p className="text-sm font-semibold tracking-[0.2em] text-gray-500 uppercase">
+              Portfolio Blog
+            </p>
+            <p className="text-sm text-gray-600">
+              AI Service Planning · Mobile App Development
+            </p>
+          </div>
+        </div>
 
         <h1 className="text-5xl md:text-6xl font-bold tracking-tight leading-tight mb-6">
           AI와 데이터를 활용해
@@ -48,7 +64,7 @@ export default function HomePage() {
           </a>
 
           <a
-            href="mailto:yeowon083 @gmail.com"
+            href="mailto:yeowon083@gmail.com"
             className="inline-flex shrink-0 items-center rounded-full border border-gray-300 px-5 py-3 text-sm font-semibold text-gray-800 transition hover:bg-gray-100"
           >
             Contact
