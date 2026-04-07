@@ -1,3 +1,5 @@
+import Link from "next/link";
+
 export default function BlogPage() {
   return (
     <main className="max-w-4xl mx-auto px-6 py-20">
@@ -50,43 +52,12 @@ export default function BlogPage() {
             </span>
           </div>
 
-          <button className="text-sm font-semibold text-gray-900 underline underline-offset-4">
-            글 준비 중
-          </button>
-        </article>
-
-        <article className="rounded-3xl border border-gray-200 p-7 transition hover:-translate-y-0.5 hover:shadow-md">
-          <div className="flex flex-wrap items-center gap-3 mb-4">
-            <span className="rounded-full bg-gray-100 px-3 py-1 text-sm text-gray-700">
-              Development
-            </span>
-            <p className="text-sm text-gray-500">2026.04</p>
-          </div>
-
-          <h2 className="text-2xl font-semibold tracking-tight mb-3">
-            Expo와 React Native로 앱 개발을 시작한 이유
-          </h2>
-
-          <p className="text-gray-600 leading-8 mb-6">
-            충동소비 예측 앱을 구현하기 위해 왜 모바일 앱 형태를 선택했는지,
-            그리고 Expo와 React Native를 사용하기로 한 이유를 정리한 글입니다.
-          </p>
-
-          <div className="flex flex-wrap gap-2 mb-6">
-            <span className="rounded-full border border-gray-300 px-3 py-1 text-sm text-gray-700">
-              Expo
-            </span>
-            <span className="rounded-full border border-gray-300 px-3 py-1 text-sm text-gray-700">
-              React Native
-            </span>
-            <span className="rounded-full border border-gray-300 px-3 py-1 text-sm text-gray-700">
-              Mobile App
-            </span>
-          </div>
-
-          <button className="text-sm font-semibold text-gray-900 underline underline-offset-4">
-            글 준비 중
-          </button>
+          <Link
+            href="/blog/impulse-spending-app-idea"
+            className="text-sm font-semibold text-gray-900 underline underline-offset-4"
+          >
+            글 보러 가기
+          </Link>
         </article>
 
         <article className="rounded-3xl border border-gray-200 p-7 transition hover:-translate-y-0.5 hover:shadow-md">
@@ -118,9 +89,12 @@ export default function BlogPage() {
             </span>
           </div>
 
-          <button className="text-sm font-semibold text-gray-900 underline underline-offset-4">
-            글 준비 중
-          </button>
+          <Link
+            href="/blog/git-github-basics"
+            className="text-sm font-semibold text-gray-900 underline underline-offset-4"
+          >
+            글 보러 가기
+          </Link>
         </article>
       </section>
     </main>
