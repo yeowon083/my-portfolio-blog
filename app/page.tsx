@@ -23,7 +23,7 @@ export default function HomePage() {
           있습니다.
         </p>
 
-        <div className="flex flex-wrap gap-4 mb-16">
+        <div className="flex flex-wrap gap-4 mb-6">
           <Link
             href="/projects"
             className="inline-flex items-center rounded-full bg-black px-6 py-3 text-sm font-semibold text-white transition hover:opacity-85"
@@ -37,6 +37,24 @@ export default function HomePage() {
           >
             소개 보기
           </Link>
+        </div>
+
+        <div className="flex flex-wrap gap-4 mb-16">
+          <a
+            href="https://github.com/yeowon083"
+            target="_blank"
+            rel="noreferrer"
+            className="inline-flex items-center rounded-full border border-gray-300 px-6 py-3 text-sm font-semibold text-gray-800 transition hover:bg-gray-100"
+          >
+            GitHub
+          </a>
+
+          <a
+            href="mailto:yeowon083@gmail.com"
+            className="inline-flex items-center rounded-full border border-gray-300 px-6 py-3 text-sm font-semibold text-gray-800 transition hover:bg-gray-100"
+          >
+            Contact
+          </a>
         </div>
 
         <section className="grid gap-6 md:grid-cols-2">
