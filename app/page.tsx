@@ -23,35 +23,33 @@ export default function HomePage() {
           있습니다.
         </p>
 
-        <div className="flex flex-wrap gap-4 mb-6">
+        <div className="flex flex-nowrap items-center gap-3 mb-16 overflow-x-auto">
           <Link
             href="/projects"
-            className="inline-flex items-center rounded-full bg-black px-6 py-3 text-sm font-semibold text-white transition hover:opacity-85"
+            className="inline-flex shrink-0 items-center rounded-full bg-black px-5 py-3 text-sm font-semibold text-white transition hover:opacity-85"
           >
             프로젝트 보기
           </Link>
 
           <Link
             href="/about"
-            className="inline-flex items-center rounded-full border border-gray-300 px-6 py-3 text-sm font-semibold text-gray-800 transition hover:bg-gray-100"
+            className="inline-flex shrink-0 items-center rounded-full border border-gray-300 px-5 py-3 text-sm font-semibold text-gray-800 transition hover:bg-gray-100"
           >
             소개 보기
           </Link>
-        </div>
 
-        <div className="flex flex-wrap gap-4 mb-16">
           <a
             href="https://github.com/yeowon083"
             target="_blank"
             rel="noreferrer"
-            className="inline-flex items-center rounded-full border border-gray-300 px-6 py-3 text-sm font-semibold text-gray-800 transition hover:bg-gray-100"
+            className="inline-flex shrink-0 items-center rounded-full border border-gray-300 px-5 py-3 text-sm font-semibold text-gray-800 transition hover:bg-gray-100"
           >
             GitHub
           </a>
 
           <a
-            href="mailto:yeowon083@gmail.com"
-            className="inline-flex items-center rounded-full border border-gray-300 px-6 py-3 text-sm font-semibold text-gray-800 transition hover:bg-gray-100"
+            href="mailto:yeowon083 @gmail.com"
+            className="inline-flex shrink-0 items-center rounded-full border border-gray-300 px-5 py-3 text-sm font-semibold text-gray-800 transition hover:bg-gray-100"
           >
             Contact
           </a>
