@@ -1,44 +1,69 @@
 import Image from "next/image";
-import Link from "next/link";
 
 export default function AboutPage() {
   return (
     <main className="max-w-4xl mx-auto px-6 py-20">
-      <section className="grid gap-10 md:grid-cols-[220px_1fr] items-start">
+      <section className="grid gap-10 md:grid-cols-[240px_1fr] items-start">
         <div>
           <Image
             src="/profile.jpg"
             alt="Yeowon profile"
-            width={220}
-            height={220}
+            width={240}
+            height={240}
             className="rounded-3xl object-cover"
           />
 
-          <div className="mt-5 rounded-3xl border border-gray-200 p-5 shadow-sm">
-            <h2 className="text-xl font-semibold mb-2">여원</h2>
-            <p className="text-sm text-gray-600 leading-6 mb-4">
-              Big Data & AI를 공부하며, AI 기반 서비스 기획과 모바일 앱 개발에
-              관심을 가지고 있습니다.
-            </p>
+          <div className="mt-5 rounded-3xl border border-gray-200 p-5 shadow-sm bg-white">
+            <div className="flex items-center justify-between mb-4">
+              <div>
+                <h2 className="text-xl font-semibold">이여원</h2>
+                <p className="text-sm text-gray-500">Big Data & AI Student</p>
+              </div>
 
-            <div className="space-y-2 text-sm text-gray-700 mb-4">
-              <p>전공 · Big Data & AI</p>
-              <p>관심 분야 · AI Service Planning, Mobile App</p>
+              <span className="rounded-full bg-gray-100 px-3 py-1 text-xs font-semibold text-gray-700">
+                Building
+              </span>
             </div>
 
-            <div className="flex flex-wrap gap-2">
+            <div className="space-y-4 text-sm text-gray-700">
+              <div>
+                <p className="text-xs font-semibold tracking-[0.15em] text-gray-400 uppercase mb-1">
+                  Interest
+                </p>
+                <p className="leading-6">
+                  AI Service Planning, Mobile App Development, Data-driven
+                  Problem Solving
+                </p>
+              </div>
+
+              <div>
+                <p className="text-xs font-semibold tracking-[0.15em] text-gray-400 uppercase mb-1">
+                  Current Project
+                </p>
+                <p className="leading-6">충동소비 예측 앱</p>
+              </div>
+
+              <div>
+                <p className="text-xs font-semibold tracking-[0.15em] text-gray-400 uppercase mb-1">
+                  Contact
+                </p>
+                <p className="leading-6 break-all">yeowon083@gmail.com</p>
+              </div>
+            </div>
+
+            <div className="flex flex-wrap gap-2 mt-5">
               <a
                 href="https://github.com/yeowon083"
                 target="_blank"
                 rel="noreferrer"
-                className="inline-flex items-center rounded-full border border-gray-300 px-3 py-2 text-sm font-semibold text-gray-800 transition hover:bg-gray-100"
+                className="inline-flex items-center rounded-full bg-black px-4 py-2 text-sm font-semibold text-white transition hover:opacity-85"
               >
                 GitHub
               </a>
 
               <a
                 href="mailto:yeowon083@gmail.com"
-                className="inline-flex items-center rounded-full border border-gray-300 px-3 py-2 text-sm font-semibold text-gray-800 transition hover:bg-gray-100"
+                className="inline-flex items-center rounded-full border border-gray-300 px-4 py-2 text-sm font-semibold text-gray-800 transition hover:bg-gray-100"
               >
                 Email
               </a>
