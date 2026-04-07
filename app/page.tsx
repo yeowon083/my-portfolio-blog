@@ -25,11 +25,7 @@ export default function HomePage() {
         </div>
 
         <h1 className="text-5xl md:text-6xl font-bold tracking-tight leading-tight mb-6">
-          AI와 데이터를 활용해
-          <br />
-          실제로 쓰이는 앱을
-          <br />
-          기획하고 만듭니다
+          YEOWON&apos;S PORTFOLIO
         </h1>
 
         <p className="text-lg text-gray-600 leading-8 max-w-2xl mb-10">
