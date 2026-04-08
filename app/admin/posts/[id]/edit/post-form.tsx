@@ -38,18 +38,9 @@ function parseTags(value: string) {
     .filter(Boolean);
 }
 
-export default function EditPostForm({ post }: { post?: Post }) {
+export default function EditPostForm({ post }: { post: Post }) {
   const supabase = createClient();
   const router = useRouter();
-
-  if (!post) {
-    return (
-      <main className="max-w-3xl mx-auto px-6 py-20">
-        <h1 className="text-3xl font-bold mb-4">글 수정</h1>
-        <p className="text-red-600">불러올 글 정보가 없습니다.</p>
-      </main>
-    );
-  }
 
   const [title, setTitle] = useState(post.title);
   const [slug, setSlug] = useState(post.slug);

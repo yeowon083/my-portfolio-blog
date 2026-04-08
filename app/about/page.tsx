@@ -1,3 +1,10 @@
+import type { Metadata } from "next";
+
+export const metadata: Metadata = {
+  title: "About",
+  description: "이여원의 소개, 관심 분야, 기술 스택을 정리한 페이지",
+};
+
 import Image from "next/image";
 
 export default function AboutPage() {

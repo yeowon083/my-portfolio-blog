@@ -1,3 +1,10 @@
+import type { Metadata } from "next";
+
+export const metadata: Metadata = {
+  title: "Projects",
+  description: "이여원이 진행한 프로젝트와 현재 만들고 있는 서비스를 소개하는 페이지",
+};
+
 export default function ProjectsPage() {
   return (
     <main className="max-w-4xl mx-auto px-6 py-20">

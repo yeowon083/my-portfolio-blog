@@ -1,3 +1,4 @@
+import type { Metadata } from "next";
 import Link from "next/link";
 import { notFound } from "next/navigation";
 import { createClient } from "@/lib/supabase/server";
@@ -19,6 +20,43 @@ type PostItem = {
   created_at: string;
   tags?: string[] | null;
 };
+
+export async function generateMetadata({
+  params,
+}: {
+  params: Promise<{ slug: string }>;
+}): Promise<Metadata> {
+  const { slug } = await params;
+  const supabase = await createClient();
+
+  const { data: post } = await supabase
+    .from("posts")
+    .select("title, summary")
+    .eq("slug", slug)
+    .eq("is_published", true)
+    .single();
+
+  if (!post) {
+    return {
+      title: "Blog",
+      description: "블로그 글 상세 페이지",
+    };
+  }
+
+  return {
+    title: post.title,
+    description: post.summary ?? "블로그 글 상세 페이지",
+    openGraph: {
+      title: post.title,
+      description: post.summary ?? "블로그 글 상세 페이지",
+    },
+    twitter: {
+      card: "summary_large_image",
+      title: post.title,
+      description: post.summary ?? "블로그 글 상세 페이지",
+    },
+  };
+}
 
 export default async function BlogDetailPage({
   params,
@@ -68,13 +106,14 @@ export default async function BlogDetailPage({
 
         {post.tags && post.tags.length > 0 && (
           <div className="flex flex-wrap gap-2 mb-6">
-            {post.tags.map((tag) => (
-              <span
+            {post.tags.map((tag: string) => (
+              <Link
                 key={tag}
-                className="rounded-full border border-gray-300 px-3 py-1 text-sm text-gray-700"
+                href={`/blog?tag=${encodeURIComponent(tag)}`}
+                className="rounded-full border border-gray-300 px-3 py-1 text-sm text-gray-700 transition hover:bg-gray-100"
               >
                 {tag}
-              </span>
+              </Link>
             ))}
           </div>
         )}

@@ -1,9 +1,37 @@
 import "./globals.css";
 import Navbar from "../components/Navbar";
+import type { Metadata } from "next";
 
-export const metadata = {
-  title: "Yeowon Portfolio Blog",
-  description: "AI와 데이터를 활용한 프로젝트와 기술 기록",
+export const metadata: Metadata = {
+  metadataBase: new URL("https://my-portfolio-blog-eight.vercel.app"),
+  title: {
+    default: "YEOWON'S PORTFOLIO",
+    template: "%s | YEOWON'S PORTFOLIO",
+  },
+  description:
+    "이여원의 프로젝트, 블로그 기록, AI 서비스 기획과 모바일 앱 개발 포트폴리오",
+  openGraph: {
+    title: "YEOWON'S PORTFOLIO",
+    description:
+      "이여원의 프로젝트, 블로그 기록, AI 서비스 기획과 모바일 앱 개발 포트폴리오",
+    siteName: "YEOWON'S PORTFOLIO",
+    type: "website",
+    images: [
+      {
+        url: "/og-image.png",
+        width: 1200,
+        height: 630,
+        alt: "YEOWON'S PORTFOLIO",
+      },
+    ],
+  },
+  twitter: {
+    card: "summary_large_image",
+    title: "YEOWON'S PORTFOLIO",
+    description:
+      "이여원의 프로젝트, 블로그 기록, AI 서비스 기획과 모바일 앱 개발 포트폴리오",
+    images: ["/og-image.png"],
+  },
 };
 
 export default function RootLayout({
