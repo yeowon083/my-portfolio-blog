@@ -1,7 +1,7 @@
 import { NextResponse } from "next/server";
 
 export async function GET() {
-  const baseUrl = "https://my-portfolio-blog-eight.vercel.app";
+  const baseUrl = "https://yeowon.dev";
 
   const body = `User-agent: *
 Allow: /

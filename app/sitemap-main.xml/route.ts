@@ -2,7 +2,7 @@ import { NextResponse } from "next/server";
 import { createClient } from "@/lib/supabase/server";
 
 export async function GET() {
-  const baseUrl = "https://my-portfolio-blog-eight.vercel.app";
+  const baseUrl = "https://yeowon.dev";
   const supabase = await createClient();
 
   const { data: posts } = await supabase
