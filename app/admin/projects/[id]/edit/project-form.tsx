@@ -298,7 +298,7 @@ export default function ProjectForm({ initialData }: ProjectFormProps) {
               )}
 
               {description ? (
-                <div className="prose max-w-none">
+                <div className="prose max-w-none prose-headings:mt-4 prose-h1:mb-3 prose-h2:mb-2 prose-h3:mb-2 prose-p:my-2 prose-hr:my-3">
                   <ReactMarkdown
                     remarkPlugins={[remarkGfm]}
                     rehypePlugins={[rehypeRaw, [rehypeSanitize, sanitizeSchema]]}
