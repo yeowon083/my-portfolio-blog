@@ -1,5 +1,7 @@
 "use client";
 
+import ReactMarkdown from "react-markdown";
+import remarkGfm from "remark-gfm";
 import { useState } from "react";
 import { createClient } from "@/lib/supabase/client";
 import { useRouter } from "next/navigation";
@@ -249,8 +251,10 @@ export default function NewPostPage() {
                 </p>
               )}
 
-              <div className="whitespace-pre-wrap text-gray-700 leading-8">
-                {content || "본문이 여기에 표시됩니다."}
+              <div className="prose prose-gray max-w-none prose-headings:tracking-tight prose-a:break-all">
+                <ReactMarkdown remarkPlugins={[remarkGfm]}>
+                  {content || "본문이 여기에 표시됩니다."}
+                </ReactMarkdown>
               </div>
             </article>
           </div>

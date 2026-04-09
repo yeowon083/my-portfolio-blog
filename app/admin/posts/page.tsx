@@ -189,12 +189,18 @@ export default async function AdminPostsPage({
                 </div>
 
                 <div className="flex flex-wrap gap-3">
-                  <Link
-                    href={`/blog/${post.slug}`}
-                    className="inline-flex items-center rounded-full border border-gray-300 px-4 py-2 text-sm font-semibold text-gray-800 transition hover:bg-gray-100"
-                  >
-                    공개 글 보기
-                  </Link>
+                  {post.is_published ? (
+                    <Link
+                      href={`/blog/${post.slug}`}
+                      className="inline-flex items-center rounded-full border border-gray-300 px-4 py-2 text-sm font-semibold text-gray-800 transition hover:bg-gray-100"
+                    >
+                      공개 글 보기
+                    </Link>
+                  ) : (
+                    <span className="inline-flex items-center rounded-full border border-gray-200 px-4 py-2 text-sm font-semibold text-gray-400">
+                      비공개 글
+                    </span>
+                  )}
 
                   <Link
                     href={`/admin/posts/${post.id}/edit`}
