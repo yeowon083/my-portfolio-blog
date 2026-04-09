@@ -130,9 +130,14 @@ export async function PATCH(
 
   const { data: updatedComment, error: updateError } = await supabase
     .from("comments")
-    .update({ content })
+    .update({
+      content,
+      updated_at: new Date().toISOString(),
+    })
     .eq("id", id)
-    .select("id, author_name, content, target_type, target_id, created_at")
+    .select(
+      "id, author_name, content, target_type, target_id, created_at, updated_at"
+    )
     .single();
 
   if (updateError) {

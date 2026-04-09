@@ -38,7 +38,9 @@ export async function GET(request: NextRequest) {
 
   const { data, error } = await supabase
     .from("comments")
-    .select("id, author_name, content, target_type, target_id, created_at")
+    .select(
+      "id, author_name, content, target_type, target_id, created_at, updated_at"
+    )
     .eq("target_type", targetType)
     .eq("target_id", targetId)
     .order("created_at", { ascending: true });
@@ -104,7 +106,9 @@ export async function POST(request: NextRequest) {
       target_type: targetType,
       target_id: targetId,
     })
-    .select("id, author_name, content, target_type, target_id, created_at")
+    .select(
+      "id, author_name, content, target_type, target_id, created_at, updated_at"
+    )
     .single();
 
   if (error) {

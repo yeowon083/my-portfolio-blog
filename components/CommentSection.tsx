@@ -11,6 +11,7 @@ type CommentItem = {
   target_type: CommentTargetType;
   target_id: string;
   created_at: string;
+  updated_at?: string;
 };
 
 type CommentSectionProps = {
@@ -77,6 +78,28 @@ export default function CommentSection({
   useEffect(() => {
     fetchComments();
   }, [targetType, targetId]);
+
+  function handleCommentKeyDown(
+    e: React.KeyboardEvent<HTMLTextAreaElement>
+  ) {
+    if (e.key === "Enter" && !e.shiftKey) {
+      e.preventDefault();
+      const form = e.currentTarget.form;
+      if (form) {
+        form.requestSubmit();
+      }
+    }
+  }
+
+  function handleEditKeyDown(
+    e: React.KeyboardEvent<HTMLTextAreaElement>,
+    commentId: string
+  ) {
+    if (e.key === "Enter" && !e.shiftKey) {
+      e.preventDefault();
+      handleEdit(commentId);
+    }
+  }
 
   async function handleSubmit(e: React.FormEvent) {
     e.preventDefault();
@@ -252,10 +275,14 @@ export default function CommentSection({
           <textarea
             value={content}
             onChange={(e) => setContent(e.target.value)}
+            onKeyDown={handleCommentKeyDown}
             rows={4}
             placeholder="댓글을 입력하세요"
             className="w-full rounded-2xl border border-gray-300 px-4 py-3 outline-none focus:border-black"
           />
+          <p className="mt-2 text-xs text-gray-500">
+            Enter로 등록, Shift + Enter로 줄바꿈
+          </p>
         </div>
 
         {message && <p className="text-sm text-gray-600">{message}</p>}
@@ -285,6 +312,9 @@ export default function CommentSection({
                   </p>
                   <p className="text-sm text-gray-500">
                     {formatDate(comment.created_at)}
+                    {comment.updated_at &&
+                      comment.updated_at !== comment.created_at &&
+                      " · 수정됨"}
                   </p>
                 </div>
 
@@ -342,9 +372,13 @@ export default function CommentSection({
                   <textarea
                     value={editContent}
                     onChange={(e) => setEditContent(e.target.value)}
+                    onKeyDown={(e) => handleEditKeyDown(e, comment.id)}
                     rows={4}
                     className="w-full rounded-2xl border border-gray-300 px-4 py-3 outline-none focus:border-black mb-3"
                   />
+                  <p className="mt-2 mb-3 text-xs text-gray-500">
+                    Enter로 수정, Shift + Enter로 줄바꿈
+                  </p>
 
                   <label className="block text-sm font-medium text-gray-700 mb-2">
                     수정 비밀번호
