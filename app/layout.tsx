@@ -3,20 +3,20 @@ import Navbar from "../components/Navbar";
 import type { Metadata } from "next";
 
 export const metadata: Metadata = {
-  metadataBase: new URL("https://my-portfolio-blog-eight.vercel.app"),
+  metadataBase: new URL("https://yeowon.dev"),
   title: {
     default: "YEOWON'S PORTFOLIO",
     template: "%s | YEOWON'S PORTFOLIO",
   },
   description:
-    "이여원의 프로젝트, 블로그 기록, AI 서비스 기획과 모바일 앱 개발 포트폴리오",
+    "이여원의 포트폴리오",
   verification: {
-    google: "trEajzB8WnRPqf_QHB2NxtRw5WAyk6qKwR3l9sfmGA4",
+    google: "5QZM0-YAk_y6z2DvJxmyqBOWObiKFOY9_vyE5EBQGyc",
   },
     openGraph: {
     title: "YEOWON'S PORTFOLIO",
     description:
-      "이여원의 프로젝트, 블로그 기록, AI 서비스 기획과 모바일 앱 개발 포트폴리오",
+      "이여원의 포트폴리오",
     siteName: "YEOWON'S PORTFOLIO",
     type: "website",
     images: [
@@ -32,7 +32,7 @@ export const metadata: Metadata = {
     card: "summary_large_image",
     title: "YEOWON'S PORTFOLIO",
     description:
-      "이여원의 프로젝트, 블로그 기록, AI 서비스 기획과 모바일 앱 개발 포트폴리오",
+      "이여원의 포트폴리오",
     images: ["/og-image.png"],
   },
 };
