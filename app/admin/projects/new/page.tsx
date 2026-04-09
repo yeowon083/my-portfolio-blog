@@ -3,6 +3,10 @@
 import { useState } from "react";
 import { createClient } from "@/lib/supabase/client";
 import { useRouter } from "next/navigation";
+import ReactMarkdown from "react-markdown";
+import remarkGfm from "remark-gfm";
+import rehypeRaw from "rehype-raw";
+import rehypeSanitize, { defaultSchema } from "rehype-sanitize";
 
 function generateSlug(value: string) {
   return value
@@ -19,6 +23,11 @@ function parseTechStack(value: string) {
     .map((item) => item.trim())
     .filter(Boolean);
 }
+
+const sanitizeSchema = {
+  ...defaultSchema,
+  tagNames: [...(defaultSchema.tagNames || []), "mark"],
+};
 
 export default function NewProjectPage() {
   const supabase = createClient();
@@ -272,9 +281,14 @@ export default function NewProjectPage() {
               )}
 
               {description ? (
-                <p className="text-gray-700 leading-8 whitespace-pre-wrap">
-                  {description}
-                </p>
+                <div className="prose max-w-none">
+                  <ReactMarkdown
+                    remarkPlugins={[remarkGfm]}
+                    rehypePlugins={[rehypeRaw, [rehypeSanitize, sanitizeSchema]]}
+                  >
+                    {description}
+                  </ReactMarkdown>
+                </div>
               ) : (
                 <p className="text-gray-400 leading-8">
                   설명이 여기에 표시됩니다.

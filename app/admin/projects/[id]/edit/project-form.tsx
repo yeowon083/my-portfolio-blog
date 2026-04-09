@@ -3,6 +3,10 @@
 import { useState } from "react";
 import { createClient } from "@/lib/supabase/client";
 import { useRouter } from "next/navigation";
+import ReactMarkdown from "react-markdown";
+import remarkGfm from "remark-gfm";
+import rehypeRaw from "rehype-raw";
+import rehypeSanitize, { defaultSchema } from "rehype-sanitize";
 
 type ProjectFormProps = {
   initialData: {
@@ -35,6 +39,11 @@ function parseTechStack(value: string) {
     .filter(Boolean);
 }
 
+const sanitizeSchema = {
+  ...defaultSchema,
+  tagNames: [...(defaultSchema.tagNames || []), "mark"],
+};
+
 export default function ProjectForm({ initialData }: ProjectFormProps) {
   const supabase = createClient();
   const router = useRouter();
@@ -43,7 +52,9 @@ export default function ProjectForm({ initialData }: ProjectFormProps) {
   const [slug, setSlug] = useState(initialData.slug ?? "");
   const [summary, setSummary] = useState(initialData.summary ?? "");
   const [description, setDescription] = useState(initialData.description ?? "");
-  const [thumbnailUrl, setThumbnailUrl] = useState(initialData.thumbnail_url ?? "");
+  const [thumbnailUrl, setThumbnailUrl] = useState(
+    initialData.thumbnail_url ?? ""
+  );
   const [projectUrl, setProjectUrl] = useState(initialData.project_url ?? "");
   const [githubUrl, setGithubUrl] = useState(initialData.github_url ?? "");
   const [techStackInput, setTechStackInput] = useState(
@@ -287,9 +298,14 @@ export default function ProjectForm({ initialData }: ProjectFormProps) {
               )}
 
               {description ? (
-                <p className="text-gray-700 leading-8 whitespace-pre-wrap">
-                  {description}
-                </p>
+                <div className="prose max-w-none">
+                  <ReactMarkdown
+                    remarkPlugins={[remarkGfm]}
+                    rehypePlugins={[rehypeRaw, [rehypeSanitize, sanitizeSchema]]}
+                  >
+                    {description}
+                  </ReactMarkdown>
+                </div>
               ) : (
                 <p className="text-gray-400 leading-8">
                   설명이 여기에 표시됩니다.

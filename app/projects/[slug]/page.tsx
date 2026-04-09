@@ -1,6 +1,10 @@
 import type { Metadata } from "next";
 import Link from "next/link";
 import { notFound } from "next/navigation";
+import ReactMarkdown from "react-markdown";
+import remarkGfm from "remark-gfm";
+import rehypeRaw from "rehype-raw";
+import rehypeSanitize, { defaultSchema } from "rehype-sanitize";
 import { createClient } from "@/lib/supabase/server";
 
 type Project = {
@@ -23,6 +27,11 @@ function formatDate(dateString: string) {
     day: "numeric",
   });
 }
+
+const sanitizeSchema = {
+  ...defaultSchema,
+  tagNames: [...(defaultSchema.tagNames || []), "mark"],
+};
 
 export async function generateMetadata({
   params,
@@ -156,8 +165,13 @@ export default async function ProjectDetailPage({
         </div>
 
         {typedProject.description ? (
-          <div className="whitespace-pre-wrap text-gray-700 leading-8">
-            {typedProject.description}
+          <div className="prose max-w-none">
+            <ReactMarkdown
+              remarkPlugins={[remarkGfm]}
+              rehypePlugins={[rehypeRaw, [rehypeSanitize, sanitizeSchema]]}
+            >
+              {typedProject.description}
+            </ReactMarkdown>
           </div>
         ) : (
           <p className="text-gray-400 leading-8">
