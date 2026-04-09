@@ -101,6 +101,12 @@ export default async function AdminPostsPage({
           >
             새 글 작성
           </Link>
+          <Link
+            href="/admin/categories"
+            className="inline-flex items-center rounded-full border border-gray-300 px-5 py-3 text-sm font-semibold text-gray-800 transition hover:bg-gray-100"
+          >
+            카테고리 관리
+          </Link>
           <AdminLogoutButton />
         </div>
       </div>

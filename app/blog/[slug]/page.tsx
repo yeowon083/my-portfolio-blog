@@ -21,6 +21,26 @@ const sanitizeSchema = {
   tagNames: [...(defaultSchema.tagNames || []), "mark"],
 };
 
+type Category = {
+  id: string;
+  name: string;
+  slug: string;
+};
+
+type PostItem = {
+  id: string;
+  title: string;
+  slug: string;
+  summary: string | null;
+  content: string;
+  created_at: string;
+  tags?: string[] | null;
+  is_published?: boolean;
+  view_count?: number | null;
+  category_id?: string | null;
+  categories?: Category[] | null;
+};
+
 export async function generateMetadata({
   params,
 }: {
@@ -68,9 +88,23 @@ export default async function BlogDetailPage({
 
   const { data: post, error } = await supabase
     .from("posts")
-    .select(
-      "id, title, slug, summary, content, created_at, tags, is_published, view_count, category"
-    )
+    .select(`
+      id,
+      title,
+      slug,
+      summary,
+      content,
+      created_at,
+      tags,
+      is_published,
+      view_count,
+      category_id,
+      categories (
+        id,
+        name,
+        slug
+      )
+    `)
     .eq("slug", slug)
     .eq("is_published", true)
     .single();
@@ -78,6 +112,9 @@ export default async function BlogDetailPage({
   if (error || !post) {
     notFound();
   }
+
+  const typedPost = post as PostItem;
+  const category = typedPost.categories?.[0] ?? null;
 
   return (
     <main className="max-w-3xl mx-auto px-6 py-20">
@@ -89,26 +126,28 @@ export default async function BlogDetailPage({
       </Link>
 
       <article>
-        <ViewTracker slug={post.slug} />
+        <ViewTracker slug={typedPost.slug} />
 
         <p className="text-sm text-gray-500 mb-5">
-          {formatDate(post.created_at)} · 조회수 {post.view_count ?? 0}
+          {formatDate(typedPost.created_at)} · 조회수 {typedPost.view_count ?? 0}
         </p>
 
-        {post.category && (
-          <p className="text-sm font-semibold tracking-[0.12em]
-        text-gray-500 uppercase mb-4">
-          {post.category}
-          </p>
+        {category?.name && category?.slug && (
+          <Link
+            href={`/blog/category/${category.slug}`}
+            className="inline-block text-sm font-semibold tracking-[0.12em] text-gray-500 uppercase mb-4 underline underline-offset-4 hover:text-gray-800"
+          >
+            {category.name}
+          </Link>
         )}
 
         <h1 className="text-4xl md:text-5xl font-bold tracking-tight leading-tight mb-6">
-          {post.title}
+          {typedPost.title}
         </h1>
 
-        {post.tags && post.tags.length > 0 && (
+        {typedPost.tags && typedPost.tags.length > 0 && (
           <div className="flex flex-wrap gap-2 mb-6">
-            {post.tags.map((tag: string) => (
+            {typedPost.tags.map((tag: string) => (
               <Link
                 key={tag}
                 href={`/blog?tag=${encodeURIComponent(tag)}`}
@@ -120,9 +159,9 @@ export default async function BlogDetailPage({
           </div>
         )}
 
-        {post.summary && (
+        {typedPost.summary && (
           <p className="text-lg text-gray-600 leading-8 mb-12">
-            {post.summary}
+            {typedPost.summary}
           </p>
         )}
 
@@ -131,7 +170,7 @@ export default async function BlogDetailPage({
             remarkPlugins={[remarkGfm]}
             rehypePlugins={[rehypeRaw, [rehypeSanitize, sanitizeSchema]]}
           >
-            {post.content}
+            {typedPost.content}
           </ReactMarkdown>
         </div>
 

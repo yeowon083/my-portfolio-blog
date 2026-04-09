@@ -17,6 +17,12 @@ function formatDate(dateString: string) {
   });
 }
 
+type Category = {
+  id: string;
+  name: string;
+  slug: string;
+};
+
 type Post = {
   id: string;
   title: string;
@@ -25,7 +31,8 @@ type Post = {
   created_at: string;
   tags?: string[] | null;
   view_count?: number | null;
-  category?: string | null;
+  category_id?: string | null;
+  categories?: Category[] | null;
 };
 
 export default async function BlogPage({
@@ -54,7 +61,21 @@ export default async function BlogPage({
 
   const { data: posts, error } = await supabase
     .from("posts")
-    .select("id, title, slug, summary, created_at, tags, view_count, category")
+    .select(`
+      id,
+      title,
+      slug,
+      summary,
+      created_at,
+      tags,
+      view_count,
+      category_id,
+      categories (
+        id,
+        name,
+        slug
+      )
+    `)
     .eq("is_published", true)
     .order("created_at", { ascending: false });
 
@@ -63,11 +84,16 @@ export default async function BlogPage({
       <main className="max-w-4xl mx-auto px-6 py-20">
         <h1 className="text-4xl font-bold mb-6">Blog</h1>
         <p className="text-red-600">글 목록을 불러오는 중 오류가 발생했습니다.</p>
+        <pre className="mt-4 whitespace-pre-wrap text-sm text-gray-700">
+          {error.message}
+        </pre>
       </main>
     );
   }
 
-  let filteredPosts: Post[] = (posts ?? []) as Post[];
+  const typedPosts: Post[] = (posts ?? []) as Post[];
+
+  let filteredPosts = typedPosts;
 
   if (selectedTag) {
     filteredPosts = filteredPosts.filter((post) =>
@@ -77,7 +103,7 @@ export default async function BlogPage({
 
   if (selectedCategory) {
     filteredPosts = filteredPosts.filter(
-      (post) => post.category === selectedCategory
+      (post) => post.categories?.[0]?.slug === selectedCategory
     );
   }
 
@@ -90,12 +116,16 @@ export default async function BlogPage({
   }
 
   const allTags = Array.from(
-    new Set((posts ?? []).flatMap((post) => post.tags ?? []))
+    new Set(typedPosts.flatMap((post) => post.tags ?? []))
   ).sort((a, b) => a.localeCompare(b));
 
   const allCategories = Array.from(
-    new Set((posts ?? []).map((post) => post.category).filter(Boolean))
-  ) as string[];
+    new Map(
+      typedPosts
+        .flatMap((post) => post.categories ?? [])
+        .map((category) => [category.id, category])
+    ).values()
+  ).sort((a, b) => a.name.localeCompare(b.name));
 
   const totalPosts = filteredPosts.length;
   const totalPages = Math.max(1, Math.ceil(totalPosts / POSTS_PER_PAGE));
@@ -165,7 +195,8 @@ export default async function BlogPage({
                     Category
                   </span>
                   <span className="rounded-full border border-gray-300 px-3 py-1 text-sm text-gray-700">
-                    {selectedCategory}
+                    {allCategories.find((c) => c.slug === selectedCategory)?.name ??
+                      selectedCategory}
                   </span>
                 </>
               )}
@@ -192,7 +223,9 @@ export default async function BlogPage({
               현재{" "}
               {selectedCategory && (
                 <span className="font-semibold text-gray-900">
-                  카테고리 {selectedCategory}
+                  카테고리{" "}
+                  {allCategories.find((c) => c.slug === selectedCategory)?.name ??
+                    selectedCategory}
                 </span>
               )}
               {selectedCategory && selectedTag && <span> · </span>}
@@ -284,13 +317,13 @@ export default async function BlogPage({
             </Link>
 
             {allCategories.map((category) => {
-              const isActive = selectedCategory === category;
+              const isActive = selectedCategory === category.slug;
 
               return (
                 <Link
-                  key={category}
+                  key={category.id}
                   href={buildBlogHref({
-                    nextCategory: category,
+                    nextCategory: category.slug,
                     nextTag: selectedTag || undefined,
                     nextQ: keyword || undefined,
                     nextPage: 1,
@@ -301,7 +334,7 @@ export default async function BlogPage({
                       : "border border-gray-300 text-gray-800 hover:bg-gray-100"
                   }`}
                 >
-                  {category}
+                  {category.name}
                 </Link>
               );
             })}
@@ -327,7 +360,9 @@ export default async function BlogPage({
 
           {selectedCategory && (
             <span className="inline-flex items-center rounded-full border border-gray-300 px-4 py-2 text-sm font-semibold text-gray-800">
-              선택된 카테고리 · {selectedCategory}
+              선택된 카테고리 ·{" "}
+              {allCategories.find((c) => c.slug === selectedCategory)?.name ??
+                selectedCategory}
             </span>
           )}
 
@@ -397,9 +432,21 @@ export default async function BlogPage({
                       Latest
                     </span>
                   )}
+
                 <p className="text-sm font-medium text-gray-500">
-                  {post.category ? `카테고리 · ${post.category} · ` : ""}
-                  작성일 · {formatDate(post.created_at)} · 조회수{" "}
+                  {post.categories?.[0]?.slug && post.categories?.[0]?.name && (
+                    <>
+                      카테고리 ·{" "}
+                      <Link
+                        href={`/blog/category/${post.categories[0].slug}`}
+                        className="underline underline-offset-4 hover:text-gray-800"
+                      >
+                        {post.categories[0].name}
+                      </Link>{" "}
+                      ·{" "}
+                    </>
+                  )}
+                  작성일: {formatDate(post.created_at)} · 조회수{" "}
                   {post.view_count ?? 0}
                 </p>
               </div>
@@ -447,17 +494,17 @@ export default async function BlogPage({
           <div className="rounded-3xl border border-dashed border-gray-300 p-8 text-center">
             <p className="text-gray-600 mb-4">
               {selectedCategory && selectedTag && keyword
-                ? `"${selectedCategory}" 카테고리, "${selectedTag}" 태그, "${keyword}" 검색어에 해당하는 글이 없습니다.`
+                ? `선택한 카테고리, 태그, 검색어에 해당하는 글이 없습니다.`
                 : selectedCategory && selectedTag
-                ? `"${selectedCategory}" 카테고리와 "${selectedTag}" 태그에 해당하는 글이 없습니다.`
+                ? `선택한 카테고리와 태그에 해당하는 글이 없습니다.`
                 : selectedCategory && keyword
-                ? `"${selectedCategory}" 카테고리와 "${keyword}" 검색어에 해당하는 글이 없습니다.`
+                ? `선택한 카테고리와 검색어에 해당하는 글이 없습니다.`
                 : selectedTag && keyword
-                ? `"${selectedTag}" 태그와 "${keyword}" 검색어에 해당하는 글이 없습니다.`
+                ? `선택한 태그와 검색어에 해당하는 글이 없습니다.`
                 : selectedCategory
-                ? `"${selectedCategory}" 카테고리에 해당하는 글이 아직 없습니다.`
+                ? `선택한 카테고리에 해당하는 글이 아직 없습니다.`
                 : selectedTag
-                ? `"${selectedTag}" 태그에 해당하는 글이 아직 없습니다.`
+                ? `선택한 태그에 해당하는 글이 아직 없습니다.`
                 : keyword
                 ? `"${keyword}" 검색어에 해당하는 글이 없습니다.`
                 : "아직 발행된 글이 없습니다."}

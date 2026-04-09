@@ -12,20 +12,6 @@ type Category = {
   slug: string;
 };
 
-type PostFormProps = {
-  initialData: {
-    id: string;
-    title: string;
-    slug: string;
-    summary: string | null;
-    content: string;
-    is_published: boolean;
-    tags?: string[] | null;
-    category_id?: string | null;
-  };
-  categories: Category[];
-};
-
 function generateSlug(value: string) {
   return value
     .toLowerCase()
@@ -50,24 +36,21 @@ function parseTags(value: string) {
     .filter(Boolean);
 }
 
-export default function PostForm({
-  initialData,
+export default function NewPostForm({
   categories,
-}: PostFormProps) {
+}: {
+  categories: Category[];
+}) {
   const supabase = createClient();
   const router = useRouter();
 
-  const [title, setTitle] = useState(initialData.title ?? "");
-  const [slug, setSlug] = useState(initialData.slug ?? "");
-  const [summary, setSummary] = useState(initialData.summary ?? "");
-  const [content, setContent] = useState(initialData.content ?? "");
-  const [categoryId, setCategoryId] = useState(initialData.category_id ?? "");
-  const [tagsInput, setTagsInput] = useState(
-    (initialData.tags ?? []).join(", ")
-  );
-  const [isPublished, setIsPublished] = useState(
-    initialData.is_published ?? false
-  );
+  const [categoryId, setCategoryId] = useState("");
+  const [title, setTitle] = useState("");
+  const [slug, setSlug] = useState("");
+  const [summary, setSummary] = useState("");
+  const [content, setContent] = useState("");
+  const [tagsInput, setTagsInput] = useState("");
+  const [isPublished, setIsPublished] = useState(false);
   const [message, setMessage] = useState("");
   const [isSaving, setIsSaving] = useState(false);
 
@@ -99,18 +82,26 @@ export default function PostForm({
 
     setIsSaving(true);
 
-    const { error } = await supabase
-      .from("posts")
-      .update({
-        title: trimmedTitle,
-        slug: trimmedSlug,
-        summary: trimmedSummary,
-        content: trimmedContent,
-        category_id: categoryId || null,
-        tags,
-        is_published: isPublished,
-      })
-      .eq("id", initialData.id);
+    const {
+      data: { user },
+    } = await supabase.auth.getUser();
+
+    if (!user) {
+      setIsSaving(false);
+      setMessage("로그인이 필요합니다.");
+      return;
+    }
+
+    const { error } = await supabase.from("posts").insert({
+      title: trimmedTitle,
+      slug: trimmedSlug,
+      summary: trimmedSummary,
+      content: trimmedContent,
+      category_id: categoryId || null,
+      tags,
+      is_published: isPublished,
+      author_id: user.id,
+    });
 
     setIsSaving(false);
 
@@ -129,7 +120,7 @@ export default function PostForm({
         Admin
       </p>
 
-      <h1 className="text-4xl font-bold tracking-tight mb-10">글 수정</h1>
+      <h1 className="text-4xl font-bold tracking-tight mb-10">새 글 작성</h1>
 
       <div className="grid gap-10 lg:grid-cols-[1fr_1fr]">
         <form onSubmit={handleSubmit} className="space-y-5">
@@ -153,9 +144,6 @@ export default function PostForm({
               onChange={(e) => setSlug(generateSlug(e.target.value))}
               className="w-full rounded-2xl border border-gray-300 px-4 py-3 outline-none focus:border-black"
             />
-            <p className="mt-2 text-xs text-gray-500">
-              영어 소문자, 숫자, 하이픈(-) 형태로 관리하는 것을 추천해.
-            </p>
           </div>
 
           <div>
@@ -194,12 +182,8 @@ export default function PostForm({
             <input
               value={tagsInput}
               onChange={(e) => setTagsInput(e.target.value)}
-              placeholder="예: AI, App, Supabase"
               className="w-full rounded-2xl border border-gray-300 px-4 py-3 outline-none focus:border-black"
             />
-            <p className="mt-2 text-xs text-gray-500">
-              쉼표(,)로 구분해서 입력해.
-            </p>
           </div>
 
           <div>
@@ -225,15 +209,13 @@ export default function PostForm({
 
           {message && <p className="text-sm text-red-600">{message}</p>}
 
-          <div className="flex flex-wrap gap-3 pt-2">
-            <button
-              type="submit"
-              disabled={isSaving}
-              className="inline-flex items-center rounded-full bg-black px-5 py-3 text-sm font-semibold text-white transition hover:opacity-85 disabled:opacity-50"
-            >
-              {isSaving ? "저장 중..." : "저장"}
-            </button>
-          </div>
+          <button
+            type="submit"
+            disabled={isSaving}
+            className="inline-flex items-center rounded-full bg-black px-5 py-3 text-sm font-semibold text-white transition hover:opacity-85 disabled:opacity-50"
+          >
+            {isSaving ? "저장 중..." : "저장"}
+          </button>
         </form>
 
         <section>
@@ -252,9 +234,7 @@ export default function PostForm({
               <div className="flex flex-wrap items-center gap-3 mb-4">
                 <span
                   className={`rounded-full px-3 py-1 text-xs font-semibold ${
-                    isPublished
-                      ? "bg-black text-white"
-                      : "bg-gray-100 text-gray-700"
+                    isPublished ? "bg-black text-white" : "bg-gray-100 text-gray-700"
                   }`}
                 >
                   {isPublished ? "Published" : "Draft"}
@@ -285,9 +265,7 @@ export default function PostForm({
               )}
 
               {summary ? (
-                <p className="text-lg text-gray-600 leading-8 mb-8">
-                  {summary}
-                </p>
+                <p className="text-lg text-gray-600 leading-8 mb-8">{summary}</p>
               ) : (
                 <p className="text-lg text-gray-400 leading-8 mb-8">
                   요약이 여기에 표시됩니다.

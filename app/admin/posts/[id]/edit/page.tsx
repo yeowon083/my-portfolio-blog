@@ -1,6 +1,6 @@
 import { redirect } from "next/navigation";
 import { createClient } from "@/lib/supabase/server";
-import EditPostForm from "./post-form";
+import PostForm from "./post-form";
 
 export default async function EditPostPage({
   params,
@@ -24,13 +24,34 @@ export default async function EditPostPage({
 
   const { data: post, error } = await supabase
     .from("posts")
-    .select("*")
+    .select(
+      "id, title, slug, summary, content, is_published, tags, category_id"
+    )
     .eq("id", id)
     .single();
 
   if (error || !post) {
-    redirect("/admin/posts");
+    return (
+      <main className="max-w-4xl mx-auto px-6 py-20">
+        <h1 className="text-3xl font-bold mb-4">글 수정</h1>
+        <p className="text-red-600">글 정보를 불러오는 중 오류가 발생했습니다.</p>
+      </main>
+    );
   }
 
-  return <EditPostForm post={post} />;
+  const { data: categories, error: categoriesError } = await supabase
+    .from("categories")
+    .select("id, name, slug")
+    .order("name", { ascending: true });
+
+  if (categoriesError) {
+    return (
+      <main className="max-w-4xl mx-auto px-6 py-20">
+        <h1 className="text-3xl font-bold mb-4">글 수정</h1>
+        <p className="text-red-600">카테고리 목록을 불러오는 중 오류가 발생했습니다.</p>
+      </main>
+    );
+  }
+
+  return <PostForm initialData={post} categories={categories ?? []} />;
 }
