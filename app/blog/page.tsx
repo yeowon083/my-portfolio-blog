@@ -436,7 +436,7 @@ export default async function BlogPage({
                 <p className="text-sm font-medium text-gray-500">
                   {post.categories?.[0]?.slug && post.categories?.[0]?.name && (
                     <>
-                      카테고리 ·{" "}
+                      카테고리: {" "}
                       <Link
                         href={`/blog/category/${post.categories[0].slug}`}
                         className="underline underline-offset-4 hover:text-gray-800"
