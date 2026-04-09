@@ -23,6 +23,18 @@ type Category = {
   slug: string;
 };
 
+type RawPost = {
+  id: string;
+  title: string;
+  slug: string;
+  summary: string | null;
+  created_at: string;
+  tags?: string[] | null;
+  view_count?: number | null;
+  category_id?: string | null;
+  category?: Category | Category[] | null;
+};
+
 type Post = {
   id: string;
   title: string;
@@ -32,8 +44,15 @@ type Post = {
   tags?: string[] | null;
   view_count?: number | null;
   category_id?: string | null;
-  category?: Category[] | null;
+  category?: Category | null;
 };
+
+function normalizeCategory(
+  category: Category | Category[] | null | undefined
+): Category | null {
+  if (!category) return null;
+  return Array.isArray(category) ? category[0] ?? null : category;
+}
 
 export default async function BlogPage({
   searchParams,
@@ -91,7 +110,10 @@ export default async function BlogPage({
     );
   }
 
-  const typedPosts: Post[] = (posts ?? []) as Post[];
+  const typedPosts: Post[] = ((posts ?? []) as RawPost[]).map((post) => ({
+    ...post,
+    category: normalizeCategory(post.category),
+  }));
 
   let filteredPosts = typedPosts;
 
@@ -103,27 +125,29 @@ export default async function BlogPage({
 
   if (selectedCategory) {
     filteredPosts = filteredPosts.filter(
-      (post) => post.category?.[0]?.slug === selectedCategory
+      (post) => post.category?.slug === selectedCategory
     );
   }
 
   if (keyword) {
     filteredPosts = filteredPosts.filter((post) => {
-      const inTitle = post.title.toLowerCase().includes(keyword);
-      const inSummary = (post.summary ?? "").toLowerCase().includes(keyword);
+      const inTitle = 
+      post.title.toLowerCase().includes(keyword);
+      const inSummary = (post.summary ?? 
+    "").toLowerCase().includes(keyword);
+      const inTags = (post.tags ?? []).some((tag) =>
+        tag.toLowerCase().includes(keyword)
+      );
+
       return inTitle || inSummary;
     });
   }
 
-  const allTags = Array.from(
-    new Set(typedPosts.flatMap((post) => post.tags ?? []))
-  ).sort((a, b) => a.localeCompare(b));
-
   const allCategories = Array.from(
     new Map(
       typedPosts
-        .flatMap((post) => post.category ?? [])
-        .map((category) => [category.id, category])
+        .filter((post) => post.category)
+        .map((post) => [post.category!.id, post.category!])
     ).values()
   ).sort((a, b) => a.name.localeCompare(b.name));
 
@@ -150,21 +174,10 @@ export default async function BlogPage({
   }) {
     const params = new URLSearchParams();
 
-    if (nextTag) {
-      params.set("tag", nextTag);
-    }
-
-    if (nextQ) {
-      params.set("q", nextQ);
-    }
-
-    if (nextCategory) {
-      params.set("category", nextCategory);
-    }
-
-    if (nextPage && nextPage > 1) {
-      params.set("page", String(nextPage));
-    }
+    if (nextTag) params.set("tag", nextTag);
+    if (nextQ) params.set("q", nextQ);
+    if (nextCategory) params.set("category", nextCategory);
+    if (nextPage && nextPage > 1) params.set("page", String(nextPage));
 
     const queryString = params.toString();
     return queryString ? `/blog?${queryString}` : "/blog";
@@ -181,9 +194,6 @@ export default async function BlogPage({
 
   return (
     <main className="max-w-4xl mx-auto px-6 py-20">
-      <pre className="text-xs text-red-500 mb-4 whitespace-pre-wrap">
-        {JSON.stringify(typedPosts, null, 2)}
-      </pre>
       <section className="mb-14 max-w-3xl">
         <p className="text-sm font-semibold tracking-[0.2em] text-gray-500 uppercase mb-4">
           Blog
@@ -273,7 +283,7 @@ export default async function BlogPage({
             type="text"
             name="q"
             defaultValue={keyword}
-            placeholder="제목 또는 요약 검색"
+            placeholder="제목, 요약, 태그 검색"
             className="min-w-[260px] flex-1 rounded-2xl border border-gray-300 px-4 py-3 outline-none focus:border-black"
           />
 
@@ -345,33 +355,12 @@ export default async function BlogPage({
         )}
 
         <div className="flex flex-wrap items-center gap-3">
-          <Link
-            href={buildBlogHref({
-              nextTag: undefined,
-              nextQ: keyword || undefined,
-              nextPage: 1,
-              nextCategory: selectedCategory || undefined,
-            })}
-            className={`inline-flex items-center rounded-full px-4 py-2 text-sm font-semibold transition ${
-              !selectedTag
-                ? "bg-black text-white"
-                : "border border-gray-300 text-gray-800 hover:bg-gray-100"
-            }`}
-          >
-            전체 태그
-          </Link>
 
           {selectedCategory && (
             <span className="inline-flex items-center rounded-full border border-gray-300 px-4 py-2 text-sm font-semibold text-gray-800">
               선택된 카테고리 ·{" "}
               {allCategories.find((c) => c.slug === selectedCategory)?.name ??
                 selectedCategory}
-            </span>
-          )}
-
-          {selectedTag && (
-            <span className="inline-flex items-center rounded-full border border-gray-300 px-4 py-2 text-sm font-semibold text-gray-800">
-              선택된 태그 · {selectedTag}
             </span>
           )}
 
@@ -382,32 +371,6 @@ export default async function BlogPage({
           )}
         </div>
 
-        {allTags.length > 0 && (
-          <div className="flex flex-wrap gap-2">
-            {allTags.map((tag) => {
-              const isActive = selectedTag === tag;
-
-              return (
-                <Link
-                  key={tag}
-                  href={buildBlogHref({
-                    nextTag: tag,
-                    nextQ: keyword || undefined,
-                    nextPage: 1,
-                    nextCategory: selectedCategory || undefined,
-                  })}
-                  className={`rounded-full px-3 py-1 text-sm transition ${
-                    isActive
-                      ? "bg-black text-white"
-                      : "border border-gray-300 text-gray-700 hover:bg-gray-100"
-                  }`}
-                >
-                  {tag}
-                </Link>
-              );
-            })}
-          </div>
-        )}
       </section>
 
       <section className="space-y-6">
@@ -437,14 +400,14 @@ export default async function BlogPage({
                   )}
 
                 <p className="text-sm font-medium text-gray-500">
-                  {post.category?.[0]?.slug && post.category?.[0]?.name && (
+                  {post.category?.slug && post.category?.name && (
                     <>
-                      카테고리: {" "}
+                      카테고리:{" "}
                       <Link
-                        href={`/blog/category/${post.category[0].slug}`}
+                        href={`/blog/category/${post.category.slug}`}
                         className="underline underline-offset-4 hover:text-gray-800"
                       >
-                        {post.category[0].name}
+                        {post.category.name}
                       </Link>{" "}
                       ·{" "}
                     </>

@@ -27,6 +27,20 @@ type Category = {
   slug: string;
 };
 
+type RawPostItem = {
+  id: string;
+  title: string;
+  slug: string;
+  summary: string | null;
+  content: string;
+  created_at: string;
+  tags?: string[] | null;
+  is_published?: boolean;
+  view_count?: number | null;
+  category_id?: string | null;
+  category?: Category | Category[] | null;
+};
+
 type PostItem = {
   id: string;
   title: string;
@@ -38,8 +52,15 @@ type PostItem = {
   is_published?: boolean;
   view_count?: number | null;
   category_id?: string | null;
-  category?: Category[] | null;
+  category?: Category | null;
 };
+
+function normalizeCategory(
+  category: Category | Category[] | null | undefined
+): Category | null {
+  if (!category) return null;
+  return Array.isArray(category) ? category[0] ?? null : category;
+}
 
 export async function generateMetadata({
   params,
@@ -113,8 +134,14 @@ export default async function BlogDetailPage({
     notFound();
   }
 
-  const typedPost = post as PostItem;
-  const category = typedPost.category?.[0] ?? null;
+  const rawPost = post as RawPostItem;
+
+  const typedPost: PostItem = {
+    ...rawPost,
+    category: normalizeCategory(rawPost.category),
+  };
+
+  const category = typedPost.category ?? null;
 
   return (
     <main className="max-w-3xl mx-auto px-6 py-20">
