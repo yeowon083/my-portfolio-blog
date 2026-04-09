@@ -7,6 +7,14 @@ function isValidTargetType(value: string): value is CommentTargetType {
   return value === "post" || value === "project";
 }
 
+async function hashPassword(password: string) {
+  const encoder = new TextEncoder();
+  const data = encoder.encode(password);
+  const hashBuffer = await crypto.subtle.digest("SHA-256", data);
+  const hashArray = Array.from(new Uint8Array(hashBuffer));
+  return hashArray.map((byte) => byte.toString(16).padStart(2, "0")).join("");
+}
+
 export async function GET(request: NextRequest) {
   const supabase = await createClient();
 
@@ -85,11 +93,13 @@ export async function POST(request: NextRequest) {
     );
   }
 
+  const hashedPassword = await hashPassword(authorPassword);
+
   const { data, error } = await supabase
     .from("comments")
     .insert({
       author_name: authorName,
-      author_password: authorPassword,
+      author_password: hashedPassword,
       content,
       target_type: targetType,
       target_id: targetId,
