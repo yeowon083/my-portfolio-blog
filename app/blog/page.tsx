@@ -32,7 +32,7 @@ type Post = {
   tags?: string[] | null;
   view_count?: number | null;
   category_id?: string | null;
-  categories?: Category[] | null;
+  category?: Category[] | null;
 };
 
 export default async function BlogPage({
@@ -70,7 +70,7 @@ export default async function BlogPage({
       tags,
       view_count,
       category_id,
-      categories (
+      category:categories!posts_category_id_fkey (
         id,
         name,
         slug
@@ -103,7 +103,7 @@ export default async function BlogPage({
 
   if (selectedCategory) {
     filteredPosts = filteredPosts.filter(
-      (post) => post.categories?.[0]?.slug === selectedCategory
+      (post) => post.category?.[0]?.slug === selectedCategory
     );
   }
 
@@ -122,7 +122,7 @@ export default async function BlogPage({
   const allCategories = Array.from(
     new Map(
       typedPosts
-        .flatMap((post) => post.categories ?? [])
+        .flatMap((post) => post.category ?? [])
         .map((category) => [category.id, category])
     ).values()
   ).sort((a, b) => a.name.localeCompare(b.name));
@@ -181,6 +181,9 @@ export default async function BlogPage({
 
   return (
     <main className="max-w-4xl mx-auto px-6 py-20">
+      <pre className="text-xs text-red-500 mb-4 whitespace-pre-wrap">
+        {JSON.stringify(typedPosts, null, 2)}
+      </pre>
       <section className="mb-14 max-w-3xl">
         <p className="text-sm font-semibold tracking-[0.2em] text-gray-500 uppercase mb-4">
           Blog
@@ -434,14 +437,14 @@ export default async function BlogPage({
                   )}
 
                 <p className="text-sm font-medium text-gray-500">
-                  {post.categories?.[0]?.slug && post.categories?.[0]?.name && (
+                  {post.category?.[0]?.slug && post.category?.[0]?.name && (
                     <>
                       카테고리: {" "}
                       <Link
-                        href={`/blog/category/${post.categories[0].slug}`}
+                        href={`/blog/category/${post.category[0].slug}`}
                         className="underline underline-offset-4 hover:text-gray-800"
                       >
-                        {post.categories[0].name}
+                        {post.category[0].name}
                       </Link>{" "}
                       ·{" "}
                     </>

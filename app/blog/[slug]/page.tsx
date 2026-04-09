@@ -38,7 +38,7 @@ type PostItem = {
   is_published?: boolean;
   view_count?: number | null;
   category_id?: string | null;
-  categories?: Category[] | null;
+  category?: Category[] | null;
 };
 
 export async function generateMetadata({
@@ -99,7 +99,7 @@ export default async function BlogDetailPage({
       is_published,
       view_count,
       category_id,
-      categories (
+      category:categories!posts_category_id_fkey (
         id,
         name,
         slug
@@ -114,7 +114,7 @@ export default async function BlogDetailPage({
   }
 
   const typedPost = post as PostItem;
-  const category = typedPost.categories?.[0] ?? null;
+  const category = typedPost.category?.[0] ?? null;
 
   return (
     <main className="max-w-3xl mx-auto px-6 py-20">
