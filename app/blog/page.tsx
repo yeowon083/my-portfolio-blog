@@ -132,14 +132,14 @@ export default async function BlogPage({
   if (keyword) {
     filteredPosts = filteredPosts.filter((post) => {
       const inTitle = 
-      post.title.toLowerCase().includes(keyword);
+    post.title.toLowerCase().includes(keyword);
       const inSummary = (post.summary ?? 
     "").toLowerCase().includes(keyword);
       const inTags = (post.tags ?? []).some((tag) =>
         tag.toLowerCase().includes(keyword)
       );
 
-      return inTitle || inSummary;
+      return inTitle || inSummary || inTags;
     });
   }
 
