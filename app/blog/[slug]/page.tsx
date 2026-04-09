@@ -69,7 +69,7 @@ export default async function BlogDetailPage({
   const { data: post, error } = await supabase
     .from("posts")
     .select(
-      "id, title, slug, summary, content, created_at, tags, is_published, view_count"
+      "id, title, slug, summary, content, created_at, tags, is_published, view_count, category"
     )
     .eq("slug", slug)
     .eq("is_published", true)
@@ -94,6 +94,13 @@ export default async function BlogDetailPage({
         <p className="text-sm text-gray-500 mb-5">
           {formatDate(post.created_at)} · 조회수 {post.view_count ?? 0}
         </p>
+
+        {post.category && (
+          <p className="text-sm font-semibold tracking-[0.12em]
+        text-gray-500 uppercase mb-4">
+          {post.category}
+          </p>
+        )}
 
         <h1 className="text-4xl md:text-5xl font-bold tracking-tight leading-tight mb-6">
           {post.title}

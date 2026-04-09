@@ -16,7 +16,7 @@ export async function POST(
 
   const { data: post, error } = await supabase
     .from("posts")
-    .select("id, view_count, is_published")
+    .select("id, is_published")
     .eq("slug", slug)
     .single();
 
@@ -31,14 +31,13 @@ export async function POST(
     return NextResponse.json({ ok: true, skipped: true });
   }
 
-  const { error: updateError } = await supabase
-    .from("posts")
-    .update({ view_count: (post.view_count ?? 0) + 1 })
-    .eq("id", post.id);
+  const { error: rpcError } = await supabase.rpc("increment_post_view", {
+    p_slug: slug,
+  });
 
-  if (updateError) {
+  if (rpcError) {
     return NextResponse.json(
-      { ok: false, message: updateError.message },
+      { ok: false, message: rpcError.message },
       { status: 500 }
     );
   }

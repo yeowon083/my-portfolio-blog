@@ -1,11 +1,11 @@
 import type { Metadata } from "next";
+import Link from "next/link";
+import { createClient } from "@/lib/supabase/server";
 
 export const metadata: Metadata = {
   title: "Blog",
   description: "프로젝트를 만들며 배우고 기록한 생각과 과정을 정리한 블로그",
 };
-import Link from "next/link";
-import { createClient } from "@/lib/supabase/server";
 
 const POSTS_PER_PAGE = 5;
 
@@ -24,45 +24,60 @@ type Post = {
   summary: string | null;
   created_at: string;
   tags?: string[] | null;
+  view_count?: number | null;
+  category?: string | null;
 };
 
 export default async function BlogPage({
   searchParams,
 }: {
-  searchParams?: Promise<{ tag?: string; q?: string; page?: string }>;
+  searchParams?: Promise<{
+    tag?: string;
+    q?: string;
+    page?: string;
+    category?: string;
+  }>;
 }) {
   const resolvedSearchParams = (await searchParams) ?? {};
 
   const tag = resolvedSearchParams.tag;
   const q = resolvedSearchParams.q;
   const page = resolvedSearchParams.page;
+  const category = resolvedSearchParams.category;
 
   const selectedTag = tag?.trim() ?? "";
   const keyword = q?.trim().toLowerCase() ?? "";
+  const selectedCategory = category?.trim() ?? "";
   const currentPage = Math.max(1, Number(page) || 1);
 
   const supabase = await createClient();
 
   const { data: posts, error } = await supabase
     .from("posts")
-    .select("id, title, slug, summary, created_at, tags")
+    .select("id, title, slug, summary, created_at, tags, view_count, category")
     .eq("is_published", true)
     .order("created_at", { ascending: false });
 
-if (error) {
-  return (
-    <main className="max-w-4xl mx-auto px-6 py-20">
-      <h1 className="text-4xl font-bold mb-6">Blog</h1>
-      <p className="text-red-600">글 목록을 불러오는 중 오류가 발생했습니다.</p>
-    </main>
-  );
-}
+  if (error) {
+    return (
+      <main className="max-w-4xl mx-auto px-6 py-20">
+        <h1 className="text-4xl font-bold mb-6">Blog</h1>
+        <p className="text-red-600">글 목록을 불러오는 중 오류가 발생했습니다.</p>
+      </main>
+    );
+  }
 
-  let filteredPosts = posts ?? [];
+  let filteredPosts: Post[] = (posts ?? []) as Post[];
 
   if (selectedTag) {
     filteredPosts = filteredPosts.filter((post) =>
       post.tags?.includes(selectedTag)
+    );
+  }
+
+  if (selectedCategory) {
+    filteredPosts = filteredPosts.filter(
+      (post) => post.category === selectedCategory
     );
   }
 
@@ -78,6 +93,10 @@ if (error) {
     new Set((posts ?? []).flatMap((post) => post.tags ?? []))
   ).sort((a, b) => a.localeCompare(b));
 
+  const allCategories = Array.from(
+    new Set((posts ?? []).map((post) => post.category).filter(Boolean))
+  ) as string[];
+
   const totalPosts = filteredPosts.length;
   const totalPages = Math.max(1, Math.ceil(totalPosts / POSTS_PER_PAGE));
   const safePage = Math.min(currentPage, totalPages);
@@ -92,10 +111,12 @@ if (error) {
     nextTag,
     nextQ,
     nextPage,
+    nextCategory,
   }: {
     nextTag?: string;
     nextQ?: string;
     nextPage?: number;
+    nextCategory?: string;
   }) {
     const params = new URLSearchParams();
 
@@ -105,6 +126,10 @@ if (error) {
 
     if (nextQ) {
       params.set("q", nextQ);
+    }
+
+    if (nextCategory) {
+      params.set("category", nextCategory);
     }
 
     if (nextPage && nextPage > 1) {
@@ -120,6 +145,7 @@ if (error) {
       nextTag: selectedTag || undefined,
       nextQ: undefined,
       nextPage: 1,
+      nextCategory: selectedCategory || undefined,
     });
   }
 
@@ -130,26 +156,52 @@ if (error) {
           Blog
         </p>
 
-        {selectedTag ? (
+        {selectedTag || selectedCategory ? (
           <>
             <div className="flex flex-wrap items-center gap-3 mb-5">
-              <span className="rounded-full bg-black px-3 py-1 text-xs font-semibold text-white">
-                Tag
-              </span>
-              <span className="rounded-full border border-gray-300 px-3 py-1 text-sm text-gray-700">
-                {selectedTag}
-              </span>
+              {selectedCategory && (
+                <>
+                  <span className="rounded-full bg-black px-3 py-1 text-xs font-semibold text-white">
+                    Category
+                  </span>
+                  <span className="rounded-full border border-gray-300 px-3 py-1 text-sm text-gray-700">
+                    {selectedCategory}
+                  </span>
+                </>
+              )}
+
+              {selectedTag && (
+                <>
+                  <span className="rounded-full bg-black px-3 py-1 text-xs font-semibold text-white">
+                    Tag
+                  </span>
+                  <span className="rounded-full border border-gray-300 px-3 py-1 text-sm text-gray-700">
+                    {selectedTag}
+                  </span>
+                </>
+              )}
             </div>
 
             <h1 className="text-4xl md:text-5xl font-bold tracking-tight leading-tight mb-6">
-              {selectedTag} 태그와 관련된
+              조건에 맞는 글을
               <br />
-              글을 모아봤어요
+              모아봤어요
             </h1>
 
             <p className="text-lg text-gray-600 leading-8 mb-6">
-              현재 <span className="font-semibold text-gray-900">{selectedTag}</span>{" "}
-              태그가 포함된 글을 보고 있습니다.
+              현재{" "}
+              {selectedCategory && (
+                <span className="font-semibold text-gray-900">
+                  카테고리 {selectedCategory}
+                </span>
+              )}
+              {selectedCategory && selectedTag && <span> · </span>}
+              {selectedTag && (
+                <span className="font-semibold text-gray-900">
+                  태그 {selectedTag}
+                </span>
+              )}{" "}
+              조건이 적용된 글을 보고 있습니다.
             </p>
 
             <div className="flex flex-wrap items-center gap-3">
@@ -190,6 +242,9 @@ if (error) {
           />
 
           {selectedTag && <input type="hidden" name="tag" value={selectedTag} />}
+          {selectedCategory && (
+            <input type="hidden" name="category" value={selectedCategory} />
+          )}
 
           <button
             type="submit"
@@ -210,12 +265,56 @@ if (error) {
       </form>
 
       <section className="mb-10 space-y-4">
+        {allCategories.length > 0 && (
+          <div className="flex flex-wrap gap-2 mb-4">
+            <Link
+              href={buildBlogHref({
+                nextCategory: undefined,
+                nextTag: selectedTag || undefined,
+                nextQ: keyword || undefined,
+                nextPage: 1,
+              })}
+              className={`rounded-full px-4 py-2 text-sm font-semibold transition ${
+                !selectedCategory
+                  ? "bg-black text-white"
+                  : "border border-gray-300 text-gray-800 hover:bg-gray-100"
+              }`}
+            >
+              전체 카테고리
+            </Link>
+
+            {allCategories.map((category) => {
+              const isActive = selectedCategory === category;
+
+              return (
+                <Link
+                  key={category}
+                  href={buildBlogHref({
+                    nextCategory: category,
+                    nextTag: selectedTag || undefined,
+                    nextQ: keyword || undefined,
+                    nextPage: 1,
+                  })}
+                  className={`rounded-full px-4 py-2 text-sm font-semibold transition ${
+                    isActive
+                      ? "bg-black text-white"
+                      : "border border-gray-300 text-gray-800 hover:bg-gray-100"
+                  }`}
+                >
+                  {category}
+                </Link>
+              );
+            })}
+          </div>
+        )}
+
         <div className="flex flex-wrap items-center gap-3">
           <Link
             href={buildBlogHref({
               nextTag: undefined,
               nextQ: keyword || undefined,
               nextPage: 1,
+              nextCategory: selectedCategory || undefined,
             })}
             className={`inline-flex items-center rounded-full px-4 py-2 text-sm font-semibold transition ${
               !selectedTag
@@ -223,8 +322,14 @@ if (error) {
                 : "border border-gray-300 text-gray-800 hover:bg-gray-100"
             }`}
           >
-            전체 보기
+            전체 태그
           </Link>
+
+          {selectedCategory && (
+            <span className="inline-flex items-center rounded-full border border-gray-300 px-4 py-2 text-sm font-semibold text-gray-800">
+              선택된 카테고리 · {selectedCategory}
+            </span>
+          )}
 
           {selectedTag && (
             <span className="inline-flex items-center rounded-full border border-gray-300 px-4 py-2 text-sm font-semibold text-gray-800">
@@ -241,7 +346,7 @@ if (error) {
 
         {allTags.length > 0 && (
           <div className="flex flex-wrap gap-2">
-            {allTags.map((tag: string) => {
+            {allTags.map((tag) => {
               const isActive = selectedTag === tag;
 
               return (
@@ -251,6 +356,7 @@ if (error) {
                     nextTag: tag,
                     nextQ: keyword || undefined,
                     nextPage: 1,
+                    nextCategory: selectedCategory || undefined,
                   })}
                   className={`rounded-full px-3 py-1 text-sm transition ${
                     isActive
@@ -272,19 +378,29 @@ if (error) {
             <article
               key={post.id}
               className={`rounded-3xl border border-gray-200 p-7 transition hover:-translate-y-0.5 hover:shadow-md ${
-                index === 0 && safePage === 1 && !selectedTag && !keyword
+                index === 0 &&
+                safePage === 1 &&
+                !selectedTag &&
+                !keyword &&
+                !selectedCategory
                   ? "shadow-sm"
                   : ""
               }`}
             >
               <div className="flex flex-wrap items-center gap-3 mb-4">
-                {index === 0 && safePage === 1 && !selectedTag && !keyword && (
-                  <span className="rounded-full bg-black px-3 py-1 text-xs font-semibold text-white">
-                    Latest
-                  </span>
-                )}
+                {index === 0 &&
+                  safePage === 1 &&
+                  !selectedTag &&
+                  !keyword &&
+                  !selectedCategory && (
+                    <span className="rounded-full bg-black px-3 py-1 text-xs font-semibold text-white">
+                      Latest
+                    </span>
+                  )}
                 <p className="text-sm font-medium text-gray-500">
-                  작성일 · {formatDate(post.created_at)}
+                  {post.category ? `카테고리 · ${post.category} · ` : ""}
+                  작성일 · {formatDate(post.created_at)} · 조회수{" "}
+                  {post.view_count ?? 0}
                 </p>
               </div>
 
@@ -294,13 +410,14 @@ if (error) {
 
               {post.tags && post.tags.length > 0 && (
                 <div className="flex flex-wrap gap-2 mb-5">
-                  {post.tags.map((tag: string) => (
+                  {post.tags.map((tag) => (
                     <Link
                       key={tag}
                       href={buildBlogHref({
                         nextTag: tag,
                         nextQ: keyword || undefined,
                         nextPage: 1,
+                        nextCategory: selectedCategory || undefined,
                       })}
                       className={`rounded-full px-3 py-1 text-sm transition ${
                         selectedTag === tag
@@ -329,8 +446,16 @@ if (error) {
         ) : (
           <div className="rounded-3xl border border-dashed border-gray-300 p-8 text-center">
             <p className="text-gray-600 mb-4">
-              {selectedTag && keyword
+              {selectedCategory && selectedTag && keyword
+                ? `"${selectedCategory}" 카테고리, "${selectedTag}" 태그, "${keyword}" 검색어에 해당하는 글이 없습니다.`
+                : selectedCategory && selectedTag
+                ? `"${selectedCategory}" 카테고리와 "${selectedTag}" 태그에 해당하는 글이 없습니다.`
+                : selectedCategory && keyword
+                ? `"${selectedCategory}" 카테고리와 "${keyword}" 검색어에 해당하는 글이 없습니다.`
+                : selectedTag && keyword
                 ? `"${selectedTag}" 태그와 "${keyword}" 검색어에 해당하는 글이 없습니다.`
+                : selectedCategory
+                ? `"${selectedCategory}" 카테고리에 해당하는 글이 아직 없습니다.`
                 : selectedTag
                 ? `"${selectedTag}" 태그에 해당하는 글이 아직 없습니다.`
                 : keyword
@@ -338,7 +463,7 @@ if (error) {
                 : "아직 발행된 글이 없습니다."}
             </p>
 
-            {(selectedTag || keyword) && (
+            {(selectedCategory || selectedTag || keyword) && (
               <Link
                 href="/blog"
                 className="inline-flex items-center rounded-full border border-gray-300 px-5 py-3 text-sm font-semibold text-gray-800 transition hover:bg-gray-100"
@@ -358,6 +483,7 @@ if (error) {
                 nextTag: selectedTag || undefined,
                 nextQ: keyword || undefined,
                 nextPage: safePage - 1,
+                nextCategory: selectedCategory || undefined,
               })}
               className="inline-flex items-center rounded-full border border-gray-300 px-4 py-2 text-sm font-semibold text-gray-800 transition hover:bg-gray-100"
             >
@@ -375,6 +501,7 @@ if (error) {
                 nextTag: selectedTag || undefined,
                 nextQ: keyword || undefined,
                 nextPage: safePage + 1,
+                nextCategory: selectedCategory || undefined,
               })}
               className="inline-flex items-center rounded-full border border-gray-300 px-4 py-2 text-sm font-semibold text-gray-800 transition hover:bg-gray-100"
             >

@@ -34,6 +34,7 @@ export default function NewPostPage() {
   const supabase = createClient();
   const router = useRouter();
 
+  const [category, setCategory] = useState("");
   const [title, setTitle] = useState("");
   const [slug, setSlug] = useState("");
   const [summary, setSummary] = useState("");
@@ -84,6 +85,7 @@ export default function NewPostPage() {
       slug: trimmedSlug,
       summary: trimmedSummary,
       content: trimmedContent,
+      category: category.trim() || null,
       tags,
       is_published: isPublished,
       author_id: user.id,
@@ -206,6 +208,12 @@ export default function NewPostPage() {
             </p>
 
             <article className="rounded-3xl border border-gray-200 p-7 shadow-sm bg-white">
+              {category && (
+                <p className="text-sm font-semibold
+              tracking-[0.12em] text-gray-500 uppercase mb-4">
+                  {category}
+              </p>
+              )}
               <div className="flex flex-wrap items-center gap-3 mb-4">
                 <span
                   className={`rounded-full px-3 py-1 text-xs font-semibold ${
@@ -250,6 +258,20 @@ export default function NewPostPage() {
                   요약이 여기에 표시됩니다.
                 </p>
               )}
+              
+                <div className="space-y-2">
+                  <label className="text-sm font-semibold
+                text-gray-700">카테고리</label>
+                  <input
+                  type="text"
+                  value={category}
+                  onChange={(e) => setCategory(e.target.value)}
+                  placeholder="예: 개발, 프로젝트, 회고, 공부"
+                  className="w-full rounded-2XL border 
+                border-gray-300 px-4 py-3 outline-none 
+                focus:border-black"
+                  />
+                </div>
 
               <div className="prose prose-gray max-w-none prose-headings:tracking-tight prose-a:break-all">
                 <ReactMarkdown remarkPlugins={[remarkGfm]}>
