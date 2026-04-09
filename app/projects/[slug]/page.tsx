@@ -6,6 +6,7 @@ import remarkGfm from "remark-gfm";
 import rehypeRaw from "rehype-raw";
 import rehypeSanitize, { defaultSchema } from "rehype-sanitize";
 import { createClient } from "@/lib/supabase/server";
+import CommentSection from "@/components/CommentSection";
 
 type Project = {
   id: string;
@@ -178,6 +179,9 @@ export default async function ProjectDetailPage({
             아직 상세 설명이 등록되지 않았습니다.
           </p>
         )}
+
+        <CommentSection targetType="project"
+        targetId={typedProject.id} />
       </article>
     </main>
   );

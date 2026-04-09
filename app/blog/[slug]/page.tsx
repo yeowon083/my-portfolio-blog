@@ -7,6 +7,7 @@ import rehypeRaw from "rehype-raw";
 import rehypeSanitize, { defaultSchema } from "rehype-sanitize";
 import { createClient } from "@/lib/supabase/server";
 import ViewTracker from "@/components/ViewTracker";
+import CommentSection from "@/components/CommentSection";
 
 function formatDate(dateString: string) {
   return new Date(dateString).toLocaleDateString("ko-KR", {
@@ -209,6 +210,9 @@ export default async function BlogDetailPage({
             Blog 목록으로 돌아가기
           </Link>
         </div>
+
+        <CommentSection targetType="post"
+        targetId={typedPost.id} />
       </article>
     </main>
   );
