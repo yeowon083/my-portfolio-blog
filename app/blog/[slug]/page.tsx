@@ -3,14 +3,10 @@ import Link from "next/link";
 import { notFound } from "next/navigation";
 import ReactMarkdown from "react-markdown";
 import remarkGfm from "remark-gfm";
-import { createClient } from "@/lib/supabase/server";
 import rehypeRaw from "rehype-raw";
-import rehypeSanitize, {defaultSchema} from "rehype-sanitize";
-
-const sanitizeSchema = { 
-  ...defaultSchema,
-  tagNames: [...(defaultSchema.tagNames || []), "mark"],
-};
+import rehypeSanitize, { defaultSchema } from "rehype-sanitize";
+import { createClient } from "@/lib/supabase/server";
+import ViewTracker from "@/components/ViewTracker";
 
 function formatDate(dateString: string) {
   return new Date(dateString).toLocaleDateString("ko-KR", {
@@ -20,15 +16,9 @@ function formatDate(dateString: string) {
   });
 }
 
-type PostItem = {
-  id: string;
-  title: string;
-  slug: string;
-  summary: string | null;
-  content: string;
-  created_at: string;
-  tags?: string[] | null;
-  is_published?: boolean;
+const sanitizeSchema = {
+  ...defaultSchema,
+  tagNames: [...(defaultSchema.tagNames || []), "mark"],
 };
 
 export async function generateMetadata({
@@ -78,7 +68,9 @@ export default async function BlogDetailPage({
 
   const { data: post, error } = await supabase
     .from("posts")
-    .select("id, title, slug, summary, content, created_at, tags, is_published")
+    .select(
+      "id, title, slug, summary, content, created_at, tags, is_published, view_count"
+    )
     .eq("slug", slug)
     .eq("is_published", true)
     .single();
@@ -97,8 +89,10 @@ export default async function BlogDetailPage({
       </Link>
 
       <article>
+        <ViewTracker slug={post.slug} />
+
         <p className="text-sm text-gray-500 mb-5">
-          {formatDate(post.created_at)}
+          {formatDate(post.created_at)} · 조회수 {post.view_count ?? 0}
         </p>
 
         <h1 className="text-4xl md:text-5xl font-bold tracking-tight leading-tight mb-6">
@@ -125,12 +119,11 @@ export default async function BlogDetailPage({
           </p>
         )}
 
-        <div className="prose prose-gray max-w-none prose-headings:tracking-tight prose-a:break-all">
-          <ReactMarkdown 
+        <div className="prose max-w-none">
+          <ReactMarkdown
             remarkPlugins={[remarkGfm]}
-            rehypePlugins={[rehypeRaw, [rehypeSanitize,
-              sanitizeSchema]]}
-              >
+            rehypePlugins={[rehypeRaw, [rehypeSanitize, sanitizeSchema]]}
+          >
             {post.content}
           </ReactMarkdown>
         </div>
