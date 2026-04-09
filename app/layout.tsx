@@ -10,7 +10,10 @@ export const metadata: Metadata = {
   },
   description:
     "이여원의 프로젝트, 블로그 기록, AI 서비스 기획과 모바일 앱 개발 포트폴리오",
-  openGraph: {
+  verification: {
+    google: "trEajzB8WnRPqf_QHB2NxtRw5WAyk6qKwR3l9sfmGA4",
+  },
+    openGraph: {
     title: "YEOWON'S PORTFOLIO",
     description:
       "이여원의 프로젝트, 블로그 기록, AI 서비스 기획과 모바일 앱 개발 포트폴리오",
