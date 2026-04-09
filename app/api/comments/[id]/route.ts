@@ -18,6 +18,7 @@ export async function DELETE(
 
   let body: {
     authorPassword?: string;
+    adminMode?: boolean;
   };
 
   try {
@@ -30,15 +31,13 @@ export async function DELETE(
   }
 
   const authorPassword = body.authorPassword?.trim() ?? "";
+  const adminMode = body.adminMode === true;
 
-  if (!authorPassword) {
-    return NextResponse.json(
-      { message: "비밀번호를 입력해주세요." },
-      { status: 400 }
-    );
-  }
+  const {
+    data: { user },
+  } = await supabase.auth.getUser();
 
-  const hashedPassword = await hashPassword(authorPassword);
+  const isAdmin = !!user && user.email === "yeowon083@gmail.com";
 
   const { data: comment, error: findError } = await supabase
     .from("comments")
@@ -53,11 +52,29 @@ export async function DELETE(
     );
   }
 
-  if (comment.author_password !== hashedPassword) {
-    return NextResponse.json(
-      { message: "비밀번호가 일치하지 않습니다." },
-      { status: 403 }
-    );
+  if (adminMode) {
+    if (!isAdmin) {
+      return NextResponse.json(
+        { message: "관리자 권한이 없습니다." },
+        { status: 403 }
+      );
+    }
+  } else {
+    if (!authorPassword) {
+      return NextResponse.json(
+        { message: "비밀번호를 입력해주세요." },
+        { status: 400 }
+      );
+    }
+
+    const hashedPassword = await hashPassword(authorPassword);
+
+    if (comment.author_password !== hashedPassword) {
+      return NextResponse.json(
+        { message: "비밀번호가 일치하지 않습니다." },
+        { status: 403 }
+      );
+    }
   }
 
   const { error: deleteError } = await supabase

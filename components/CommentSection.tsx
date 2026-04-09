@@ -17,6 +17,7 @@ type CommentItem = {
 type CommentSectionProps = {
   targetType: CommentTargetType;
   targetId: string;
+  isAdmin?: boolean;
 };
 
 function formatDate(dateString: string) {
@@ -30,6 +31,7 @@ function formatDate(dateString: string) {
 export default function CommentSection({
   targetType,
   targetId,
+  isAdmin = false,
 }: CommentSectionProps) {
   const [comments, setComments] = useState<CommentItem[]>([]);
   const [authorName, setAuthorName] = useState("");
@@ -78,28 +80,6 @@ export default function CommentSection({
   useEffect(() => {
     fetchComments();
   }, [targetType, targetId]);
-
-  function handleCommentKeyDown(
-    e: React.KeyboardEvent<HTMLTextAreaElement>
-  ) {
-    if (e.key === "Enter" && !e.shiftKey) {
-      e.preventDefault();
-      const form = e.currentTarget.form;
-      if (form) {
-        form.requestSubmit();
-      }
-    }
-  }
-
-  function handleEditKeyDown(
-    e: React.KeyboardEvent<HTMLTextAreaElement>,
-    commentId: string
-  ) {
-    if (e.key === "Enter" && !e.shiftKey) {
-      e.preventDefault();
-      handleEdit(commentId);
-    }
-  }
 
   async function handleSubmit(e: React.FormEvent) {
     e.preventDefault();
@@ -177,6 +157,43 @@ export default function CommentSection({
 
       if (!response.ok) {
         setMessage(data.message ?? "댓글 삭제에 실패했습니다.");
+        setIsDeleting(false);
+        return;
+      }
+
+      setMessage("댓글이 삭제되었습니다.");
+      setDeleteCommentId("");
+      setDeletePassword("");
+      await fetchComments();
+      setIsDeleting(false);
+    } catch {
+      setMessage("댓글 삭제 중 오류가 발생했습니다.");
+      setIsDeleting(false);
+    }
+  }
+
+  async function handleAdminDelete(commentId: string) {
+    const ok = window.confirm("관리자 권한으로 이 댓글을 삭제할까요?");
+    if (!ok) return;
+
+    setIsDeleting(true);
+    setMessage("");
+
+    try {
+      const response = await fetch(`/api/comments/${commentId}`, {
+        method: "DELETE",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({
+          adminMode: true,
+        }),
+      });
+
+      const data = await response.json();
+
+      if (!response.ok) {
+        setMessage(data.message ?? "관리자 삭제에 실패했습니다.");
         setIsDeleting(false);
         return;
       }
@@ -275,14 +292,10 @@ export default function CommentSection({
           <textarea
             value={content}
             onChange={(e) => setContent(e.target.value)}
-            onKeyDown={handleCommentKeyDown}
             rows={4}
             placeholder="댓글을 입력하세요"
             className="w-full rounded-2xl border border-gray-300 px-4 py-3 outline-none focus:border-black"
           />
-          <p className="mt-2 text-xs text-gray-500">
-            Enter로 등록, Shift + Enter로 줄바꿈
-          </p>
         </div>
 
         {message && <p className="text-sm text-gray-600">{message}</p>}
@@ -356,6 +369,17 @@ export default function CommentSection({
                   >
                     삭제
                   </button>
+
+                  {isAdmin && (
+                    <button
+                      type="button"
+                      disabled={isDeleting}
+                      onClick={() => handleAdminDelete(comment.id)}
+                      className="text-sm font-semibold text-red-700 underline underline-offset-4 disabled:opacity-50"
+                    >
+                      관리자 삭제
+                    </button>
+                  )}
                 </div>
               </div>
 
@@ -372,13 +396,9 @@ export default function CommentSection({
                   <textarea
                     value={editContent}
                     onChange={(e) => setEditContent(e.target.value)}
-                    onKeyDown={(e) => handleEditKeyDown(e, comment.id)}
                     rows={4}
                     className="w-full rounded-2xl border border-gray-300 px-4 py-3 outline-none focus:border-black mb-3"
                   />
-                  <p className="mt-2 mb-3 text-xs text-gray-500">
-                    Enter로 수정, Shift + Enter로 줄바꿈
-                  </p>
 
                   <label className="block text-sm font-medium text-gray-700 mb-2">
                     수정 비밀번호

@@ -1,7 +1,28 @@
 import Image from "next/image";
 import Link from "next/link";
+import { createClient } from "@/lib/supabase/server";
 
-export default function HomePage() {
+type Project = {
+  id: string;
+  title: string;
+  slug: string;
+  summary: string | null;
+  tech_stack: string[] | null;
+};
+
+export default async function HomePage() {
+  const supabase = await createClient();
+
+  const { data: featuredProject } = await supabase
+    .from("projects")
+    .select("id, title, slug, summary, tech_stack")
+    .eq("is_published", true)
+    .order("created_at", { ascending: false })
+    .limit(1)
+    .maybeSingle();
+
+  const project = (featuredProject as Project | null) ?? null;
+
   return (
     <main className="min-h-[calc(100vh-81px)]">
       <section className="max-w-4xl mx-auto px-6 pt-24 pb-16">
@@ -76,33 +97,52 @@ export default function HomePage() {
               </span>
             </div>
 
-            <h3 className="text-xl font-semibold mb-3">충동소비 예측 앱</h3>
-            <p className="text-gray-600 leading-8 mb-5">
-              지출 기록과 소비 패턴 데이터를 바탕으로 충동 소비 위험을 예측하고,
-              예산 관리와 소비 점검을 도와주는 모바일 앱 프로젝트입니다.
-            </p>
+            {project ? (
+              <>
+                <h3 className="text-xl font-semibold mb-3">{project.title}</h3>
 
-            <div className="flex flex-wrap gap-2 mb-6">
-              <span className="rounded-full border border-gray-300 px-3 py-1 text-sm text-gray-700">
-                Expo
-              </span>
-              <span className="rounded-full border border-gray-300 px-3 py-1 text-sm text-gray-700">
-                React Native
-              </span>
-              <span className="rounded-full border border-gray-300 px-3 py-1 text-sm text-gray-700">
-                TypeScript
-              </span>
-              <span className="rounded-full border border-gray-300 px-3 py-1 text-sm text-gray-700">
-                Supabase
-              </span>
-            </div>
+                <p className="text-gray-600 leading-8 mb-5">
+                  {project.summary ?? "프로젝트 요약이 아직 없습니다."}
+                </p>
 
-            <Link
-              href="/projects"
-              className="text-sm font-semibold text-gray-900 underline underline-offset-4"
-            >
-              자세히 보기
-            </Link>
+                {project.tech_stack && project.tech_stack.length > 0 && (
+                  <div className="flex flex-wrap gap-2 mb-6">
+                    {project.tech_stack.map((tech) => (
+                      <span
+                        key={tech}
+                        className="rounded-full border border-gray-300 px-3 py-1 text-sm text-gray-700"
+                      >
+                        {tech}
+                      </span>
+                    ))}
+                  </div>
+                )}
+
+                <Link
+                  href={`/projects/${project.slug}`}
+                  className="text-sm font-semibold text-gray-900 underline underline-offset-4"
+                >
+                  자세히 보기
+                </Link>
+              </>
+            ) : (
+              <>
+                <h3 className="text-xl font-semibold mb-3">
+                  아직 공개된 프로젝트가 없습니다
+                </h3>
+
+                <p className="text-gray-600 leading-8 mb-5">
+                  프로젝트를 공개하면 이 영역에 대표 프로젝트가 표시됩니다.
+                </p>
+
+                <Link
+                  href="/projects"
+                  className="text-sm font-semibold text-gray-900 underline underline-offset-4"
+                >
+                  프로젝트 보러 가기
+                </Link>
+              </>
+            )}
           </article>
 
           <article className="rounded-3xl border border-gray-200 p-7">

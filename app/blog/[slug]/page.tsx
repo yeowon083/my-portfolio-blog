@@ -108,6 +108,12 @@ export default async function BlogDetailPage({
   const { slug } = await params;
   const supabase = await createClient();
 
+  const {
+    data: { user },
+  } = await supabase.auth.getUser();
+
+  const isAdmin = !!user && user.email === "yeowon083@gmail.com";
+
   const { data: post, error } = await supabase
     .from("posts")
     .select(`
@@ -178,7 +184,7 @@ export default async function BlogDetailPage({
             {typedPost.tags.map((tag: string) => (
               <Link
                 key={tag}
-                href={`/blog?tag=${encodeURIComponent(tag)}`}
+                href={`/blog?q=${encodeURIComponent(tag)}`}
                 className="rounded-full border border-gray-300 px-3 py-1 text-sm text-gray-700 transition hover:bg-gray-100"
               >
                 {tag}
@@ -193,7 +199,7 @@ export default async function BlogDetailPage({
           </p>
         )}
 
-        <div className="prose max-w-none">
+        <div className="prose max-w-none prose-headings:mt-4 prose-h1:mb-3 prose-h2:mb-2 prose-h3:mb-2 prose-p:my-2 prose-hr:my-3">
           <ReactMarkdown
             remarkPlugins={[remarkGfm]}
             rehypePlugins={[rehypeRaw, [rehypeSanitize, sanitizeSchema]]}
@@ -211,8 +217,11 @@ export default async function BlogDetailPage({
           </Link>
         </div>
 
-        <CommentSection targetType="post"
-        targetId={typedPost.id} />
+        <CommentSection
+          targetType="post"
+          targetId={typedPost.id}
+          isAdmin={isAdmin}
+        />
       </article>
     </main>
   );

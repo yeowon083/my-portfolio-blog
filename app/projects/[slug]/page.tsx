@@ -79,6 +79,12 @@ export default async function ProjectDetailPage({
   const { slug } = await params;
   const supabase = await createClient();
 
+  const {
+    data: { user },
+  } = await supabase.auth.getUser();
+
+  const isAdmin = !!user && user.email === "yeowon083@gmail.com";
+
   const { data: project, error } = await supabase
     .from("projects")
     .select(
@@ -180,8 +186,11 @@ export default async function ProjectDetailPage({
           </p>
         )}
 
-        <CommentSection targetType="project"
-        targetId={typedProject.id} />
+        <CommentSection
+          targetType="project"
+          targetId={typedProject.id}
+          isAdmin={isAdmin}
+        />
       </article>
     </main>
   );
