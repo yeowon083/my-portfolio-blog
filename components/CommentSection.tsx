@@ -38,6 +38,10 @@ export default function CommentSection({
   const [isLoading, setIsLoading] = useState(true);
   const [isSubmitting, setIsSubmitting] = useState(false);
 
+  const [deleteCommentId, setDeleteCommentId] = useState("");
+  const [deletePassword, setDeletePassword] = useState("");
+  const [isDeleting, setIsDeleting] = useState(false);
+
   async function fetchComments() {
     setIsLoading(true);
 
@@ -119,6 +123,47 @@ export default function CommentSection({
     }
   }
 
+  async function handleDelete(commentId: string) {
+    const trimmedPassword = deletePassword.trim();
+
+    if (!trimmedPassword) {
+      setMessage("삭제 비밀번호를 입력해주세요.");
+      return;
+    }
+
+    setIsDeleting(true);
+    setMessage("");
+
+    try {
+      const response = await fetch(`/api/comments/${commentId}`, {
+        method: "DELETE",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({
+          authorPassword: trimmedPassword,
+        }),
+      });
+
+      const data = await response.json();
+
+      if (!response.ok) {
+        setMessage(data.message ?? "댓글 삭제에 실패했습니다.");
+        setIsDeleting(false);
+        return;
+      }
+
+      setMessage("댓글이 삭제되었습니다.");
+      setDeleteCommentId("");
+      setDeletePassword("");
+      await fetchComments();
+      setIsDeleting(false);
+    } catch {
+      setMessage("댓글 삭제 중 오류가 발생했습니다.");
+      setIsDeleting(false);
+    }
+  }
+
   return (
     <section className="mt-16 pt-10 border-t border-gray-200">
       <h2 className="text-2xl font-semibold tracking-tight mb-6">댓글</h2>
@@ -184,18 +229,61 @@ export default function CommentSection({
               key={comment.id}
               className="rounded-3xl border border-gray-200 p-5"
             >
-              <div className="flex flex-wrap items-center gap-3 mb-3">
-                <p className="font-semibold text-gray-900">
-                  {comment.author_name}
-                </p>
-                <p className="text-sm text-gray-500">
-                  {formatDate(comment.created_at)}
-                </p>
+              <div className="flex flex-wrap items-center justify-between gap-3 mb-3">
+                <div className="flex flex-wrap items-center gap-3">
+                  <p className="font-semibold text-gray-900">
+                    {comment.author_name}
+                  </p>
+                  <p className="text-sm text-gray-500">
+                    {formatDate(comment.created_at)}
+                  </p>
+                </div>
+
+                <button
+                  type="button"
+                  onClick={() => {
+                    setDeleteCommentId(
+                      deleteCommentId === comment.id ? "" : comment.id
+                    );
+                    setDeletePassword("");
+                    setMessage("");
+                  }}
+                  className="text-sm font-semibold text-red-600 underline underline-offset-4"
+                >
+                  삭제
+                </button>
               </div>
 
               <p className="text-gray-700 leading-8 whitespace-pre-wrap">
                 {comment.content}
               </p>
+
+              {deleteCommentId === comment.id && (
+                <div className="mt-4 rounded-2xl border border-red-200 bg-red-50 p-4">
+                  <label className="block text-sm font-medium text-gray-700 mb-2">
+                    삭제 비밀번호
+                  </label>
+
+                  <div className="flex flex-wrap gap-3">
+                    <input
+                      type="password"
+                      value={deletePassword}
+                      onChange={(e) => setDeletePassword(e.target.value)}
+                      placeholder="비밀번호 입력"
+                      className="min-w-[220px] flex-1 rounded-2xl border border-gray-300 px-4 py-3 outline-none focus:border-black"
+                    />
+
+                    <button
+                      type="button"
+                      disabled={isDeleting}
+                      onClick={() => handleDelete(comment.id)}
+                      className="inline-flex items-center rounded-full border border-red-300 px-4 py-3 text-sm font-semibold text-red-600 transition hover:bg-red-100 disabled:opacity-50"
+                    >
+                      {isDeleting ? "삭제 중..." : "삭제 확인"}
+                    </button>
+                  </div>
+                </div>
+              )}
             </article>
           ))
         ) : (
