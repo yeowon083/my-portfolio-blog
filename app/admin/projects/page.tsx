@@ -1,5 +1,7 @@
+import DeleteProjectButton from "@/components/DeleteProjectButton";   
 import Link from "next/link";
 import { redirect } from "next/navigation";
+import { revalidatePath } from "next/cache";
 import { createClient } from "@/lib/supabase/server";
 
 type Project = {
@@ -17,6 +19,39 @@ function formatDate(dateString: string) {
     month: "long",
     day: "numeric",
   });
+}
+
+async function deleteProject(formData: FormData) {
+  "use server";
+
+  const supabase = await createClient();
+
+  const {
+    data: { user },
+  } = await supabase.auth.getUser();
+
+  if (!user) {
+    redirect("/admin/login");
+  }
+
+  if (user.email !== "yeowon083@gmail.com") {
+    redirect("/");
+  }
+
+  const id = String(formData.get("id") ?? "").trim();
+
+  if (!id) {
+    return;
+  }
+
+  const { error } = await supabase.from("projects").delete().eq("id", id);
+
+  if (error) {
+    return;
+  }
+
+  revalidatePath("/admin/projects");
+  revalidatePath("/projects");
 }
 
 export default async function AdminProjectsPage() {
@@ -133,6 +168,8 @@ export default async function AdminProjectsPage() {
                   >
                     수정
                   </Link>
+
+                  <DeleteProjectButton projectId={project.id} action={deleteProject} />
                 </div>
               </div>
             </article>
