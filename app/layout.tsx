@@ -3,7 +3,7 @@ import Navbar from "../components/Navbar";
 import type { Metadata } from "next";
 
 export const metadata: Metadata = {
-  metadataBase: new URL("https://my-portfolio-blog-eight.vercel.app"),
+  metadataBase: new URL("https://my-portfolio-blog.vercel.app"),
   title: {
     default: "YEOWON'S PORTFOLIO",
     template: "%s | YEOWON'S PORTFOLIO",
