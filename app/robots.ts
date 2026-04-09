@@ -1,14 +1,11 @@
 import type { MetadataRoute } from "next";
 
 export default function robots(): MetadataRoute.Robots {
-  const baseUrl = "https://my-portfolio-blog-eight.vercel.app";
-
   return {
     rules: {
       userAgent: "*",
       allow: "/",
-      disallow: ["/admin", "/admin/login"],
     },
-    sitemap: `${baseUrl}/sitemap.xml`,
+    sitemap: "https://my-portfolio-blog-eight.vercel.app/sitemap.xml",
   };
 }
