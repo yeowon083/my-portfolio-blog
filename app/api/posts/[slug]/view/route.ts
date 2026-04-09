@@ -2,7 +2,7 @@ import { NextResponse } from "next/server";
 import { createClient } from "@/lib/supabase/server";
 
 export async function POST(
-  request: Request,
+  _request: Request,
   { params }: { params: Promise<{ slug: string }> }
 ) {
   const { slug } = await params;
@@ -21,7 +21,10 @@ export async function POST(
     .single();
 
   if (error || !post || !post.is_published) {
-    return NextResponse.json({ ok: false, message: "Post not found" }, { status: 404 });
+    return NextResponse.json(
+      { ok: false, message: "Post not found" },
+      { status: 404 }
+    );
   }
 
   if (isOwner) {
