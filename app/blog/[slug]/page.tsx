@@ -5,7 +5,12 @@ import ReactMarkdown from "react-markdown";
 import remarkGfm from "remark-gfm";
 import { createClient } from "@/lib/supabase/server";
 import rehypeRaw from "rehype-raw";
-import rehypeSanitize from "rehype-sanitize";
+import rehypeSanitize, {defaultSchema} from "rehype-sanitize";
+
+const sanitizeSchema = { 
+  ...defaultSchema,
+  tagNames: [...(defaultSchema.tagNames || []), "mark"],
+};
 
 function formatDate(dateString: string) {
   return new Date(dateString).toLocaleDateString("ko-KR", {
@@ -123,7 +128,9 @@ export default async function BlogDetailPage({
         <div className="prose prose-gray max-w-none prose-headings:tracking-tight prose-a:break-all">
           <ReactMarkdown 
             remarkPlugins={[remarkGfm]}
-            rehypePlugins={[rehypeRaw, rehypeSanitize]}>
+            rehypePlugins={[rehypeRaw, [rehypeSanitize,
+              sanitizeSchema]]}
+              >
             {post.content}
           </ReactMarkdown>
         </div>
