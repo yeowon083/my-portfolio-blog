@@ -25,7 +25,7 @@ export default async function HomePage() {
 
   return (
     <main className="min-h-[calc(100vh-81px)]">
-      <section className="max-w-4xl mx-auto px-6 pt-24 pb-16">
+      <section className="max-w-3xl mx-auto px-6 pt-24 pb-16">
         <div className="flex items-center gap-4 mb-6">
           <Image
             src="/profile.jpg"
