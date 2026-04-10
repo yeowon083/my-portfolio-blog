@@ -15,11 +15,11 @@ export default function Navbar() {
 
   return (
     <header className="border-b border-gray-200">
-      <nav className="max-w-4xl mx-auto flex items-center justify-between px-2 py-5">
+      <nav className="max-w-4xl mx-auto flex items-center justify-between px-6 md:px-8 py-5">
         <Link
           href="/"
           className="text-xl font-bold tracking-tight transition hover:opacity-70"
-        >
+      >
           Yeowon
         </Link>
 
