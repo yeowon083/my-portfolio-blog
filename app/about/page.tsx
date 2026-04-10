@@ -9,7 +9,7 @@ import Image from "next/image";
 
 export default function AboutPage() {
   return (
-    <main className="max-w-4xl mx-auto px-6 py-20">
+    <main className="max-w-3xl mx-auto px-6 py-20">
       <section className="grid gap-10 md:grid-cols-[240px_1fr] items-start">
         <div>
           <Image

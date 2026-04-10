@@ -101,7 +101,7 @@ export default async function ProjectDetailPage({
   const typedProject = project as Project;
 
   return (
-    <main className="max-w-4xl mx-auto px-6 py-20">
+    <main className="max-w-3xl mx-auto px-6 py-20">
       <Link
         href="/projects"
         className="inline-flex items-center text-sm font-semibold text-gray-500 underline underline-offset-4 mb-10"

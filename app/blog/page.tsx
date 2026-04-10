@@ -100,7 +100,7 @@ export default async function BlogPage({
 
   if (error) {
     return (
-      <main className="max-w-4xl mx-auto px-6 py-20">
+      <main className="max-w-3xl mx-auto px-6 py-20">
         <h1 className="text-4xl font-bold mb-6">Blog</h1>
         <p className="text-red-600">글 목록을 불러오는 중 오류가 발생했습니다.</p>
         <pre className="mt-4 whitespace-pre-wrap text-sm text-gray-700">
