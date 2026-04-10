@@ -147,6 +147,9 @@ export default function AboutPage() {
             <span className="rounded-full border border-gray-300 px-3 py-1 text-sm text-gray-700">
               GitHub
             </span>
+            <span className="rounded-full border border-gray-300 px-3 py-1 text-sm text-gray-700">
+              Node.js
+            </span>
           </div>
         </article>
       </section>
