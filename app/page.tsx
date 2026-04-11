@@ -89,7 +89,7 @@ export default async function HomePage() {
         </div>
 
         <section className="grid gap-6 md:grid-cols-2">
-          <article className="rounded-3xl border border-gray-200 p-7 shadow-sm">
+          <article className="rounded-3xl border border-gray-200 p-7 shadow-sm flex h-full flex-col">
             <div className="flex items-center gap-3 mb-4">
               <h2 className="text-2xl font-semibold">대표 프로젝트</h2>
               <span className="rounded-full bg-gray-100 px-3 py-1 text-sm text-gray-700">
@@ -107,7 +107,7 @@ export default async function HomePage() {
 
                 {project.tech_stack && project.tech_stack.length > 0 && (
                   <div className="flex flex-wrap gap-2 mb-6">
-                    {project.tech_stack.map((tech) => (
+                    {project.tech_stack.map((tech: string) => (
                       <span
                         key={tech}
                         className="rounded-full border border-gray-300 px-3 py-1 text-sm text-gray-700"
@@ -118,12 +118,14 @@ export default async function HomePage() {
                   </div>
                 )}
 
-                <Link
-                  href={`/projects/${project.slug}`}
-                  className="text-sm font-semibold text-gray-900 underline underline-offset-4"
-                >
-                  자세히 보기
-                </Link>
+                <div className="mt-auto pt-8">
+                  <Link
+                    href={`/projects/${project.slug}`}
+                    className="text-sm font-semibold text-gray-900 underline underline-offset-4"
+                  >
+                    자세히 보기
+                  </Link>
+                </div>
               </>
             ) : (
               <>
@@ -135,26 +137,40 @@ export default async function HomePage() {
                   프로젝트를 공개하면 이 영역에 대표 프로젝트가 표시됩니다.
                 </p>
 
-                <Link
-                  href="/projects"
-                  className="text-sm font-semibold text-gray-900 underline underline-offset-4"
-                >
-                  프로젝트 보러 가기
-                </Link>
+                <div className="mt-auto pt-8">
+                  <Link
+                    href="/projects"
+                    className="text-sm font-semibold text-gray-900 underline underline-offset-4"
+                  >
+                    프로젝트 보러 가기
+                  </Link>
+                </div>
               </>
             )}
           </article>
 
-          <article className="rounded-3xl border border-gray-200 p-7">
+          <article className="rounded-3xl border border-gray-200 p-7 flex h-full flex-col">
             <h2 className="text-2xl font-semibold mb-4">이 블로그에는</h2>
 
             <ul className="space-y-3 text-gray-600 leading-7">
-              <li>프로젝트를 기획하고<br/>구현해 나가는 과정을 기록합니다.</li>
-              <li>배운 기술을 정리하고<br/>개선 과정도 함께 남깁니다.</li>
-              <li>앱을 만들며 고민한 점과<br/>배운 점도 꾸준히 쌓아갑니다.</li>
+              <li>
+                프로젝트를 기획하고
+                <br />
+                구현해 나가는 과정을 기록합니다.
+              </li>
+              <li>
+                배운 기술을 정리하고
+                <br />
+                개선 과정도 함께 남깁니다.
+              </li>
+              <li>
+                앱을 만들며 고민한 점과
+                <br />
+                배운 점도 꾸준히 쌓아갑니다.
+              </li>
             </ul>
 
-            <div className="mt-8">
+            <div className="mt-auto pt-8">
               <Link
                 href="/blog"
                 className="text-sm font-semibold text-gray-900 underline underline-offset-4"
