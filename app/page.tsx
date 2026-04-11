@@ -149,10 +149,9 @@ export default async function HomePage() {
             <h2 className="text-2xl font-semibold mb-4">이 블로그에는</h2>
 
             <ul className="space-y-3 text-gray-600 leading-7">
-              <li>프로젝트 기획 과정</li>
-              <li>기술 학습 기록과 구현 과정</li>
-              <li>시행착오와 개선 포인트</li>
-              <li>앱을 만들며 배운 점 정리</li>
+              <li>프로젝트를 기획하고<br/>구현해 나가는 과정을 기록합니다.</li>
+              <li>배운 기술을 정리하고<br/>개선 과정도 함께 남깁니다.</li>
+              <li>앱을 만들며 고민한 점과<br/>배운 점도 꾸준히 쌓아갑니다.</li>
             </ul>
 
             <div className="mt-8">
