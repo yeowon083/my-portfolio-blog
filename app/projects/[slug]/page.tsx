@@ -7,6 +7,7 @@ import rehypeRaw from "rehype-raw";
 import rehypeSanitize, { defaultSchema } from "rehype-sanitize";
 import { createClient } from "@/lib/supabase/server";
 import CommentSection from "@/components/CommentSection";
+import type { Components } from "react-markdown";
 
 type Project = {
   id: string;
@@ -32,6 +33,40 @@ function formatDate(dateString: string) {
 const sanitizeSchema = {
   ...defaultSchema,
   tagNames: [...(defaultSchema.tagNames || []), "mark"],
+  attributes: {
+    ...defaultSchema.attributes,
+    code: [...(defaultSchema.attributes?.code || []), "className"],
+  },
+};
+
+const markdownComponents: Components = {
+  pre({ children, ...props }) {
+    return (
+      <pre
+        className="rounded-md bg-gray-100 px-4 py-3 overflow-x-auto my-4 text-sm text-gray-800 leading-relaxed [&>code]:bg-transparent [&>code]:p-0 [&>code]:text-inherit [&>code]:rounded-none"
+        {...props}
+      >
+        {children}
+      </pre>
+    );
+  },
+  code({ className, children, ...props }) {
+    if (className) {
+      return (
+        <code className={className} {...props}>
+          {children}
+        </code>
+      );
+    }
+    return (
+      <code
+        className="rounded-md bg-gray-100 px-1.5 py-0.5 text-[0.9em] font-normal text-gray-800 before:content-none after:content-none"
+        {...props}
+      >
+        {children}
+      </code>
+    );
+  },
 };
 
 export async function generateMetadata({
@@ -174,6 +209,7 @@ export default async function ProjectDetailPage({
         {typedProject.description ? (
           <div className="prose max-w-none prose-headings:mt-4 prose-h1:mb-3 prose-h2:mb-2 prose-h3:mb-2 prose-p:my-2 prose-hr:my-3 prose-code:rounded-md prose-code:bg-gray-100 prose-code:px-1.5 prose-code:py-0.5 prose-code:text-[0.9em] prose-code:font-normal prose-code:text-gray-800 prose-code:before:content-none prose-code:after:content-none">
             <ReactMarkdown
+              components={markdownComponents}
               remarkPlugins={[remarkGfm]}
               rehypePlugins={[rehypeRaw, [rehypeSanitize, sanitizeSchema]]}
             >

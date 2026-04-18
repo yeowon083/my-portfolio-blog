@@ -31,7 +31,7 @@ const markdownComponents: Components = {
   pre({ children, ...props }) {
     return (
       <pre
-        className="rounded-lg bg-gray-900 text-gray-100 p-4 overflow-x-auto my-6 text-sm leading-relaxed [&>code]:bg-transparent [&>code]:p-0 [&>code]:text-inherit [&>code]:rounded-none"
+        className="rounded-lg bg-gray-100 text-gray-800 p-4 overflow-x-auto my-6 text-sm leading-relaxed [&>code]:bg-transparent [&>code]:p-0 [&>code]:text-inherit [&>code]:rounded-none"
         {...props}
       >
         {children}
