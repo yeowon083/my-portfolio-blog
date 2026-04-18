@@ -30,7 +30,7 @@ const markdownComponents: Components = {
     if (!isBlock) {
       return (
         <code
-          className="rounded-md bg-gray-100 px-1.5 py-0.5 text-[0.9em] font-normal text-gray-800"
+          className="rounded-md bg-gray-100 px-1.5 py-0.5 text-[0.9em] font-normal text-gray-800 before:content-none after:content-none"
           {...props}
         >
           {children}
@@ -223,7 +223,7 @@ export default async function BlogDetailPage({
           </p>
         )}
 
-        <div className="prose max-w-none prose-headings:mt-4 prose-h1:mb-3 prose-h2:mb-2 prose-h3:mb-2 prose-p:my-2 prose-hr:my-3">
+        <div className="prose max-w-none prose-headings:mt-4 prose-h1:mb-3 prose-h2:mb-2 prose-h3:mb-2 prose-p:my-2 prose-hr:my-3 prose-code:before:content-none prose-code:after:content-none">
           <ReactMarkdown
             components={markdownComponents}
             remarkPlugins={[remarkGfm]}

@@ -1,7 +1,7 @@
 import { NextResponse, type NextRequest } from "next/server";
 import { createServerClient } from "@supabase/ssr";
 
-export async function proxy(request: NextRequest) {
+export async function middleware(request: NextRequest) {
   let response = NextResponse.next({
     request,
   });
@@ -31,9 +31,15 @@ export async function proxy(request: NextRequest) {
     }
   );
 
-  await supabase.auth.getUser();
 
-  return response;
+await supabase.auth.getUser();
+return response;
+
+const { data: { user } } = await supabase.auth.getUser();
+if (!user) {
+  return NextResponse.redirect(new URL("/login", request.url));
+}
+return response;
 }
 
 export const config = {
