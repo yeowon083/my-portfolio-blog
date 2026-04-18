@@ -21,11 +21,15 @@ function formatDate(dateString: string) {
 const sanitizeSchema = {
   ...defaultSchema,
   tagNames: [...(defaultSchema.tagNames || []), "mark"],
+  attributes: {
+    ...defaultSchema.attributes,
+    code: [...(defaultSchema.attributes?.code || []), "className"],
+  },
 };
 
 const markdownComponents: Components = {
-  code({ className, children, ...props }) {
-    const isBlock = !!className;
+  code({ className, children, node, ...props }) {
+    const isBlock = !!className || node?.tagName === "code" && (node as any)?.data?.meta != null;
 
     if (!isBlock) {
       return (
