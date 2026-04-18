@@ -8,6 +8,7 @@ import rehypeSanitize, { defaultSchema } from "rehype-sanitize";
 import { createClient } from "@/lib/supabase/server";
 import ViewTracker from "@/components/ViewTracker";
 import CommentSection from "@/components/CommentSection";
+import type { Components } from "react-markdown";
 
 function formatDate(dateString: string) {
   return new Date(dateString).toLocaleDateString("ko-KR", {
@@ -20,6 +21,29 @@ function formatDate(dateString: string) {
 const sanitizeSchema = {
   ...defaultSchema,
   tagNames: [...(defaultSchema.tagNames || []), "mark"],
+};
+
+const markdownComponents: Components = {
+  code({ className, children, ...props }) {
+    const isBlock = !!className;
+
+    if (!isBlock) {
+      return (
+        <code
+          className="rounded-md bg-gray-100 px-1.5 py-0.5 text-[0.9em] font-normal text-gray-800"
+          {...props}
+        >
+          {children}
+        </code>
+      );
+    }
+
+    return (
+      <code className={className} {...props}>
+        {children}
+      </code>
+    );
+  },
 };
 
 type Category = {
@@ -199,8 +223,9 @@ export default async function BlogDetailPage({
           </p>
         )}
 
-        <div className="prose max-w-none prose-headings:mt-4 prose-h1:mb-3 prose-h2:mb-2 prose-h3:mb-2 prose-p:my-2 prose-hr:my-3 prose-code:rounded-md prose-code:bg-gray-100 prose-code:px-1.5 prose-code:py-0.5 prose-code:text-[0.9em] prose-code:font-normal prose-code:text-gray-800">
+        <div className="prose max-w-none prose-headings:mt-4 prose-h1:mb-3 prose-h2:mb-2 prose-h3:mb-2 prose-p:my-2 prose-hr:my-3">
           <ReactMarkdown
+            components={markdownComponents}
             remarkPlugins={[remarkGfm]}
             rehypePlugins={[rehypeRaw, [rehypeSanitize, sanitizeSchema]]}
           >
