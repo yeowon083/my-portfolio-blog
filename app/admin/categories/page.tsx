@@ -114,7 +114,11 @@ async function deleteCategory(formData: FormData) {
     return;
   }
 
-  await supabase.from("categories").delete().eq("id", id);
+  const { error } = await supabase.from("categories").delete().eq("id", id);
+
+  if (error) {
+    return;
+  }
 
   revalidatePath("/admin/categories");
   revalidatePath("/blog");
@@ -183,7 +187,10 @@ export default async function AdminCategoriesPage() {
       <section className="rounded-3xl border border-gray-200 p-6 mb-8">
         <h2 className="text-2xl font-semibold mb-5">새 카테고리 추가</h2>
 
-        <form action={createCategory} className="grid gap-4 md:grid-cols-[1fr_1fr_auto]">
+        <form
+          action={createCategory}
+          className="grid gap-4 md:grid-cols-[1fr_1fr_auto]"
+        >
           <input
             name="name"
             placeholder="카테고리 이름"
@@ -212,36 +219,35 @@ export default async function AdminCategoriesPage() {
               key={category.id}
               className="rounded-3xl border border-gray-200 p-6 shadow-sm"
             >
-              <form
-                action={updateCategory}
-                className="grid gap-4 md:grid-cols-[1fr_1fr_auto_auto]"
-              >
-                <input type="hidden" name="id" value={category.id} />
+              <div className="grid gap-4 md:grid-cols-[1fr_1fr_auto_auto]">
+                <form action={updateCategory} className="contents">
+                  <input type="hidden" name="id" value={category.id} />
 
-                <input
-                  name="name"
-                  defaultValue={category.name}
-                  className="w-full rounded-2xl border border-gray-300 px-4 py-3 outline-none focus:border-black"
-                />
+                  <input
+                    name="name"
+                    defaultValue={category.name}
+                    className="w-full rounded-2xl border border-gray-300 px-4 py-3 outline-none focus:border-black"
+                  />
 
-                <input
-                  name="slug"
-                  defaultValue={category.slug}
-                  className="w-full rounded-2xl border border-gray-300 px-4 py-3 outline-none focus:border-black"
-                />
+                  <input
+                    name="slug"
+                    defaultValue={category.slug}
+                    className="w-full rounded-2xl border border-gray-300 px-4 py-3 outline-none focus:border-black"
+                  />
 
-                <button
-                  type="submit"
-                  className="inline-flex items-center justify-center rounded-full border border-gray-300 px-5 py-3 text-sm font-semibold text-gray-800 transition hover:bg-gray-100"
-                >
-                  수정 저장
-                </button>
+                  <button
+                    type="submit"
+                    className="inline-flex items-center justify-center rounded-full border border-gray-300 px-5 py-3 text-sm font-semibold text-gray-800 transition hover:bg-gray-100"
+                  >
+                    수정 저장
+                  </button>
+                </form>
 
                 <DeleteCategoryButton
                   categoryId={category.id}
                   action={deleteCategory}
                 />
-              </form>
+              </div>
             </article>
           ))
         ) : (
