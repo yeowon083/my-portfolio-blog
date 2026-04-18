@@ -28,22 +28,31 @@ const sanitizeSchema = {
 };
 
 const markdownComponents: Components = {
-  code({ className, children, node, ...props }) {
-    const isBlock = !!className || node?.tagName === "code" && (node as any)?.data?.meta != null;
-
-    if (!isBlock) {
+  pre({ children, ...props }) {
+    return (
+      <pre
+        className="rounded-lg bg-gray-900 text-gray-100 p-4 overflow-x-auto my-6 text-sm leading-relaxed [&>code]:bg-transparent [&>code]:p-0 [&>code]:text-inherit [&>code]:rounded-none"
+        {...props}
+      >
+        {children}
+      </pre>
+    );
+  },
+  code({ className, children, ...props }) {
+    // className 있으면 언어 지정된 블록 코드
+    if (className) {
       return (
-        <code
-          className="rounded-md bg-gray-100 px-1.5 py-0.5 text-[0.9em] font-normal text-gray-800 before:content-none after:content-none"
-          {...props}
-        >
+        <code className={className} {...props}>
           {children}
         </code>
       );
     }
-
+    // className 없으면 인라인 코드
     return (
-      <code className={className} {...props}>
+      <code
+        className="rounded-md bg-gray-100 px-1.5 py-0.5 text-[0.9em] font-normal text-gray-800 before:content-none after:content-none"
+        {...props}
+      >
         {children}
       </code>
     );
