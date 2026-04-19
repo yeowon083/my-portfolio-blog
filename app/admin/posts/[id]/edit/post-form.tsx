@@ -5,12 +5,11 @@ import remarkGfm from "remark-gfm";
 import { useState } from "react";
 import { createClient } from "@/lib/supabase/client";
 import { useRouter } from "next/navigation";
-
-type Category = {
-  id: string;
-  name: string;
-  slug: string;
-};
+import {
+  getCategoryLabel,
+  getCategoryOptions,
+  type Category,
+} from "@/lib/categories";
 
 type PostFormProps = {
   initialData: {
@@ -74,6 +73,7 @@ export default function PostForm({
   const tags = parseTags(tagsInput);
   const selectedCategory =
     categories.find((category) => category.id === categoryId) ?? null;
+  const categoryOptions = getCategoryOptions(categories);
 
   function handleTitleChange(value: string) {
     setTitle(value);
@@ -179,9 +179,9 @@ export default function PostForm({
               className="w-full rounded-2xl border border-gray-300 px-4 py-3 outline-none focus:border-black bg-white"
             >
               <option value="">카테고리 선택</option>
-              {categories.map((category) => (
+              {categoryOptions.map((category) => (
                 <option key={category.id} value={category.id}>
-                  {category.name}
+                  {getCategoryLabel(category, categories)}
                 </option>
               ))}
             </select>
@@ -245,7 +245,7 @@ export default function PostForm({
             <article className="rounded-3xl border border-gray-200 p-7 shadow-sm bg-white">
               {selectedCategory && (
                 <p className="text-sm font-semibold tracking-[0.12em] text-gray-500 uppercase mb-4">
-                  {selectedCategory.name}
+                  {getCategoryLabel(selectedCategory, categories)}
                 </p>
               )}
 

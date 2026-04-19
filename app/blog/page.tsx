@@ -1,6 +1,13 @@
 import type { Metadata } from "next";
 import Link from "next/link";
 import { createClient } from "@/lib/supabase/server";
+import {
+  getCategoryLabel,
+  getCategoryOptions,
+  getParentCategory,
+  getTopLevelCategories,
+  isMissingParentIdError,
+} from "@/lib/categories";
 
 export const metadata: Metadata = {
   title: "Blog",
@@ -21,6 +28,7 @@ type Category = {
   id: string;
   name: string;
   slug: string;
+  parent_id?: string | null;
 };
 
 type RawPost = {
@@ -45,6 +53,11 @@ type Post = {
   view_count?: number | null;
   category_id?: string | null;
   category?: Category | null;
+};
+
+type SupabaseResult = {
+  data: unknown;
+  error: { message?: string } | null;
 };
 
 function normalizeCategory(
@@ -78,9 +91,23 @@ export default async function BlogPage({
 
   const supabase = await createClient();
 
-  const { data: posts, error } = await supabase
-    .from("posts")
-    .select(`
+  const postSelectWithParent = `
+      id,
+      title,
+      slug,
+      summary,
+      created_at,
+      tags,
+      view_count,
+      category_id,
+      category:categories!posts_category_id_fkey (
+        id,
+        name,
+        slug,
+        parent_id
+      )
+    `;
+  const postSelect = `
       id,
       title,
       slug,
@@ -94,9 +121,23 @@ export default async function BlogPage({
         name,
         slug
       )
-    `)
+    `;
+
+  let postsResult: SupabaseResult = await supabase
+    .from("posts")
+    .select(postSelectWithParent)
     .eq("is_published", true)
     .order("created_at", { ascending: false });
+
+  if (isMissingParentIdError(postsResult.error)) {
+    postsResult = await supabase
+      .from("posts")
+      .select(postSelect)
+      .eq("is_published", true)
+      .order("created_at", { ascending: false });
+  }
+
+  const { data: posts, error } = postsResult;
 
   if (error) {
     return (
@@ -115,6 +156,34 @@ export default async function BlogPage({
     category: normalizeCategory(post.category),
   }));
 
+  let categoriesResult: SupabaseResult = await supabase
+    .from("categories")
+    .select("id, name, slug, parent_id")
+    .order("name", { ascending: true });
+
+  if (isMissingParentIdError(categoriesResult.error)) {
+    categoriesResult = await supabase
+      .from("categories")
+      .select("id, name, slug")
+      .order("name", { ascending: true });
+  }
+
+  const { data: categories } = categoriesResult;
+
+  const categoryList = (categories ?? []) as Category[];
+  const allCategories = getCategoryOptions(categoryList);
+  const topLevelCategories = getTopLevelCategories(categoryList);
+  const selectedCategoryItem =
+    allCategories.find((item) => item.slug === selectedCategory) ?? null;
+  const selectedParentCategory = selectedCategoryItem?.parent_id
+    ? getParentCategory(selectedCategoryItem, allCategories)
+    : selectedCategoryItem;
+  const childCategories = selectedParentCategory
+    ? allCategories.filter(
+        (category) => category.parent_id === selectedParentCategory.id
+      )
+    : [];
+
   let filteredPosts = typedPosts;
 
   if (selectedTag) {
@@ -125,7 +194,10 @@ export default async function BlogPage({
 
   if (selectedCategory) {
     filteredPosts = filteredPosts.filter(
-      (post) => post.category?.slug === selectedCategory
+      (post) =>
+        post.category?.slug === selectedCategory ||
+        (!!selectedCategoryItem &&
+          post.category?.parent_id === selectedCategoryItem.id)
     );
   }
 
@@ -142,14 +214,6 @@ export default async function BlogPage({
       return inTitle || inSummary || inTags;
     });
   }
-
-  const allCategories = Array.from(
-    new Map(
-      typedPosts
-        .filter((post) => post.category)
-        .map((post) => [post.category!.id, post.category!])
-    ).values()
-  ).sort((a, b) => a.name.localeCompare(b.name));
 
   const totalPosts = filteredPosts.length;
   const totalPages = Math.max(1, Math.ceil(totalPosts / POSTS_PER_PAGE));
@@ -208,8 +272,9 @@ export default async function BlogPage({
                     Category
                   </span>
                   <span className="rounded-full border border-gray-300 px-3 py-1 text-sm text-gray-700">
-                    {allCategories.find((c) => c.slug === selectedCategory)?.name ??
-                      selectedCategory}
+                    {selectedCategoryItem
+                      ? getCategoryLabel(selectedCategoryItem, allCategories)
+                      : selectedCategory}
                   </span>
                 </>
               )}
@@ -237,8 +302,9 @@ export default async function BlogPage({
               {selectedCategory && (
                 <span className="font-semibold text-gray-900">
                   카테고리{" "}
-                  {allCategories.find((c) => c.slug === selectedCategory)?.name ??
-                    selectedCategory}
+                  {selectedCategoryItem
+                    ? getCategoryLabel(selectedCategoryItem, allCategories)
+                    : selectedCategory}
                 </span>
               )}
               {selectedCategory && selectedTag && <span> · </span>}
@@ -311,8 +377,9 @@ export default async function BlogPage({
       </form>
 
       <section className="mb-10 space-y-4">
-        {allCategories.length > 0 && (
-          <div className="flex flex-wrap gap-2 mb-4">
+        {topLevelCategories.length > 0 && (
+          <div className="space-y-3 mb-4">
+            <div className="flex flex-wrap gap-2">
             <Link
               href={buildBlogHref({
                 nextCategory: undefined,
@@ -329,7 +396,7 @@ export default async function BlogPage({
               전체 카테고리
             </Link>
 
-            {allCategories.map((category) => {
+            {topLevelCategories.map((category) => {
               const isActive = selectedCategory === category.slug;
 
               return (
@@ -351,6 +418,34 @@ export default async function BlogPage({
                 </Link>
               );
             })}
+            </div>
+
+            {childCategories.length > 0 && (
+              <div className="flex flex-wrap gap-2">
+                {childCategories.map((category) => {
+                  const isActive = selectedCategory === category.slug;
+
+                  return (
+                    <Link
+                      key={category.id}
+                      href={buildBlogHref({
+                        nextCategory: category.slug,
+                        nextTag: selectedTag || undefined,
+                        nextQ: keyword || undefined,
+                        nextPage: 1,
+                      })}
+                      className={`rounded-full px-4 py-2 text-sm font-semibold transition ${
+                        isActive
+                          ? "bg-black text-white"
+                          : "border border-gray-300 text-gray-800 hover:bg-gray-100"
+                      }`}
+                    >
+                      {category.name}
+                    </Link>
+                  );
+                })}
+              </div>
+            )}
           </div>
         )}
 
@@ -359,8 +454,9 @@ export default async function BlogPage({
           {selectedCategory && (
             <span className="inline-flex items-center rounded-full border border-gray-300 px-4 py-2 text-sm font-semibold text-gray-800">
               선택된 카테고리 ·{" "}
-              {allCategories.find((c) => c.slug === selectedCategory)?.name ??
-                selectedCategory}
+              {selectedCategoryItem
+                ? getCategoryLabel(selectedCategoryItem, allCategories)
+                : selectedCategory}
             </span>
           )}
 
@@ -407,7 +503,7 @@ export default async function BlogPage({
                         href={`/blog/category/${post.category.slug}`}
                         className="underline underline-offset-4 hover:text-gray-800"
                       >
-                        {post.category.name}
+                        {getCategoryLabel(post.category, allCategories)}
                       </Link>{" "}
                       ·{" "}
                     </>

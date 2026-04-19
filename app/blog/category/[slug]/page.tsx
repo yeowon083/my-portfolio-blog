@@ -2,6 +2,7 @@ import type { Metadata } from "next";
 import Link from "next/link";
 import { notFound } from "next/navigation";
 import { createClient } from "@/lib/supabase/server";
+import { isMissingParentIdError } from "@/lib/categories";
 
 function formatDate(dateString: string) {
   return new Date(dateString).toLocaleDateString("ko-KR", {
@@ -15,6 +16,7 @@ type Category = {
   id: string;
   name: string;
   slug: string;
+  parent_id?: string | null;
 };
 
 type Post = {
@@ -28,6 +30,11 @@ type Post = {
   categories?: Category[] | null;
 };
 
+type SupabaseResult = {
+  data: unknown;
+  error: { message?: string } | null;
+};
+
 export async function generateMetadata({
   params,
 }: {
@@ -36,11 +43,21 @@ export async function generateMetadata({
   const { slug } = await params;
   const supabase = await createClient();
 
-  const { data: category } = await supabase
+  let categoryResult: SupabaseResult = await supabase
     .from("categories")
-    .select("id, name, slug")
+    .select("id, name, slug, parent_id")
     .eq("slug", slug)
     .single();
+
+  if (isMissingParentIdError(categoryResult.error)) {
+    categoryResult = await supabase
+      .from("categories")
+      .select("id, name, slug")
+      .eq("slug", slug)
+      .single();
+  }
+
+  const category = categoryResult.data as Category | null;
 
   if (!category) {
     return {
@@ -63,19 +80,59 @@ export default async function CategoryBlogPage({
   const { slug } = await params;
   const supabase = await createClient();
 
-  const { data: category, error: categoryError } = await supabase
+  let categoryResult: SupabaseResult = await supabase
     .from("categories")
-    .select("id, name, slug")
+    .select("id, name, slug, parent_id")
     .eq("slug", slug)
     .single();
+
+  if (isMissingParentIdError(categoryResult.error)) {
+    categoryResult = await supabase
+      .from("categories")
+      .select("id, name, slug")
+      .eq("slug", slug)
+      .single();
+  }
+
+  const category = categoryResult.data as Category | null;
+  const { error: categoryError } = categoryResult;
 
   if (categoryError || !category) {
     notFound();
   }
 
-  const { data: posts, error: postsError } = await supabase
-    .from("posts")
-    .select(`
+  let childCategories: { id: string }[] = [];
+
+  if (category.parent_id !== undefined) {
+    const childCategoriesResult = await supabase
+      .from("categories")
+      .select("id")
+      .eq("parent_id", category.id);
+
+    childCategories = (childCategoriesResult.data ?? []) as { id: string }[];
+  }
+
+  const categoryIds = [
+    category.id,
+    ...childCategories.map((child) => child.id),
+  ];
+
+  const postSelectWithParent = `
+      id,
+      title,
+      slug,
+      summary,
+      created_at,
+      tags,
+      view_count,
+      categories (
+        id,
+        name,
+        slug,
+        parent_id
+      )
+    `;
+  const postSelect = `
       id,
       title,
       slug,
@@ -88,10 +145,25 @@ export default async function CategoryBlogPage({
         name,
         slug
       )
-    `)
+    `;
+
+  let postsResult: SupabaseResult = await supabase
+    .from("posts")
+    .select(postSelectWithParent)
     .eq("is_published", true)
-    .eq("category_id", category.id)
+    .in("category_id", categoryIds)
     .order("created_at", { ascending: false });
+
+  if (isMissingParentIdError(postsResult.error)) {
+    postsResult = await supabase
+      .from("posts")
+      .select(postSelect)
+      .eq("is_published", true)
+      .eq("category_id", category.id)
+      .order("created_at", { ascending: false });
+  }
+
+  const { data: posts, error: postsError } = postsResult;
 
   if (postsError) {
     return (

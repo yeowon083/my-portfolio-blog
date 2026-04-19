@@ -9,6 +9,7 @@ import { createClient } from "@/lib/supabase/server";
 import ViewTracker from "@/components/ViewTracker";
 import CommentSection from "@/components/CommentSection";
 import type { Components } from "react-markdown";
+import { getCategoryLabel, isMissingParentIdError } from "@/lib/categories";
 
 function formatDate(dateString: string) {
   return new Date(dateString).toLocaleDateString("ko-KR", {
@@ -63,6 +64,7 @@ type Category = {
   id: string;
   name: string;
   slug: string;
+  parent_id?: string | null;
 };
 
 type RawPostItem = {
@@ -91,6 +93,11 @@ type PostItem = {
   view_count?: number | null;
   category_id?: string | null;
   category?: Category | null;
+};
+
+type SupabaseResult = {
+  data: unknown;
+  error: { message?: string } | null;
 };
 
 function normalizeCategory(
@@ -151,9 +158,25 @@ export default async function BlogDetailPage({
 
   const isAdmin = !!user && user.email === "yeowon083@gmail.com";
 
-  const { data: post, error } = await supabase
-    .from("posts")
-    .select(`
+  const postSelectWithParent = `
+      id,
+      title,
+      slug,
+      summary,
+      content,
+      created_at,
+      tags,
+      is_published,
+      view_count,
+      category_id,
+      category:categories!posts_category_id_fkey (
+        id,
+        name,
+        slug,
+        parent_id
+      )
+    `;
+  const postSelect = `
       id,
       title,
       slug,
@@ -169,10 +192,25 @@ export default async function BlogDetailPage({
         name,
         slug
       )
-    `)
+    `;
+
+  let postResult: SupabaseResult = await supabase
+    .from("posts")
+    .select(postSelectWithParent)
     .eq("slug", slug)
     .eq("is_published", true)
     .single();
+
+  if (isMissingParentIdError(postResult.error)) {
+    postResult = await supabase
+      .from("posts")
+      .select(postSelect)
+      .eq("slug", slug)
+      .eq("is_published", true)
+      .single();
+  }
+
+  const { data: post, error } = postResult;
 
   if (error || !post) {
     notFound();
@@ -186,6 +224,18 @@ export default async function BlogDetailPage({
   };
 
   const category = typedPost.category ?? null;
+  let categoriesResult: SupabaseResult = await supabase
+    .from("categories")
+    .select("id, name, slug, parent_id")
+    .order("name", { ascending: true });
+  if (isMissingParentIdError(categoriesResult.error)) {
+    categoriesResult = await supabase
+      .from("categories")
+      .select("id, name, slug")
+      .order("name", { ascending: true });
+  }
+  const { data: categories } = categoriesResult;
+  const allCategories = (categories ?? []) as Category[];
 
   return (
     <main className="max-w-3xl mx-auto px-6 py-20">
@@ -208,7 +258,7 @@ export default async function BlogDetailPage({
             href={`/blog/category/${category.slug}`}
             className="inline-block text-sm font-semibold tracking-[0.12em] text-gray-500 uppercase mb-4 underline underline-offset-4 hover:text-gray-800"
           >
-            {category.name}
+            {getCategoryLabel(category, allCategories)}
           </Link>
         )}
 
