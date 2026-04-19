@@ -77,7 +77,7 @@ export default async function AdminPostsPage({
 
   if (error) {
     return (
-      <main className="max-w-4xl mx-auto px-6 py-20">
+      <main className="max-w-5xl mx-auto px-6 py-20">
         <h1 className="text-3xl font-bold mb-4">글 관리</h1>
         <p className="text-red-600">글 목록을 불러오는 중 오류가 발생했습니다.</p>
       </main>
@@ -85,7 +85,7 @@ export default async function AdminPostsPage({
   }
 
   return (
-    <main className="max-w-4xl mx-auto px-6 py-20">
+    <main className="max-w-5xl mx-auto px-6 py-20">
       <div className="flex flex-wrap items-center justify-between gap-4 mb-8">
         <div>
           <p className="text-sm font-semibold tracking-[0.2em] text-gray-500 uppercase mb-2">

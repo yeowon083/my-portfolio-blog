@@ -5,6 +5,7 @@ import { usePathname } from "next/navigation";
 
 export default function Navbar() {
   const pathname = usePathname();
+  const isAdminPage = pathname.startsWith("/admin");
 
   const navItems = [
     { href: "/", label: "Home" },
@@ -15,7 +16,11 @@ export default function Navbar() {
 
   return (
     <header className="border-b border-gray-200">
-      <nav className="max-w-3xl mx-auto flex items-center justify-between px-6 py-5">
+      <nav
+        className={`${
+          isAdminPage ? "max-w-5xl" : "max-w-3xl"
+        } mx-auto flex items-center justify-between px-6 py-5`}
+      >
         <Link
           href="/"
           className="text-xl font-bold tracking-tight transition hover:opacity-70"

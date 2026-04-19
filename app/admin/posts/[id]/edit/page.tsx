@@ -32,7 +32,7 @@ export default async function EditPostPage({
 
   if (error || !post) {
     return (
-      <main className="max-w-4xl mx-auto px-6 py-20">
+      <main className="max-w-5xl mx-auto px-6 py-20">
         <h1 className="text-3xl font-bold mb-4">글 수정</h1>
         <p className="text-red-600">글 정보를 불러오는 중 오류가 발생했습니다.</p>
       </main>
@@ -46,7 +46,7 @@ export default async function EditPostPage({
 
   if (categoriesError) {
     return (
-      <main className="max-w-4xl mx-auto px-6 py-20">
+      <main className="max-w-5xl mx-auto px-6 py-20">
         <h1 className="text-3xl font-bold mb-4">글 수정</h1>
         <p className="text-red-600">카테고리 목록을 불러오는 중 오류가 발생했습니다.</p>
       </main>
