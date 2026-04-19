@@ -10,6 +10,17 @@ import {
   getCategoryOptions,
   type Category,
 } from "@/lib/categories";
+import { readDraft, removeDraft, saveDraft } from "@/lib/drafts";
+
+type PostDraft = {
+  categoryId: string;
+  title: string;
+  slug: string;
+  summary: string;
+  content: string;
+  tagsInput: string;
+  isPublished: boolean;
+};
 
 type PostFormProps = {
   initialData: {
@@ -55,6 +66,7 @@ export default function PostForm({
 }: PostFormProps) {
   const supabase = createClient();
   const router = useRouter();
+  const draftKey = `draft:post:${initialData.id}`;
 
   const [title, setTitle] = useState(initialData.title ?? "");
   const [slug, setSlug] = useState(initialData.slug ?? "");
@@ -81,6 +93,46 @@ export default function PostForm({
     if (!slug) {
       setSlug(generateSlug(value));
     }
+  }
+
+  function getDraft() {
+    return {
+      categoryId,
+      title,
+      slug,
+      summary,
+      content,
+      tagsInput,
+      isPublished,
+    };
+  }
+
+  function handleSaveDraft() {
+    saveDraft<PostDraft>(draftKey, getDraft());
+    setMessage("임시저장했습니다.");
+  }
+
+  function handleLoadDraft() {
+    const draft = readDraft<PostDraft>(draftKey);
+
+    if (!draft) {
+      setMessage("불러올 임시저장이 없습니다.");
+      return;
+    }
+
+    setCategoryId(draft.categoryId ?? "");
+    setTitle(draft.title ?? "");
+    setSlug(draft.slug ?? "");
+    setSummary(draft.summary ?? "");
+    setContent(draft.content ?? "");
+    setTagsInput(draft.tagsInput ?? "");
+    setIsPublished(draft.isPublished ?? false);
+    setMessage("임시저장을 불러왔습니다.");
+  }
+
+  function handleRemoveDraft() {
+    removeDraft(draftKey);
+    setMessage("임시저장을 삭제했습니다.");
   }
 
   async function handleSubmit(e: React.FormEvent) {
@@ -119,6 +171,7 @@ export default function PostForm({
       return;
     }
 
+    removeDraft(draftKey);
     router.replace("/admin/posts");
     router.refresh();
   }
@@ -232,6 +285,27 @@ export default function PostForm({
               className="inline-flex items-center rounded-full bg-black px-5 py-3 text-sm font-semibold text-white transition hover:opacity-85 disabled:opacity-50"
             >
               {isSaving ? "저장 중..." : "저장"}
+            </button>
+            <button
+              type="button"
+              onClick={handleSaveDraft}
+              className="inline-flex items-center rounded-full border border-gray-300 px-5 py-3 text-sm font-semibold text-gray-800 transition hover:bg-gray-100"
+            >
+              임시저장
+            </button>
+            <button
+              type="button"
+              onClick={handleLoadDraft}
+              className="inline-flex items-center rounded-full border border-gray-300 px-5 py-3 text-sm font-semibold text-gray-800 transition hover:bg-gray-100"
+            >
+              불러오기
+            </button>
+            <button
+              type="button"
+              onClick={handleRemoveDraft}
+              className="inline-flex items-center rounded-full border border-red-300 px-5 py-3 text-sm font-semibold text-red-600 transition hover:bg-red-50"
+            >
+              임시저장 삭제
             </button>
           </div>
         </form>

@@ -7,6 +7,19 @@ import ReactMarkdown from "react-markdown";
 import remarkGfm from "remark-gfm";
 import rehypeRaw from "rehype-raw";
 import rehypeSanitize, { defaultSchema } from "rehype-sanitize";
+import { readDraft, removeDraft, saveDraft } from "@/lib/drafts";
+
+type ProjectDraft = {
+  title: string;
+  slug: string;
+  summary: string;
+  description: string;
+  thumbnailUrl: string;
+  projectUrl: string;
+  githubUrl: string;
+  techStackInput: string;
+  isPublished: boolean;
+};
 
 function generateSlug(value: string) {
   return value
@@ -32,6 +45,7 @@ const sanitizeSchema = {
 export default function NewProjectPage() {
   const supabase = createClient();
   const router = useRouter();
+  const draftKey = "draft:project:new";
 
   const [title, setTitle] = useState("");
   const [slug, setSlug] = useState("");
@@ -53,6 +67,50 @@ export default function NewProjectPage() {
     if (!slug) {
       setSlug(generateSlug(value));
     }
+  }
+
+  function getDraft() {
+    return {
+      title,
+      slug,
+      summary,
+      description,
+      thumbnailUrl,
+      projectUrl,
+      githubUrl,
+      techStackInput,
+      isPublished,
+    };
+  }
+
+  function handleSaveDraft() {
+    saveDraft<ProjectDraft>(draftKey, getDraft());
+    setMessage("임시저장했습니다.");
+  }
+
+  function handleLoadDraft() {
+    const draft = readDraft<ProjectDraft>(draftKey);
+
+    if (!draft) {
+      setMessage("불러올 임시저장이 없습니다.");
+      return;
+    }
+
+    setTitle(draft.title ?? "");
+    setSlug(draft.slug ?? "");
+    setSummary(draft.summary ?? "");
+    setDescription(draft.description ?? "");
+    setThumbnailUrl(draft.thumbnailUrl ?? "");
+    setProjectUrl(draft.projectUrl ?? "");
+    setGithubUrl(draft.githubUrl ?? "");
+    setTechStackInput(draft.techStackInput ?? "");
+    setIsPublished(draft.isPublished ?? false);
+    setMessage("임시저장을 불러왔습니다.");
+  }
+
+  function handleRemoveDraft() {
+    removeDraft(draftKey);
+    setMessage("임시저장을 삭제했습니다.");
   }
 
   async function handleSubmit(e: React.FormEvent) {
@@ -93,6 +151,7 @@ export default function NewProjectPage() {
       return;
     }
 
+    removeDraft(draftKey);
     router.replace("/admin/projects");
     router.refresh();
   }
@@ -228,6 +287,27 @@ export default function NewProjectPage() {
               className="inline-flex items-center rounded-full bg-black px-5 py-3 text-sm font-semibold text-white transition hover:opacity-85 disabled:opacity-50"
             >
               {isSaving ? "저장 중..." : "저장"}
+            </button>
+            <button
+              type="button"
+              onClick={handleSaveDraft}
+              className="inline-flex items-center rounded-full border border-gray-300 px-5 py-3 text-sm font-semibold text-gray-800 transition hover:bg-gray-100"
+            >
+              임시저장
+            </button>
+            <button
+              type="button"
+              onClick={handleLoadDraft}
+              className="inline-flex items-center rounded-full border border-gray-300 px-5 py-3 text-sm font-semibold text-gray-800 transition hover:bg-gray-100"
+            >
+              불러오기
+            </button>
+            <button
+              type="button"
+              onClick={handleRemoveDraft}
+              className="inline-flex items-center rounded-full border border-red-300 px-5 py-3 text-sm font-semibold text-red-600 transition hover:bg-red-50"
+            >
+              임시저장 삭제
             </button>
           </div>
         </form>
