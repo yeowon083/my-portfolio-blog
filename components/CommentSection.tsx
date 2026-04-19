@@ -28,6 +28,28 @@ function formatDate(dateString: string) {
   });
 }
 
+const MY_COMMENTS_KEY = "my_comment_ids";
+
+function getMyCommentIds(): string[] {
+  try {
+    return JSON.parse(localStorage.getItem(MY_COMMENTS_KEY) ?? "[]");
+  } catch {
+    return [];
+  }
+}
+
+function addMyCommentId(id: string) {
+  const ids = getMyCommentIds();
+  if (!ids.includes(id)) {
+    localStorage.setItem(MY_COMMENTS_KEY, JSON.stringify([...ids, id]));
+  }
+}
+
+function removeMyCommentId(id: string) {
+  const ids = getMyCommentIds().filter((i) => i !== id);
+  localStorage.setItem(MY_COMMENTS_KEY, JSON.stringify(ids));
+}
+
 export default function CommentSection({
   targetType,
   targetId,
@@ -41,6 +63,9 @@ export default function CommentSection({
   const [isLoading, setIsLoading] = useState(true);
   const [isSubmitting, setIsSubmitting] = useState(false);
 
+  // ✅ 내가 작성한 댓글 ID 목록
+  const [myCommentIds, setMyCommentIds] = useState<string[]>([]);
+
   const [deleteCommentId, setDeleteCommentId] = useState("");
   const [deletePassword, setDeletePassword] = useState("");
   const [isDeleting, setIsDeleting] = useState(false);
@@ -50,24 +75,25 @@ export default function CommentSection({
   const [editContent, setEditContent] = useState("");
   const [isEditing, setIsEditing] = useState(false);
 
+  // ✅ 마운트 시 localStorage에서 내 댓글 ID 불러오기
+  useEffect(() => {
+    setMyCommentIds(getMyCommentIds());
+  }, []);
+
   async function fetchComments() {
     setIsLoading(true);
-
     try {
       const response = await fetch(
         `/api/comments?targetType=${targetType}&targetId=${targetId}`,
         { cache: "no-store" }
       );
-
       const data = await response.json();
-
       if (!response.ok) {
         setMessage(data.message ?? "댓글을 불러오지 못했습니다.");
         setComments([]);
         setIsLoading(false);
         return;
       }
-
       setComments(data.comments ?? []);
       setIsLoading(false);
     } catch {
@@ -99,9 +125,7 @@ export default function CommentSection({
     try {
       const response = await fetch("/api/comments", {
         method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-        },
+        headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
           authorName: trimmedAuthorName,
           authorPassword: trimmedAuthorPassword,
@@ -119,6 +143,13 @@ export default function CommentSection({
         return;
       }
 
+      // ✅ 작성 성공 시 댓글 ID를 localStorage에 저장
+      const newId = data.comment?.id;
+      if (newId) {
+        addMyCommentId(newId);
+        setMyCommentIds(getMyCommentIds());
+      }
+
       setAuthorName("");
       setAuthorPassword("");
       setContent("");
@@ -133,7 +164,6 @@ export default function CommentSection({
 
   async function handleDelete(commentId: string) {
     const trimmedPassword = deletePassword.trim();
-
     if (!trimmedPassword) {
       setMessage("삭제 비밀번호를 입력해주세요.");
       return;
@@ -145,12 +175,8 @@ export default function CommentSection({
     try {
       const response = await fetch(`/api/comments/${commentId}`, {
         method: "DELETE",
-        headers: {
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify({
-          authorPassword: trimmedPassword,
-        }),
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ authorPassword: trimmedPassword }),
       });
 
       const data = await response.json();
@@ -160,6 +186,10 @@ export default function CommentSection({
         setIsDeleting(false);
         return;
       }
+
+      // ✅ 삭제 성공 시 localStorage에서도 제거
+      removeMyCommentId(commentId);
+      setMyCommentIds(getMyCommentIds());
 
       setMessage("댓글이 삭제되었습니다.");
       setDeleteCommentId("");
@@ -182,12 +212,8 @@ export default function CommentSection({
     try {
       const response = await fetch(`/api/comments/${commentId}`, {
         method: "DELETE",
-        headers: {
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify({
-          adminMode: true,
-        }),
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ adminMode: true }),
       });
 
       const data = await response.json();
@@ -197,6 +223,9 @@ export default function CommentSection({
         setIsDeleting(false);
         return;
       }
+
+      removeMyCommentId(commentId);
+      setMyCommentIds(getMyCommentIds());
 
       setMessage("댓글이 삭제되었습니다.");
       setDeleteCommentId("");
@@ -224,9 +253,7 @@ export default function CommentSection({
     try {
       const response = await fetch(`/api/comments/${commentId}`, {
         method: "PATCH",
-        headers: {
-          "Content-Type": "application/json",
-        },
+        headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
           authorPassword: trimmedPassword,
           content: trimmedContent,
@@ -270,7 +297,6 @@ export default function CommentSection({
               className="w-full rounded-2xl border border-gray-300 px-4 py-3 outline-none focus:border-black"
             />
           </div>
-
           <div>
             <label className="block text-sm font-medium text-gray-700 mb-2">
               비밀번호
@@ -313,146 +339,152 @@ export default function CommentSection({
         {isLoading ? (
           <p className="text-gray-500">댓글을 불러오는 중...</p>
         ) : comments.length > 0 ? (
-          comments.map((comment) => (
-            <article
-              key={comment.id}
-              className="rounded-3xl border border-gray-200 p-5"
-            >
-              <div className="flex flex-wrap items-center justify-between gap-3 mb-3">
-                <div className="flex flex-wrap items-center gap-3">
-                  <p className="font-semibold text-gray-900">
-                    {comment.author_name}
-                  </p>
-                  <p className="text-sm text-gray-500">
-                    {formatDate(comment.created_at)}
-                    {comment.updated_at &&
-                      comment.updated_at !== comment.created_at &&
-                      " · 수정됨"}
-                  </p>
-                </div>
+          comments.map((comment) => {
+            // ✅ 내가 쓴 댓글인지 확인
+            const isMine = myCommentIds.includes(comment.id);
 
-                <div className="flex flex-wrap items-center gap-3">
-                  <button
-                    type="button"
-                    onClick={() => {
-                      if (editCommentId === comment.id) {
-                        setEditCommentId("");
-                        setEditPassword("");
-                        setEditContent("");
-                      } else {
-                        setEditCommentId(comment.id);
-                        setEditPassword("");
-                        setEditContent(comment.content);
-                        setDeleteCommentId("");
-                        setDeletePassword("");
-                      }
-                      setMessage("");
-                    }}
-                    className="text-sm font-semibold text-gray-700 underline underline-offset-4"
-                  >
-                    수정
-                  </button>
+            return (
+              <article
+                key={comment.id}
+                className="rounded-3xl border border-gray-200 p-5"
+              >
+                <div className="flex flex-wrap items-center justify-between gap-3 mb-3">
+                  <div className="flex flex-wrap items-center gap-3">
+                    <p className="font-semibold text-gray-900">
+                      {comment.author_name}
+                    </p>
+                    <p className="text-sm text-gray-500">
+                      {formatDate(comment.created_at)}
+                      {comment.updated_at &&
+                        comment.updated_at !== comment.created_at &&
+                        " · 수정됨"}
+                    </p>
+                  </div>
 
-                  <button
-                    type="button"
-                    onClick={() => {
-                      setDeleteCommentId(
-                        deleteCommentId === comment.id ? "" : comment.id
-                      );
-                      setDeletePassword("");
-                      setEditCommentId("");
-                      setEditPassword("");
-                      setEditContent("");
-                      setMessage("");
-                    }}
-                    className="text-sm font-semibold text-red-600 underline underline-offset-4"
-                  >
-                    삭제
-                  </button>
+                  {/* ✅ 내 댓글이거나 관리자일 때만 버튼 표시 */}
+                  {(isMine || isAdmin) && (
+                    <div className="flex flex-wrap items-center gap-3">
+                      {isMine && (
+                        <>
+                          <button
+                            type="button"
+                            onClick={() => {
+                              if (editCommentId === comment.id) {
+                                setEditCommentId("");
+                                setEditPassword("");
+                                setEditContent("");
+                              } else {
+                                setEditCommentId(comment.id);
+                                setEditPassword("");
+                                setEditContent(comment.content);
+                                setDeleteCommentId("");
+                                setDeletePassword("");
+                              }
+                              setMessage("");
+                            }}
+                            className="text-sm font-semibold text-gray-700 underline underline-offset-4"
+                          >
+                            수정
+                          </button>
 
-                  {isAdmin && (
-                    <button
-                      type="button"
-                      disabled={isDeleting}
-                      onClick={() => handleAdminDelete(comment.id)}
-                      className="text-sm font-semibold text-red-700 underline underline-offset-4 disabled:opacity-50"
-                    >
-                      관리자 삭제
-                    </button>
+                          <button
+                            type="button"
+                            onClick={() => {
+                              setDeleteCommentId(
+                                deleteCommentId === comment.id ? "" : comment.id
+                              );
+                              setDeletePassword("");
+                              setEditCommentId("");
+                              setEditPassword("");
+                              setEditContent("");
+                              setMessage("");
+                            }}
+                            className="text-sm font-semibold text-red-600 underline underline-offset-4"
+                          >
+                            삭제
+                          </button>
+                        </>
+                      )}
+
+                      {isAdmin && (
+                        <button
+                          type="button"
+                          disabled={isDeleting}
+                          onClick={() => handleAdminDelete(comment.id)}
+                          className="text-sm font-semibold text-red-700 underline underline-offset-4 disabled:opacity-50"
+                        >
+                          관리자 삭제
+                        </button>
+                      )}
+                    </div>
                   )}
                 </div>
-              </div>
 
-              <p className="text-gray-700 leading-8 whitespace-pre-wrap">
-                {comment.content}
-              </p>
+                <p className="text-gray-700 leading-8 whitespace-pre-wrap">
+                  {comment.content}
+                </p>
 
-              {editCommentId === comment.id && (
-                <div className="mt-4 rounded-2xl border border-gray-200 bg-gray-50 p-4">
-                  <label className="block text-sm font-medium text-gray-700 mb-2">
-                    수정할 댓글 내용
-                  </label>
-
-                  <textarea
-                    value={editContent}
-                    onChange={(e) => setEditContent(e.target.value)}
-                    rows={4}
-                    className="w-full rounded-2xl border border-gray-300 px-4 py-3 outline-none focus:border-black mb-3"
-                  />
-
-                  <label className="block text-sm font-medium text-gray-700 mb-2">
-                    수정 비밀번호
-                  </label>
-
-                  <div className="flex flex-wrap gap-3">
-                    <input
-                      type="password"
-                      value={editPassword}
-                      onChange={(e) => setEditPassword(e.target.value)}
-                      placeholder="비밀번호 입력"
-                      className="min-w-[220px] flex-1 rounded-2xl border border-gray-300 px-4 py-3 outline-none focus:border-black"
+                {editCommentId === comment.id && (
+                  <div className="mt-4 rounded-2xl border border-gray-200 bg-gray-50 p-4">
+                    <label className="block text-sm font-medium text-gray-700 mb-2">
+                      수정할 댓글 내용
+                    </label>
+                    <textarea
+                      value={editContent}
+                      onChange={(e) => setEditContent(e.target.value)}
+                      rows={4}
+                      className="w-full rounded-2xl border border-gray-300 px-4 py-3 outline-none focus:border-black mb-3"
                     />
-
-                    <button
-                      type="button"
-                      disabled={isEditing}
-                      onClick={() => handleEdit(comment.id)}
-                      className="inline-flex items-center rounded-full border border-gray-300 px-4 py-3 text-sm font-semibold text-gray-800 transition hover:bg-gray-100 disabled:opacity-50"
-                    >
-                      {isEditing ? "수정 중..." : "수정 확인"}
-                    </button>
+                    <label className="block text-sm font-medium text-gray-700 mb-2">
+                      수정 비밀번호
+                    </label>
+                    <div className="flex flex-wrap gap-3">
+                      <input
+                        type="password"
+                        value={editPassword}
+                        onChange={(e) => setEditPassword(e.target.value)}
+                        placeholder="비밀번호 입력"
+                        className="min-w-[220px] flex-1 rounded-2xl border border-gray-300 px-4 py-3 outline-none focus:border-black"
+                      />
+                      <button
+                        type="button"
+                        disabled={isEditing}
+                        onClick={() => handleEdit(comment.id)}
+                        className="inline-flex items-center rounded-full border border-gray-300 px-4 py-3 text-sm font-semibold text-gray-800 transition hover:bg-gray-100 disabled:opacity-50"
+                      >
+                        {isEditing ? "수정 중..." : "수정 확인"}
+                      </button>
+                    </div>
                   </div>
-                </div>
-              )}
+                )}
 
-              {deleteCommentId === comment.id && (
-                <div className="mt-4 rounded-2xl border border-red-200 bg-red-50 p-4">
-                  <label className="block text-sm font-medium text-gray-700 mb-2">
-                    삭제 비밀번호
-                  </label>
-
-                  <div className="flex flex-wrap gap-3">
-                    <input
-                      type="password"
-                      value={deletePassword}
-                      onChange={(e) => setDeletePassword(e.target.value)}
-                      placeholder="비밀번호 입력"
-                      className="min-w-[220px] flex-1 rounded-2xl border border-gray-300 px-4 py-3 outline-none focus:border-black"
-                    />
-
-                    <button
-                      type="button"
-                      disabled={isDeleting}
-                      onClick={() => handleDelete(comment.id)}
-                      className="inline-flex items-center rounded-full border border-red-300 px-4 py-3 text-sm font-semibold text-red-600 transition hover:bg-red-100 disabled:opacity-50"
-                    >
-                      {isDeleting ? "삭제 중..." : "삭제 확인"}
-                    </button>
+                {deleteCommentId === comment.id && (
+                  <div className="mt-4 rounded-2xl border border-red-200 bg-red-50 p-4">
+                    <label className="block text-sm font-medium text-gray-700 mb-2">
+                      삭제 비밀번호
+                    </label>
+                    <div className="flex flex-wrap gap-3">
+                      <input
+                        type="password"
+                        value={deletePassword}
+                        onChange={(e) => setDeletePassword(e.target.value)}
+                        placeholder="비밀번호 입력"
+                        className="min-w-[220px] flex-1 rounded-2xl border border-gray-300 px-4 py-3 outline-none focus:border-black"
+                      />
+                      <button
+                        type="button"
+                        disabled={isDeleting}
+                        onClick={() => handleDelete(comment.id)}
+                        className="inline-flex items-center rounded-full border border-red-300 px-4 py-3 text-sm font-semibold text-red-600 transition hover:bg-red-100 disabled:opacity-50"
+                      >
+                        {isDeleting ? "삭제 중..." : "삭제 확인"}
+                      </button>
+                    </div>
                   </div>
-                </div>
-              )}
-            </article>
-          ))
+                )}
+              </article>
+            );
+          })
         ) : (
           <div className="rounded-3xl border border-dashed border-gray-300 p-8 text-center">
             <p className="text-gray-500">아직 댓글이 없습니다.</p>
