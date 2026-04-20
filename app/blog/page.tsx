@@ -286,9 +286,7 @@ export default async function BlogPage({
             </div>
 
             <h1 className="text-4xl md:text-5xl font-bold tracking-tight leading-tight mb-6">
-              조건에 맞는 글을
-              <br />
-              모아봤어요
+              태그로 모은 글
             </h1>
 
             <p className="text-lg text-gray-600 leading-8 mb-6">
