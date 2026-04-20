@@ -3,10 +3,7 @@
 import { useState } from "react";
 import { createClient } from "@/lib/supabase/client";
 import { useRouter } from "next/navigation";
-import ReactMarkdown from "react-markdown";
-import remarkGfm from "remark-gfm";
-import rehypeRaw from "rehype-raw";
-import rehypeSanitize, { defaultSchema } from "rehype-sanitize";
+import LiveMarkdownEditor from "@/components/LiveMarkdownEditor";
 import { readDraft, removeDraft, saveDraft } from "@/lib/drafts";
 
 type ProjectDraft = {
@@ -51,11 +48,6 @@ function parseTechStack(value: string) {
     .map((item) => item.trim())
     .filter(Boolean);
 }
-
-const sanitizeSchema = {
-  ...defaultSchema,
-  tagNames: [...(defaultSchema.tagNames || []), "mark"],
-};
 
 export default function ProjectForm({ initialData }: ProjectFormProps) {
   const supabase = createClient();
@@ -181,15 +173,14 @@ export default function ProjectForm({ initialData }: ProjectFormProps) {
   }
 
   return (
-    <main className="max-w-5xl mx-auto px-6 py-20">
+    <main className="max-w-3xl mx-auto px-6 py-20">
       <p className="text-sm font-semibold tracking-[0.2em] text-gray-500 uppercase mb-4">
         Admin
       </p>
 
       <h1 className="text-4xl font-bold tracking-tight mb-10">프로젝트 수정</h1>
 
-      <div className="grid gap-10 lg:grid-cols-[1fr_1fr]">
-        <form onSubmit={handleSubmit} className="space-y-5">
+      <form onSubmit={handleSubmit} className="space-y-5">
           <div>
             <label className="block text-sm font-medium text-gray-700 mb-2">
               프로젝트 제목
@@ -226,17 +217,13 @@ export default function ProjectForm({ initialData }: ProjectFormProps) {
             />
           </div>
 
-          <div>
-            <label className="block text-sm font-medium text-gray-700 mb-2">
-              설명
-            </label>
-            <textarea
-              value={description}
-              onChange={(e) => setDescription(e.target.value)}
-              rows={10}
-              className="w-full rounded-2xl border border-gray-300 px-4 py-3 outline-none focus:border-black"
-            />
-          </div>
+          <LiveMarkdownEditor
+            label="설명"
+            value={description}
+            onChange={setDescription}
+            rows={10}
+            emptyText="설명이 여기에 표시됩니다."
+          />
 
           <div>
             <label className="block text-sm font-medium text-gray-700 mb-2">
@@ -327,74 +314,7 @@ export default function ProjectForm({ initialData }: ProjectFormProps) {
               임시저장 삭제
             </button>
           </div>
-        </form>
-
-        <section>
-          <div className="sticky top-24">
-            <p className="text-sm font-semibold tracking-[0.2em] text-gray-500 uppercase mb-4">
-              Preview
-            </p>
-
-            <article className="rounded-3xl border border-gray-200 p-7 shadow-sm bg-white">
-              <div className="flex flex-wrap items-center gap-3 mb-4">
-                <span
-                  className={`rounded-full px-3 py-1 text-xs font-semibold ${
-                    isPublished
-                      ? "bg-black text-white"
-                      : "bg-gray-100 text-gray-700"
-                  }`}
-                >
-                  {isPublished ? "Published" : "Draft"}
-                </span>
-              </div>
-
-              <h2 className="text-3xl font-bold tracking-tight leading-tight mb-4">
-                {title || "프로젝트 제목이 여기에 표시됩니다"}
-              </h2>
-
-              <p className="text-sm text-gray-500 mb-4">
-                {slug ? `/projects/${slug}` : "/projects/your-slug"}
-              </p>
-
-              {techStack.length > 0 && (
-                <div className="flex flex-wrap gap-2 mb-6">
-                  {techStack.map((tech) => (
-                    <span
-                      key={tech}
-                      className="rounded-full border border-gray-300 px-3 py-1 text-sm text-gray-700"
-                    >
-                      {tech}
-                    </span>
-                  ))}
-                </div>
-              )}
-
-              {summary ? (
-                <p className="text-lg text-gray-600 leading-8 mb-6">{summary}</p>
-              ) : (
-                <p className="text-lg text-gray-400 leading-8 mb-6">
-                  요약이 여기에 표시됩니다.
-                </p>
-              )}
-
-              {description ? (
-                <div className="prose max-w-none prose-headings:mt-4 prose-h1:mb-3 prose-h2:mb-2 prose-h3:mb-2 prose-p:my-2 prose-hr:my-3 prose-code:rounded-md prose-code:bg-gray-100 prose-code:px-1.5 prose-code:py-0.5 prose-code:text-[0.9em] prose-code:font-normal prose-code:text-gray-800 prose-code:before:content-none prose-code:after:content-none">
-                  <ReactMarkdown
-                    remarkPlugins={[remarkGfm]}
-                    rehypePlugins={[rehypeRaw, [rehypeSanitize, sanitizeSchema]]}
-                  >
-                    {description}
-                  </ReactMarkdown>
-                </div>
-              ) : (
-                <p className="text-gray-400 leading-8">
-                  설명이 여기에 표시됩니다.
-                </p>
-              )}
-            </article>
-          </div>
-        </section>
-      </div>
+      </form>
     </main>
   );
 }

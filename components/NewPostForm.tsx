@@ -1,6 +1,6 @@
 "use client";
 
-import MarkdownContent from "@/components/MarkdownContent";
+import LiveMarkdownEditor from "@/components/LiveMarkdownEditor";
 import { useState } from "react";
 import { createClient } from "@/lib/supabase/client";
 import { useRouter } from "next/navigation";
@@ -29,14 +29,6 @@ function generateSlug(value: string) {
     .replace(/-+/g, "-");
 }
 
-function formatPreviewDate() {
-  return new Date().toLocaleDateString("ko-KR", {
-    year: "numeric",
-    month: "long",
-    day: "numeric",
-  });
-}
-
 function parseTags(value: string) {
   return value
     .split(",")
@@ -63,8 +55,6 @@ export default function NewPostForm({
   const [isSaving, setIsSaving] = useState(false);
 
   const tags = parseTags(tagsInput);
-  const selectedCategory =
-    categories.find((category) => category.id === categoryId) ?? null;
   const categoryOptions = getCategoryOptions(categories);
 
   function handleTitleChange(value: string) {
@@ -161,15 +151,14 @@ export default function NewPostForm({
   }
 
   return (
-    <main className="max-w-5xl mx-auto px-6 py-20">
+    <main className="max-w-3xl mx-auto px-6 py-20">
       <p className="text-sm font-semibold tracking-[0.2em] text-gray-500 uppercase mb-4">
         Admin
       </p>
 
       <h1 className="text-4xl font-bold tracking-tight mb-10">새 글 작성</h1>
 
-      <div className="grid gap-10 lg:grid-cols-[1fr_1fr]">
-        <form onSubmit={handleSubmit} className="space-y-5">
+      <form onSubmit={handleSubmit} className="space-y-5">
           <div>
             <label className="block text-sm font-medium text-gray-700 mb-2">
               제목
@@ -224,17 +213,13 @@ export default function NewPostForm({
             />
           </div>
 
-          <div>
-            <label className="block text-sm font-medium text-gray-700 mb-2">
-              본문
-            </label>
-            <textarea
-              value={content}
-              onChange={(e) => setContent(e.target.value)}
-              rows={16}
-              className="w-full rounded-2xl border border-gray-300 px-4 py-3 outline-none focus:border-black"
-            />
-          </div>
+          <LiveMarkdownEditor
+            label="본문"
+            value={content}
+            onChange={setContent}
+            rows={16}
+            emptyText="본문이 여기에 표시됩니다."
+          />
 
           <label className="flex items-center gap-2 text-sm text-gray-700">
             <input
@@ -277,59 +262,7 @@ export default function NewPostForm({
               임시저장 삭제
             </button>
           </div>
-        </form>
-
-        <section>
-          <div className="sticky top-24">
-            <p className="text-sm font-semibold tracking-[0.2em] text-gray-500 uppercase mb-4">
-              Preview
-            </p>
-
-            <article className="rounded-3xl border border-gray-200 p-7 shadow-sm bg-white">
-              {selectedCategory && (
-                <p className="text-sm font-semibold tracking-[0.12em] text-gray-500 uppercase mb-4">
-                  {getCategoryLabel(selectedCategory, categories)}
-                </p>
-              )}
-
-              <div className="flex flex-wrap items-center gap-3 mb-4">
-                <span
-                  className={`rounded-full px-3 py-1 text-xs font-semibold ${
-                    isPublished ? "bg-black text-white" : "bg-gray-100 text-gray-700"
-                  }`}
-                >
-                  {isPublished ? "Published" : "Draft"}
-                </span>
-
-                <p className="text-sm text-gray-500">{formatPreviewDate()}</p>
-              </div>
-
-              <h2 className="text-3xl font-bold tracking-tight leading-tight mb-4">
-                {title || "제목이 여기에 표시됩니다"}
-              </h2>
-
-              <p className="text-sm text-gray-500 mb-4">
-                {slug ? `/blog/${slug}` : "/blog/your-slug"}
-              </p>
-
-              {tags.length > 0 && (
-                <div className="flex flex-wrap gap-2 mb-6">
-                  {tags.map((tag) => (
-                    <span
-                      key={tag}
-                      className="rounded-full border border-gray-300 px-3 py-1 text-sm text-gray-700"
-                    >
-                      {tag}
-                    </span>
-                  ))}
-                </div>
-              )}
-
-              <MarkdownContent content={content || "본문이 여기에 표시됩니다."} />
-            </article>
-          </div>
-        </section>
-      </div>
+      </form>
     </main>
   );
 }
