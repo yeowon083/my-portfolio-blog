@@ -334,13 +334,13 @@ export default async function BlogPage({
       </section>
 
       <form action="/blog">
-        <div className="flex flex-wrap gap-3">
+        <div className="grid gap-3 sm:flex sm:flex-wrap">
           <input
             type="text"
             name="q"
             defaultValue={keyword}
             placeholder="제목, 태그 검색"
-            className="field min-w-[260px] flex-1"
+            className="field w-full min-w-0 sm:min-w-[260px] sm:flex-1"
           />
 
           {selectedTag && <input type="hidden" name="tag" value={selectedTag} />}
@@ -350,7 +350,7 @@ export default async function BlogPage({
 
           <button
             type="submit"
-            className="button-primary"
+            className="button-primary w-full sm:w-auto"
           >
             검색
           </button>
@@ -358,7 +358,7 @@ export default async function BlogPage({
           {keyword && (
             <Link
               href={buildResetSearchHref()}
-              className="button-secondary"
+              className="button-secondary w-full sm:w-auto"
             >
               검색 초기화
             </Link>
@@ -462,7 +462,7 @@ export default async function BlogPage({
           paginatedPosts.map((post, index) => (
             <article
               key={post.id}
-              className={`surface-card hover-lift p-7 fade-up ${index === 0 &&
+              className={`surface-card hover-lift p-5 fade-up sm:p-7 ${index === 0 &&
                   safePage === 1 &&
                   !selectedTag &&
                   !keyword &&
@@ -500,7 +500,7 @@ export default async function BlogPage({
                 </p>
               </div>
 
-              <h2 className="text-2xl md:text-3xl font-semibold tracking-tight mb-4">
+              <h2 className="mb-4 text-xl font-semibold tracking-tight sm:text-2xl md:text-3xl">
                 <Link
                   href={`/blog/${post.slug}`}
                   className="transition-all duration-200 hover:text-neutral-400"

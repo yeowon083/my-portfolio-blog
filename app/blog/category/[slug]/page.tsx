@@ -201,7 +201,7 @@ export default async function CategoryBlogPage({
           typedPosts.map((post, index) => (
             <article
               key={post.id}
-              className={`surface-card hover-lift p-7 fade-up ${
+              className={`surface-card hover-lift p-5 fade-up sm:p-7 ${
                 index === 0 ? "border-neutral-300" : ""
               }`}
             >
@@ -217,7 +217,7 @@ export default async function CategoryBlogPage({
                 </p>
               </div>
 
-              <h2 className="text-2xl md:text-3xl font-semibold tracking-tight mb-4">
+              <h2 className="mb-4 text-xl font-semibold tracking-tight sm:text-2xl md:text-3xl">
                 <Link
                   href={`/blog/${post.slug}`}
                   className="transition-all duration-200 hover:text-neutral-400"

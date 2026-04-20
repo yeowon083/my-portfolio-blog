@@ -25,9 +25,9 @@ export default async function HomePage() {
 
   return (
     <main className="min-h-[calc(100vh-73px)]">
-      <section className="page-shell pt-20">
+      <section className="page-shell pt-12 sm:pt-20">
         <div className="hero-panel fade-up mb-8">
-          <div className="flex items-center gap-4 mb-6">
+          <div className="mb-6 flex items-center gap-4">
             <Image
               src="/profile.jpg"
               alt="Yeowon profile"
@@ -53,12 +53,12 @@ export default async function HomePage() {
             있습니다.
           </p>
 
-          <div className="flex flex-nowrap items-center gap-3 overflow-x-auto">
-            <Link href="/projects" className="button-primary">
+          <div className="grid gap-3 sm:flex sm:flex-wrap sm:items-center">
+            <Link href="/projects" className="button-primary w-full sm:w-auto">
               프로젝트 보기
             </Link>
 
-            <Link href="/about" className="button-secondary">
+            <Link href="/about" className="button-secondary w-full sm:w-auto">
               소개 보기
             </Link>
 
@@ -66,21 +66,24 @@ export default async function HomePage() {
               href="https://github.com/yeowon083"
               target="_blank"
               rel="noreferrer"
-              className="button-secondary"
+              className="button-secondary w-full sm:w-auto"
             >
               GitHub
             </a>
 
-            <a href="mailto:yeowon083@gmail.com" className="button-secondary">
+            <a
+              href="mailto:yeowon083@gmail.com"
+              className="button-secondary w-full sm:w-auto"
+            >
               Contact
             </a>
           </div>
         </div>
 
         <section className="grid gap-6 md:grid-cols-2">
-          <article className="surface-card hover-lift flex h-full flex-col p-7 fade-up anim-delay-150">
-            <div className="flex items-center gap-3 mb-4">
-              <h2 className="text-2xl font-semibold tracking-tight">대표 프로젝트</h2>
+          <article className="surface-card hover-lift flex h-full flex-col p-5 fade-up anim-delay-150 sm:p-7">
+            <div className="mb-4 flex flex-wrap items-center gap-3">
+              <h2 className="text-xl font-semibold tracking-tight sm:text-2xl">대표 프로젝트</h2>
               <span className="chip">진행 중</span>
             </div>
 
@@ -133,8 +136,8 @@ export default async function HomePage() {
             )}
           </article>
 
-          <article className="surface-card hover-lift flex h-full flex-col p-7 fade-up anim-delay-225">
-            <h2 className="text-2xl font-semibold tracking-tight mb-4">이 블로그에는</h2>
+          <article className="surface-card hover-lift flex h-full flex-col p-5 fade-up anim-delay-225 sm:p-7">
+            <h2 className="mb-4 text-xl font-semibold tracking-tight sm:text-2xl">이 블로그에는</h2>
 
             <ul className="space-y-3 text-neutral-500 leading-7">
               <li>

@@ -19,7 +19,7 @@ export default function Navbar() {
       <nav
         className={`${
           isAdminPage ? "max-w-5xl" : "max-w-4xl"
-        } mx-auto flex items-center justify-between px-6 py-4`}
+        } mx-auto flex flex-wrap items-center justify-between gap-3 px-4 py-3 sm:px-6 sm:py-4`}
       >
         <Link
           href="/"
@@ -31,7 +31,7 @@ export default function Navbar() {
           Yeowon
         </Link>
 
-        <div className="flex items-center gap-0.5 rounded-xl border border-neutral-100 bg-neutral-50 p-1 text-sm font-medium shadow-[0_1px_4px_rgba(0,0,0,0.05)]">
+        <div className="flex max-w-full items-center gap-0.5 overflow-x-auto rounded-xl border border-neutral-100 bg-neutral-50 p-1 text-xs font-medium shadow-[0_1px_4px_rgba(0,0,0,0.05)] sm:text-sm">
           {navItems.map((item) => {
             const isActive =
               item.href === "/"
@@ -42,7 +42,7 @@ export default function Navbar() {
               <Link
                 key={item.href}
                 href={item.href}
-                className={`rounded-lg px-4 py-2 transition-all duration-200 ${
+                className={`rounded-lg px-3 py-2 transition-all duration-200 sm:px-4 ${
                   isActive
                     ? "bg-neutral-950 text-white shadow-sm"
                     : "text-neutral-500 hover:bg-white hover:text-neutral-900 hover:shadow-[0_1px_4px_rgba(0,0,0,0.06)]"
