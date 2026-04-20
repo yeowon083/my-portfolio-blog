@@ -334,8 +334,7 @@ export default async function BlogPage({
             </h1>
 
             <p className="text-lg text-gray-600 leading-8">
-              실제 프로젝트를 진행하면서 무엇을 고민했고 어떻게 구현했는지,
-              어떤 시행착오를 겪었는지를 중심으로 기록하고 있습니다.
+              기록하고, 정리하고, 공유합니다.
             </p>
           </>
         )}
