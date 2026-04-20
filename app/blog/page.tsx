@@ -35,7 +35,6 @@ type RawPost = {
   id: string;
   title: string;
   slug: string;
-  summary: string | null;
   created_at: string;
   tags?: string[] | null;
   view_count?: number | null;
@@ -47,7 +46,6 @@ type Post = {
   id: string;
   title: string;
   slug: string;
-  summary: string | null;
   created_at: string;
   tags?: string[] | null;
   view_count?: number | null;
@@ -95,7 +93,6 @@ export default async function BlogPage({
       id,
       title,
       slug,
-      summary,
       created_at,
       tags,
       view_count,
@@ -111,7 +108,6 @@ export default async function BlogPage({
       id,
       title,
       slug,
-      summary,
       created_at,
       tags,
       view_count,
@@ -205,13 +201,11 @@ export default async function BlogPage({
     filteredPosts = filteredPosts.filter((post) => {
       const inTitle = 
     post.title.toLowerCase().includes(keyword);
-      const inSummary = (post.summary ?? 
-    "").toLowerCase().includes(keyword);
       const inTags = (post.tags ?? []).some((tag) =>
         tag.toLowerCase().includes(keyword)
       );
 
-      return inTitle || inSummary || inTags;
+      return inTitle || inTags;
     });
   }
 
@@ -346,7 +340,7 @@ export default async function BlogPage({
             type="text"
             name="q"
             defaultValue={keyword}
-            placeholder="제목, 요약, 태그 검색"
+            placeholder="제목, 태그 검색"
             className="min-w-[260px] flex-1 rounded-2xl border border-gray-300 px-4 py-3 outline-none focus:border-black"
           />
 
@@ -511,7 +505,12 @@ export default async function BlogPage({
               </div>
 
               <h2 className="text-2xl md:text-3xl font-semibold tracking-tight mb-4">
-                {post.title}
+                <Link
+                  href={`/blog/${post.slug}`}
+                  className="transition hover:text-gray-600"
+                >
+                  {post.title}
+                </Link>
               </h2>
 
               {post.tags && post.tags.length > 0 && (
@@ -537,16 +536,6 @@ export default async function BlogPage({
                 </div>
               )}
 
-              {post.summary && (
-                <p className="text-gray-600 leading-8 mb-6">{post.summary}</p>
-              )}
-
-              <Link
-                href={`/blog/${post.slug}`}
-                className="text-sm font-semibold text-gray-900 underline underline-offset-4"
-              >
-                글 보러 가기
-              </Link>
             </article>
           ))
         ) : (

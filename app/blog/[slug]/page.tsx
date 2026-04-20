@@ -71,7 +71,6 @@ type RawPostItem = {
   id: string;
   title: string;
   slug: string;
-  summary: string | null;
   content: string;
   created_at: string;
   tags?: string[] | null;
@@ -85,7 +84,6 @@ type PostItem = {
   id: string;
   title: string;
   slug: string;
-  summary: string | null;
   content: string;
   created_at: string;
   tags?: string[] | null;
@@ -117,7 +115,7 @@ export async function generateMetadata({
 
   const { data: post } = await supabase
     .from("posts")
-    .select("title, summary")
+    .select("title")
     .eq("slug", slug)
     .eq("is_published", true)
     .single();
@@ -131,15 +129,15 @@ export async function generateMetadata({
 
   return {
     title: post.title,
-    description: post.summary ?? "블로그 글 상세 페이지",
+    description: "블로그 글 상세 페이지",
     openGraph: {
       title: post.title,
-      description: post.summary ?? "블로그 글 상세 페이지",
+      description: "블로그 글 상세 페이지",
     },
     twitter: {
       card: "summary_large_image",
       title: post.title,
-      description: post.summary ?? "블로그 글 상세 페이지",
+      description: "블로그 글 상세 페이지",
     },
   };
 }
@@ -162,7 +160,6 @@ export default async function BlogDetailPage({
       id,
       title,
       slug,
-      summary,
       content,
       created_at,
       tags,
@@ -180,7 +177,6 @@ export default async function BlogDetailPage({
       id,
       title,
       slug,
-      summary,
       content,
       created_at,
       tags,
@@ -278,12 +274,6 @@ export default async function BlogDetailPage({
               </Link>
             ))}
           </div>
-        )}
-
-        {typedPost.summary && (
-          <p className="text-lg text-gray-600 leading-8 mb-12">
-            {typedPost.summary}
-          </p>
         )}
 
         <div className="prose max-w-none prose-headings:mt-4 prose-h1:mb-3 prose-h2:mb-2 prose-h3:mb-2 prose-p:my-2 prose-hr:my-3 prose-code:before:content-none prose-code:after:content-none">

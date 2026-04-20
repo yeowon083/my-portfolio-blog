@@ -16,7 +16,6 @@ type PostDraft = {
   categoryId: string;
   title: string;
   slug: string;
-  summary: string;
   content: string;
   tagsInput: string;
   isPublished: boolean;
@@ -58,7 +57,6 @@ export default function NewPostForm({
   const [categoryId, setCategoryId] = useState("");
   const [title, setTitle] = useState("");
   const [slug, setSlug] = useState("");
-  const [summary, setSummary] = useState("");
   const [content, setContent] = useState("");
   const [tagsInput, setTagsInput] = useState("");
   const [isPublished, setIsPublished] = useState(false);
@@ -83,7 +81,6 @@ export default function NewPostForm({
       categoryId,
       title,
       slug,
-      summary,
       content,
       tagsInput,
       isPublished,
@@ -106,7 +103,6 @@ export default function NewPostForm({
     setCategoryId(draft.categoryId ?? "");
     setTitle(draft.title ?? "");
     setSlug(draft.slug ?? "");
-    setSummary(draft.summary ?? "");
     setContent(draft.content ?? "");
     setTagsInput(draft.tagsInput ?? "");
     setIsPublished(draft.isPublished ?? false);
@@ -124,7 +120,6 @@ export default function NewPostForm({
 
     const trimmedTitle = title.trim();
     const trimmedSlug = slug.trim();
-    const trimmedSummary = summary.trim();
     const trimmedContent = content.trim();
 
     if (!trimmedTitle || !trimmedSlug || !trimmedContent) {
@@ -147,7 +142,6 @@ export default function NewPostForm({
     const { error } = await supabase.from("posts").insert({
       title: trimmedTitle,
       slug: trimmedSlug,
-      summary: trimmedSummary,
       content: trimmedContent,
       category_id: categoryId || null,
       tags,
@@ -195,17 +189,6 @@ export default function NewPostForm({
             <input
               value={slug}
               onChange={(e) => setSlug(generateSlug(e.target.value))}
-              className="w-full rounded-2xl border border-gray-300 px-4 py-3 outline-none focus:border-black"
-            />
-          </div>
-
-          <div>
-            <label className="block text-sm font-medium text-gray-700 mb-2">
-              요약
-            </label>
-            <input
-              value={summary}
-              onChange={(e) => setSummary(e.target.value)}
               className="w-full rounded-2xl border border-gray-300 px-4 py-3 outline-none focus:border-black"
             />
           </div>
@@ -338,14 +321,6 @@ export default function NewPostForm({
                     </span>
                   ))}
                 </div>
-              )}
-
-              {summary ? (
-                <p className="text-lg text-gray-600 leading-8 mb-8">{summary}</p>
-              ) : (
-                <p className="text-lg text-gray-400 leading-8 mb-8">
-                  요약이 여기에 표시됩니다.
-                </p>
               )}
 
               <div className="prose prose-gray max-w-none prose-headings:tracking-tight prose-a:break-all">

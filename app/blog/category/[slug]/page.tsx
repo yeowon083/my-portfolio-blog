@@ -23,7 +23,6 @@ type Post = {
   id: string;
   title: string;
   slug: string;
-  summary: string | null;
   created_at: string;
   tags?: string[] | null;
   view_count?: number | null;
@@ -121,7 +120,6 @@ export default async function CategoryBlogPage({
       id,
       title,
       slug,
-      summary,
       created_at,
       tags,
       view_count,
@@ -136,7 +134,6 @@ export default async function CategoryBlogPage({
       id,
       title,
       slug,
-      summary,
       created_at,
       tags,
       view_count,
@@ -221,7 +218,12 @@ export default async function CategoryBlogPage({
               </div>
 
               <h2 className="text-2xl md:text-3xl font-semibold tracking-tight mb-4">
-                {post.title}
+                <Link
+                  href={`/blog/${post.slug}`}
+                  className="transition hover:text-gray-600"
+                >
+                  {post.title}
+                </Link>
               </h2>
 
               {post.tags && post.tags.length > 0 && (
@@ -238,16 +240,6 @@ export default async function CategoryBlogPage({
                 </div>
               )}
 
-              {post.summary && (
-                <p className="text-gray-600 leading-8 mb-6">{post.summary}</p>
-              )}
-
-              <Link
-                href={`/blog/${post.slug}`}
-                className="text-sm font-semibold text-gray-900 underline underline-offset-4"
-              >
-                글 보러 가기
-              </Link>
             </article>
           ))
         ) : (

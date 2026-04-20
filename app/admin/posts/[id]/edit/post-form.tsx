@@ -16,7 +16,6 @@ type PostDraft = {
   categoryId: string;
   title: string;
   slug: string;
-  summary: string;
   content: string;
   tagsInput: string;
   isPublished: boolean;
@@ -27,7 +26,6 @@ type PostFormProps = {
     id: string;
     title: string;
     slug: string;
-    summary: string | null;
     content: string;
     is_published: boolean;
     tags?: string[] | null;
@@ -70,7 +68,6 @@ export default function PostForm({
 
   const [title, setTitle] = useState(initialData.title ?? "");
   const [slug, setSlug] = useState(initialData.slug ?? "");
-  const [summary, setSummary] = useState(initialData.summary ?? "");
   const [content, setContent] = useState(initialData.content ?? "");
   const [categoryId, setCategoryId] = useState(initialData.category_id ?? "");
   const [tagsInput, setTagsInput] = useState(
@@ -100,7 +97,6 @@ export default function PostForm({
       categoryId,
       title,
       slug,
-      summary,
       content,
       tagsInput,
       isPublished,
@@ -123,7 +119,6 @@ export default function PostForm({
     setCategoryId(draft.categoryId ?? "");
     setTitle(draft.title ?? "");
     setSlug(draft.slug ?? "");
-    setSummary(draft.summary ?? "");
     setContent(draft.content ?? "");
     setTagsInput(draft.tagsInput ?? "");
     setIsPublished(draft.isPublished ?? false);
@@ -141,7 +136,6 @@ export default function PostForm({
 
     const trimmedTitle = title.trim();
     const trimmedSlug = slug.trim();
-    const trimmedSummary = summary.trim();
     const trimmedContent = content.trim();
 
     if (!trimmedTitle || !trimmedSlug || !trimmedContent) {
@@ -156,7 +150,6 @@ export default function PostForm({
       .update({
         title: trimmedTitle,
         slug: trimmedSlug,
-        summary: trimmedSummary,
         content: trimmedContent,
         category_id: categoryId || null,
         tags,
@@ -209,17 +202,6 @@ export default function PostForm({
             <p className="mt-2 text-xs text-gray-500">
               영어 소문자, 숫자, 하이픈(-) 형태로 관리하는 것을 추천해.
             </p>
-          </div>
-
-          <div>
-            <label className="block text-sm font-medium text-gray-700 mb-2">
-              요약
-            </label>
-            <input
-              value={summary}
-              onChange={(e) => setSummary(e.target.value)}
-              className="w-full rounded-2xl border border-gray-300 px-4 py-3 outline-none focus:border-black"
-            />
           </div>
 
           <div>
@@ -356,16 +338,6 @@ export default function PostForm({
                     </span>
                   ))}
                 </div>
-              )}
-
-              {summary ? (
-                <p className="text-lg text-gray-600 leading-8 mb-8">
-                  {summary}
-                </p>
-              ) : (
-                <p className="text-lg text-gray-400 leading-8 mb-8">
-                  요약이 여기에 표시됩니다.
-                </p>
               )}
 
               <div className="prose prose-gray max-w-none prose-headings:tracking-tight prose-a:break-all">
