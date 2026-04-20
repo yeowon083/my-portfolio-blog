@@ -51,7 +51,7 @@ export default async function ProjectsPage() {
 
   return (
     <main className="page-shell">
-      <section className="hero-panel fade-up mb-14 max-w-3xl">
+      <section className="hero-panel fade-up mb-14">
         <p className="kicker mb-4">Projects</p>
 
         <h1 className="page-title mb-6">프로젝트 소개</h1>
