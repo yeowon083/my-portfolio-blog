@@ -176,8 +176,8 @@ export default async function BlogPage({
     : selectedCategoryItem;
   const childCategories = selectedParentCategory
     ? allCategories.filter(
-        (category) => category.parent_id === selectedParentCategory.id
-      )
+      (category) => category.parent_id === selectedParentCategory.id
+    )
     : [];
 
   let filteredPosts = typedPosts;
@@ -199,8 +199,8 @@ export default async function BlogPage({
 
   if (keyword) {
     filteredPosts = filteredPosts.filter((post) => {
-      const inTitle = 
-    post.title.toLowerCase().includes(keyword);
+      const inTitle =
+        post.title.toLowerCase().includes(keyword);
       const inTags = (post.tags ?? []).some((tag) =>
         tag.toLowerCase().includes(keyword)
       );
@@ -304,10 +304,10 @@ export default async function BlogPage({
               {selectedCategory && selectedTag && <span> · </span>}
               {selectedTag && (
                 <span className="font-semibold text-gray-900">
-                  태그 {selectedTag}
+                  {selectedTag}
                 </span>
               )}{" "}
-              조건이 적용된 글을 보고 있습니다.
+              태그가 적용된 글을 보고 있습니다.
             </p>
 
             <div className="flex flex-wrap items-center gap-3">
@@ -371,44 +371,42 @@ export default async function BlogPage({
         {topLevelCategories.length > 0 && (
           <div className="space-y-3 mb-4">
             <div className="flex flex-wrap gap-2">
-            <Link
-              href={buildBlogHref({
-                nextCategory: undefined,
-                nextTag: selectedTag || undefined,
-                nextQ: keyword || undefined,
-                nextPage: 1,
-              })}
-              className={`rounded-full px-4 py-2 text-sm font-semibold transition ${
-                !selectedCategory
-                  ? "bg-black text-white"
-                  : "border border-gray-300 text-gray-800 hover:bg-gray-100"
-              }`}
-            >
-              전체 카테고리
-            </Link>
-
-            {topLevelCategories.map((category) => {
-              const isActive = selectedCategory === category.slug;
-
-              return (
-                <Link
-                  key={category.id}
-                  href={buildBlogHref({
-                    nextCategory: category.slug,
-                    nextTag: selectedTag || undefined,
-                    nextQ: keyword || undefined,
-                    nextPage: 1,
-                  })}
-                  className={`rounded-full px-4 py-2 text-sm font-semibold transition ${
-                    isActive
-                      ? "bg-black text-white"
-                      : "border border-gray-300 text-gray-800 hover:bg-gray-100"
+              <Link
+                href={buildBlogHref({
+                  nextCategory: undefined,
+                  nextTag: selectedTag || undefined,
+                  nextQ: keyword || undefined,
+                  nextPage: 1,
+                })}
+                className={`rounded-full px-4 py-2 text-sm font-semibold transition ${!selectedCategory
+                    ? "bg-black text-white"
+                    : "border border-gray-300 text-gray-800 hover:bg-gray-100"
                   }`}
-                >
-                  {category.name}
-                </Link>
-              );
-            })}
+              >
+                전체 카테고리
+              </Link>
+
+              {topLevelCategories.map((category) => {
+                const isActive = selectedCategory === category.slug;
+
+                return (
+                  <Link
+                    key={category.id}
+                    href={buildBlogHref({
+                      nextCategory: category.slug,
+                      nextTag: selectedTag || undefined,
+                      nextQ: keyword || undefined,
+                      nextPage: 1,
+                    })}
+                    className={`rounded-full px-4 py-2 text-sm font-semibold transition ${isActive
+                        ? "bg-black text-white"
+                        : "border border-gray-300 text-gray-800 hover:bg-gray-100"
+                      }`}
+                  >
+                    {category.name}
+                  </Link>
+                );
+              })}
             </div>
 
             {childCategories.length > 0 && (
@@ -425,11 +423,10 @@ export default async function BlogPage({
                         nextQ: keyword || undefined,
                         nextPage: 1,
                       })}
-                      className={`rounded-full px-4 py-2 text-sm font-semibold transition ${
-                        isActive
+                      className={`rounded-full px-4 py-2 text-sm font-semibold transition ${isActive
                           ? "bg-black text-white"
                           : "border border-gray-300 text-gray-800 hover:bg-gray-100"
-                      }`}
+                        }`}
                     >
                       {category.name}
                     </Link>
@@ -465,15 +462,14 @@ export default async function BlogPage({
           paginatedPosts.map((post, index) => (
             <article
               key={post.id}
-              className={`rounded-3xl border border-gray-200 p-7 transition hover:-translate-y-0.5 hover:shadow-md ${
-                index === 0 &&
-                safePage === 1 &&
-                !selectedTag &&
-                !keyword &&
-                !selectedCategory
+              className={`rounded-3xl border border-gray-200 p-7 transition hover:-translate-y-0.5 hover:shadow-md ${index === 0 &&
+                  safePage === 1 &&
+                  !selectedTag &&
+                  !keyword &&
+                  !selectedCategory
                   ? "shadow-sm"
                   : ""
-              }`}
+                }`}
             >
               <div className="flex flex-wrap items-center gap-3 mb-4">
                 {index === 0 &&
@@ -524,11 +520,10 @@ export default async function BlogPage({
                         nextPage: 1,
                         nextCategory: selectedCategory || undefined,
                       })}
-                      className={`rounded-full px-3 py-1 text-sm transition ${
-                        selectedTag === tag
+                      className={`rounded-full px-3 py-1 text-sm transition ${selectedTag === tag
                           ? "bg-black text-white"
                           : "border border-gray-300 text-gray-700 hover:bg-gray-100"
-                      }`}
+                        }`}
                     >
                       {tag}
                     </Link>
@@ -544,18 +539,18 @@ export default async function BlogPage({
               {selectedCategory && selectedTag && keyword
                 ? `선택한 카테고리, 태그, 검색어에 해당하는 글이 없습니다.`
                 : selectedCategory && selectedTag
-                ? `선택한 카테고리와 태그에 해당하는 글이 없습니다.`
-                : selectedCategory && keyword
-                ? `선택한 카테고리와 검색어에 해당하는 글이 없습니다.`
-                : selectedTag && keyword
-                ? `선택한 태그와 검색어에 해당하는 글이 없습니다.`
-                : selectedCategory
-                ? `선택한 카테고리에 해당하는 글이 아직 없습니다.`
-                : selectedTag
-                ? `선택한 태그에 해당하는 글이 아직 없습니다.`
-                : keyword
-                ? `"${keyword}" 검색어에 해당하는 글이 없습니다.`
-                : "아직 발행된 글이 없습니다."}
+                  ? `선택한 카테고리와 태그에 해당하는 글이 없습니다.`
+                  : selectedCategory && keyword
+                    ? `선택한 카테고리와 검색어에 해당하는 글이 없습니다.`
+                    : selectedTag && keyword
+                      ? `선택한 태그와 검색어에 해당하는 글이 없습니다.`
+                      : selectedCategory
+                        ? `선택한 카테고리에 해당하는 글이 아직 없습니다.`
+                        : selectedTag
+                          ? `선택한 태그에 해당하는 글이 아직 없습니다.`
+                          : keyword
+                            ? `"${keyword}" 검색어에 해당하는 글이 없습니다.`
+                            : "아직 발행된 글이 없습니다."}
             </p>
 
             {(selectedCategory || selectedTag || keyword) && (
