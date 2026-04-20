@@ -10,17 +10,17 @@ import Image from "next/image";
 export default function AboutPage() {
   return (
     <main className="page-shell">
-      <section className="grid gap-10 md:grid-cols-[240px_1fr] items-start">
-        <div className="fade-up">
+      <section className="grid gap-10 md:grid-cols-[220px_1fr]">
+        <div className="fade-up flex flex-col">
           <Image
             src="/profile.jpg"
             alt="Yeowon profile"
-            width={240}
-            height={240}
-            className="rounded-2xl border border-neutral-100 object-cover shadow-[0_8px_32px_rgba(0,0,0,0.08)]"
+            width={220}
+            height={220}
+            className="rounded-2xl border border-neutral-100 object-cover shadow-[0_8px_32px_rgba(0,0,0,0.08)] w-full"
           />
 
-          <div className="surface-card mt-5 p-5">
+          <div className="surface-card mt-5 p-5 flex-1">
             <div className="flex items-center justify-between mb-4">
               <div>
                 <h2 className="text-xl font-semibold tracking-tight">이여원</h2>
@@ -76,7 +76,7 @@ export default function AboutPage() {
           </div>
         </div>
 
-        <div className="hero-panel fade-up anim-delay-75 max-w-3xl">
+        <div className="hero-panel fade-up anim-delay-75 h-full">
           <p className="kicker mb-4">About</p>
 
           <h1 className="page-title mb-6">
@@ -109,30 +109,18 @@ export default function AboutPage() {
         </div>
       </section>
 
-      <section className="grid gap-6 md:grid-cols-2 mt-14">
-        <article className="surface-card hover-lift p-7 fade-up anim-delay-150">
-          <h2 className="text-2xl font-semibold tracking-tight mb-4">Interest</h2>
-          <ul className="space-y-3 text-neutral-500 leading-7">
-            <li>AI Product Planning</li>
-            <li>Mobile App Development</li>
-            <li>Data-Driven Problem Solving</li>
-            <li>UX & Feature Design</li>
-          </ul>
-        </article>
-
-        <article className="surface-card hover-lift p-7 fade-up anim-delay-225">
-          <h2 className="text-2xl font-semibold tracking-tight mb-4">Tech Stack</h2>
-          <div className="flex flex-wrap gap-2">
-            <span className="chip">Python</span>
-            <span className="chip">React Native</span>
-            <span className="chip">Expo</span>
-            <span className="chip">TypeScript</span>
-            <span className="chip">Supabase</span>
-            <span className="chip">GitHub</span>
-            <span className="chip">Node.js</span>
-          </div>
-        </article>
-      </section>
+      <article className="surface-card hover-lift p-7 mt-14 fade-up anim-delay-150">
+        <h2 className="text-2xl font-semibold tracking-tight mb-4">Tech Stack</h2>
+        <div className="flex flex-wrap gap-2">
+          <span className="chip">Python</span>
+          <span className="chip">React Native</span>
+          <span className="chip">Expo</span>
+          <span className="chip">TypeScript</span>
+          <span className="chip">Supabase</span>
+          <span className="chip">GitHub</span>
+          <span className="chip">Node.js</span>
+        </div>
+      </article>
     </main>
   );
 }
