@@ -253,7 +253,8 @@ export default async function BlogPage({
 
   return (
     <main className="page-shell">
-      <section className="hero-panel fade-up mb-10 max-w-3xl">
+      <div className="hero-panel fade-up mb-10">
+      <section className="mb-6 max-w-3xl">
         <p className="kicker mb-4">
           Blog
         </p>
@@ -333,7 +334,7 @@ export default async function BlogPage({
         )}
       </section>
 
-      <form action="/blog" className="surface-card mb-8 p-4">
+      <form action="/blog">
         <div className="flex flex-wrap gap-3">
           <input
             type="text"
@@ -365,6 +366,7 @@ export default async function BlogPage({
           )}
         </div>
       </form>
+      </div>
 
       <section className="mb-10 space-y-4">
         {topLevelCategories.length > 0 && (
