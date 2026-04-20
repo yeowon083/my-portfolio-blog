@@ -182,7 +182,7 @@ export default async function CategoryBlogPage({
         ← Blog로 돌아가기
       </Link>
 
-      <section className="hero-panel fade-up mb-14 max-w-3xl">
+      <section className="hero-panel fade-up mb-14">
         <p className="kicker mb-4">
           Category
         </p>
@@ -192,7 +192,7 @@ export default async function CategoryBlogPage({
         </h1>
 
         <p className="body-copy">
-          {category.name} 카테고리에 속한 글을 모아봤어요.
+          {category.name} 카테고리에 속한 글
         </p>
       </section>
 
