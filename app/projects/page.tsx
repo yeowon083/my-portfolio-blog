@@ -61,8 +61,7 @@ export default async function ProjectsPage() {
         </h1>
 
         <p className="text-lg text-gray-600 leading-8">
-          기획부터 구현까지 직접 진행한 프로젝트를 정리했습니다.
-          문제 정의, 구현 방식, 사용 기술과 결과를 함께 볼 수 있습니다.
+          만든 것들을 정리했습니다.
         </p>
       </section>
 
