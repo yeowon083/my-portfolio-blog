@@ -5,6 +5,9 @@ import remarkGfm from "remark-gfm";
 import rehypeRaw from "rehype-raw";
 import rehypeSanitize, { defaultSchema } from "rehype-sanitize";
 import type { Components } from "react-markdown";
+import { Children, isValidElement, type ReactNode } from "react";
+import { Prism as SyntaxHighlighter } from "react-syntax-highlighter";
+import { vscDarkPlus } from "react-syntax-highlighter/dist/cjs/styles/prism";
 
 const sanitizeSchema = {
   ...defaultSchema,
@@ -15,14 +18,71 @@ const sanitizeSchema = {
   },
 };
 
+function getTextContent(value: ReactNode): string {
+  return Children.toArray(value)
+    .map((child) => {
+      if (typeof child === "string" || typeof child === "number") {
+        return String(child);
+      }
+
+      if (isValidElement<{ children?: ReactNode }>(child)) {
+        return getTextContent(child.props.children);
+      }
+
+      return "";
+    })
+    .join("");
+}
+
 const markdownComponents: Components = {
-  pre({ children, ...props }) {
+  pre({ children }) {
+    const child = Children.toArray(children)[0];
+    const childProps = isValidElement<{
+      className?: string;
+      children?: ReactNode;
+    }>(child)
+      ? child.props
+      : null;
+    const code = getTextContent(childProps?.children ?? children).replace(
+      /\n$/,
+      ""
+    );
+    const language = /language-([\w-]+)/.exec(
+      childProps?.className || ""
+    )?.[1];
+
+    if (language) {
+      return (
+        <SyntaxHighlighter
+          language={language}
+          style={vscDarkPlus}
+          PreTag="div"
+          customStyle={{
+            background: "#111827",
+            borderRadius: "0.75rem",
+            border: "1px solid #374151",
+            color: "#e5e7eb",
+            margin: "1.5rem 0",
+            padding: "1rem",
+            fontSize: "0.875rem",
+            lineHeight: "1.7",
+            overflowX: "auto",
+          }}
+          codeTagProps={{
+            style: {
+              color: "#e5e7eb",
+              fontFamily: 'Consolas, "Courier New", monospace',
+            },
+          }}
+        >
+          {code}
+        </SyntaxHighlighter>
+      );
+    }
+
     return (
-      <pre
-        className="rounded-xl border border-neutral-200 bg-neutral-950 text-neutral-100 p-4 overflow-x-auto my-6 text-sm leading-relaxed shadow-[0_8px_32px_rgba(0,0,0,0.12)] [&>code]:bg-transparent [&>code]:p-0 [&>code]:text-inherit [&>code]:rounded-none"
-        {...props}
-      >
-        {children}
+      <pre className="my-6 overflow-x-auto whitespace-pre-wrap rounded-xl border border-neutral-200 bg-neutral-950 p-4 text-sm leading-relaxed text-neutral-100 shadow-[0_8px_32px_rgba(0,0,0,0.12)]">
+        <code>{code}</code>
       </pre>
     );
   },
@@ -34,6 +94,7 @@ const markdownComponents: Components = {
         </code>
       );
     }
+
     return (
       <code
         className="rounded-md bg-neutral-100 px-1.5 py-0.5 text-[0.9em] font-normal text-neutral-700 before:content-none after:content-none"
