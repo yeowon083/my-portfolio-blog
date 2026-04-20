@@ -31,6 +31,10 @@ function formatDate(dateString: string) {
 const MY_COMMENTS_KEY = "my_comment_ids";
 
 function getMyCommentIds(): string[] {
+  if (typeof window === "undefined") {
+    return [];
+  }
+
   try {
     return JSON.parse(localStorage.getItem(MY_COMMENTS_KEY) ?? "[]");
   } catch {
@@ -63,10 +67,8 @@ export default function CommentSection({
   const [isLoading, setIsLoading] = useState(true);
   const [isSubmitting, setIsSubmitting] = useState(false);
 
-  // ✅ 내가 작성한 댓글 ID 목록
-  const [myCommentIds, setMyCommentIds] = useState<string[]>(() =>
-    getMyCommentIds()
-  );
+  // 내가 작성한 댓글 ID 목록은 hydration 이후 브라우저 저장소에서 읽는다.
+  const [myCommentIds, setMyCommentIds] = useState<string[]>([]);
 
   const [deleteCommentId, setDeleteCommentId] = useState("");
   const [deletePassword, setDeletePassword] = useState("");
@@ -107,6 +109,14 @@ export default function CommentSection({
 
     return () => window.clearTimeout(timeoutId);
   }, [fetchComments]);
+
+  useEffect(() => {
+    const timeoutId = window.setTimeout(() => {
+      setMyCommentIds(getMyCommentIds());
+    }, 0);
+
+    return () => window.clearTimeout(timeoutId);
+  }, []);
 
   async function handleSubmit(e: React.FormEvent) {
     e.preventDefault();
@@ -324,6 +334,7 @@ export default function CommentSection({
             rows={4}
             placeholder="댓글을 입력하세요"
             className="field w-full"
+            suppressHydrationWarning
           />
         </div>
 
@@ -437,6 +448,7 @@ export default function CommentSection({
                       onChange={(e) => setEditContent(e.target.value)}
                       rows={4}
                       className="field mb-3 w-full"
+                      suppressHydrationWarning
                     />
                     <label className="block text-sm font-medium text-gray-700 mb-2">
                       수정 비밀번호
@@ -448,6 +460,7 @@ export default function CommentSection({
                         onChange={(e) => setEditPassword(e.target.value)}
                         placeholder="비밀번호 입력"
                         className="field min-w-[220px] flex-1"
+                        suppressHydrationWarning
                       />
                       <button
                         type="button"
@@ -473,6 +486,7 @@ export default function CommentSection({
                         onChange={(e) => setDeletePassword(e.target.value)}
                         placeholder="비밀번호 입력"
                         className="field min-w-[220px] flex-1"
+                        suppressHydrationWarning
                       />
                       <button
                         type="button"
