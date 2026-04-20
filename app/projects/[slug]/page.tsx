@@ -136,7 +136,7 @@ export default async function ProjectDetailPage({
   const typedProject = project as Project;
 
   return (
-    <main className="narrow-shell">
+    <main className="page-shell">
       <Link
         href="/projects"
         className="back-link"

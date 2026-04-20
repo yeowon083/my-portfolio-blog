@@ -16,7 +16,7 @@
 body {
   background: var(--background);
   color: var(--foreground);
-  font-family: Arial, Helvetica, sans-serif;
+  font-family: "Pretendard Variable", Pretendard, -apple-system, BlinkMacSystemFont, sans-serif;
 }
 
 body::before {
@@ -96,6 +96,10 @@ body::before {
 
   .content-prose {
     @apply prose max-w-none prose-neutral prose-headings:mt-4 prose-h1:mb-3 prose-h2:mb-2 prose-h3:mb-2 prose-p:my-2 prose-hr:my-3 prose-a:text-neutral-950 prose-a:no-underline hover:prose-a:underline prose-code:before:content-none prose-code:after:content-none;
+
+    :where(code, pre) {
+      font-family: Consolas, "Courier New", monospace;
+    }
   }
 
   .fade-up {

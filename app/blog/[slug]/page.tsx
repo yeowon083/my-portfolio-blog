@@ -1,14 +1,10 @@
 import type { Metadata } from "next";
 import Link from "next/link";
 import { notFound } from "next/navigation";
-import ReactMarkdown from "react-markdown";
-import remarkGfm from "remark-gfm";
-import rehypeRaw from "rehype-raw";
-import rehypeSanitize, { defaultSchema } from "rehype-sanitize";
 import { createClient } from "@/lib/supabase/server";
 import ViewTracker from "@/components/ViewTracker";
 import CommentSection from "@/components/CommentSection";
-import type { Components } from "react-markdown";
+import MarkdownContent from "@/components/MarkdownContent";
 import { getCategoryLabel, isMissingParentIdError } from "@/lib/categories";
 
 function formatDate(dateString: string) {
@@ -19,46 +15,6 @@ function formatDate(dateString: string) {
   });
 }
 
-const sanitizeSchema = {
-  ...defaultSchema,
-  tagNames: [...(defaultSchema.tagNames || []), "mark"],
-  attributes: {
-    ...defaultSchema.attributes,
-    code: [...(defaultSchema.attributes?.code || []), "className"],
-  },
-};
-
-const markdownComponents: Components = {
-  pre({ children, ...props }) {
-    return (
-      <pre
-        className="rounded-xl border border-neutral-200 bg-neutral-950 text-neutral-100 p-4 overflow-x-auto my-6 text-sm leading-relaxed shadow-[0_8px_32px_rgba(0,0,0,0.12)] [&>code]:bg-transparent [&>code]:p-0 [&>code]:text-inherit [&>code]:rounded-none"
-        {...props}
-      >
-        {children}
-      </pre>
-    );
-  },
-  code({ className, children, ...props }) {
-    // className 있으면 언어 지정된 블록 코드
-    if (className) {
-      return (
-        <code className={className} {...props}>
-          {children}
-        </code>
-      );
-    }
-    // className 없으면 인라인 코드
-    return (
-      <code
-        className="rounded-md bg-neutral-100 px-1.5 py-0.5 text-[0.9em] font-normal text-neutral-700 before:content-none after:content-none"
-        {...props}
-      >
-        {children}
-      </code>
-    );
-  },
-};
 
 type Category = {
   id: string;
@@ -234,7 +190,7 @@ export default async function BlogDetailPage({
   const allCategories = (categories ?? []) as Category[];
 
   return (
-    <main className="narrow-shell">
+    <main className="page-shell">
       <Link
         href="/blog"
         className="back-link"
@@ -276,15 +232,7 @@ export default async function BlogDetailPage({
           </div>
         )}
 
-        <div className="content-prose">
-          <ReactMarkdown
-            components={markdownComponents}
-            remarkPlugins={[remarkGfm]}
-            rehypePlugins={[rehypeRaw, [rehypeSanitize, sanitizeSchema]]}
-          >
-            {typedPost.content}
-          </ReactMarkdown>
-        </div>
+        <MarkdownContent content={typedPost.content} />
 
         <div className="mt-16 pt-8 border-t border-neutral-100">
           <Link

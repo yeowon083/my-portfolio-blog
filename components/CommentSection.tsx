@@ -296,6 +296,7 @@ export default function CommentSection({
               onChange={(e) => setAuthorName(e.target.value)}
               placeholder="이름을 입력하세요"
               className="field w-full"
+              suppressHydrationWarning
             />
           </div>
           <div>
@@ -308,6 +309,7 @@ export default function CommentSection({
               onChange={(e) => setAuthorPassword(e.target.value)}
               placeholder="수정/삭제용 비밀번호"
               className="field w-full"
+              suppressHydrationWarning
             />
           </div>
         </div>

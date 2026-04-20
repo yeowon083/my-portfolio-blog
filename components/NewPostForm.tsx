@@ -1,7 +1,6 @@
 "use client";
 
-import ReactMarkdown from "react-markdown";
-import remarkGfm from "remark-gfm";
+import MarkdownContent from "@/components/MarkdownContent";
 import { useState } from "react";
 import { createClient } from "@/lib/supabase/client";
 import { useRouter } from "next/navigation";
@@ -179,6 +178,7 @@ export default function NewPostForm({
               value={title}
               onChange={(e) => handleTitleChange(e.target.value)}
               className="w-full rounded-2xl border border-gray-300 px-4 py-3 outline-none focus:border-black"
+              suppressHydrationWarning
             />
           </div>
 
@@ -190,6 +190,7 @@ export default function NewPostForm({
               value={slug}
               onChange={(e) => setSlug(generateSlug(e.target.value))}
               className="w-full rounded-2xl border border-gray-300 px-4 py-3 outline-none focus:border-black"
+              suppressHydrationWarning
             />
           </div>
 
@@ -219,6 +220,7 @@ export default function NewPostForm({
               value={tagsInput}
               onChange={(e) => setTagsInput(e.target.value)}
               className="w-full rounded-2xl border border-gray-300 px-4 py-3 outline-none focus:border-black"
+              suppressHydrationWarning
             />
           </div>
 
@@ -323,11 +325,7 @@ export default function NewPostForm({
                 </div>
               )}
 
-              <div className="prose prose-gray max-w-none prose-headings:tracking-tight prose-a:break-all">
-                <ReactMarkdown remarkPlugins={[remarkGfm]}>
-                  {content || "본문이 여기에 표시됩니다."}
-                </ReactMarkdown>
-              </div>
+              <MarkdownContent content={content || "본문이 여기에 표시됩니다."} />
             </article>
           </div>
         </section>

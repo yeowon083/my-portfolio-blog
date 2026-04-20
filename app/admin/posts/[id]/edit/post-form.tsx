@@ -1,7 +1,6 @@
 "use client";
 
-import ReactMarkdown from "react-markdown";
-import remarkGfm from "remark-gfm";
+import MarkdownContent from "@/components/MarkdownContent";
 import { useState } from "react";
 import { createClient } from "@/lib/supabase/client";
 import { useRouter } from "next/navigation";
@@ -187,6 +186,7 @@ export default function PostForm({
               value={title}
               onChange={(e) => handleTitleChange(e.target.value)}
               className="w-full rounded-2xl border border-gray-300 px-4 py-3 outline-none focus:border-black"
+              suppressHydrationWarning
             />
           </div>
 
@@ -198,6 +198,7 @@ export default function PostForm({
               value={slug}
               onChange={(e) => setSlug(generateSlug(e.target.value))}
               className="w-full rounded-2xl border border-gray-300 px-4 py-3 outline-none focus:border-black"
+              suppressHydrationWarning
             />
             <p className="mt-2 text-xs text-gray-500">
               영어 소문자, 숫자, 하이픈(-) 형태로 관리하는 것을 추천해.
@@ -231,6 +232,7 @@ export default function PostForm({
               onChange={(e) => setTagsInput(e.target.value)}
               placeholder="예: AI, App, Supabase"
               className="w-full rounded-2xl border border-gray-300 px-4 py-3 outline-none focus:border-black"
+              suppressHydrationWarning
             />
             <p className="mt-2 text-xs text-gray-500">
               쉼표(,)로 구분해서 입력해.
@@ -340,11 +342,7 @@ export default function PostForm({
                 </div>
               )}
 
-              <div className="prose prose-gray max-w-none prose-headings:tracking-tight prose-a:break-all">
-                <ReactMarkdown remarkPlugins={[remarkGfm]}>
-                  {content || "본문이 여기에 표시됩니다."}
-                </ReactMarkdown>
-              </div>
+              <MarkdownContent content={content || "본문이 여기에 표시됩니다."} />
             </article>
           </div>
         </section>
