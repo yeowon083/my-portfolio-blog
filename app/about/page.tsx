@@ -84,9 +84,7 @@ export default function AboutPage() {
           </p>
 
           <h1 className="text-4xl font-bold tracking-tight mb-6">
-            데이터를 바탕으로 문제를 이해하고,
-            <br />
-            실제로 쓰이는 앱과 서비스를 고민합니다
+            데이터 기반으로 생각하고, 서비스로 구현합니다
           </h1>
 
           <div className="space-y-5 text-lg text-gray-600 leading-8">
@@ -119,10 +117,10 @@ export default function AboutPage() {
         <article className="rounded-3xl border border-gray-200 p-7 shadow-sm">
           <h2 className="text-2xl font-semibold mb-4">Interest</h2>
           <ul className="space-y-3 text-gray-600 leading-7">
-            <li>AI 기반 서비스 기획</li>
-            <li>모바일 앱 개발</li>
-            <li>데이터 기반 문제 해결</li>
-            <li>사용자 경험과 기능 설계</li>
+            <li>AI Product Planning</li>
+            <li>Mobile App Development</li>
+            <li>Data-Driven Problem Solving</li>
+            <li>UX & Feature Design</li>
           </ul>
         </article>
 

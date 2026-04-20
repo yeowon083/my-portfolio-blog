@@ -57,7 +57,7 @@ export default async function ProjectsPage() {
         </p>
 
         <h1 className="text-4xl md:text-5xl font-bold tracking-tight leading-tight mb-6">
-          프로젝트를 소개합니다
+          프로젝트를 소개
         </h1>
 
         <p className="text-lg text-gray-600 leading-8">
