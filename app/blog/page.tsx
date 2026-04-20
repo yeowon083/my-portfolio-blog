@@ -11,7 +11,7 @@ import {
 
 export const metadata: Metadata = {
   title: "Blog",
-  description: "프로젝트를 만들며 배우고 기록한 생각과 과정을 정리한 블로그",
+  description: "글 목록",
 };
 
 const POSTS_PER_PAGE = 5;
