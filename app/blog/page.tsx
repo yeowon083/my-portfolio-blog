@@ -292,7 +292,6 @@ export default async function BlogPage({
             </h1>
 
             <p className="body-copy mb-6">
-              현재{" "}
               {selectedCategory && (
                 <span className="font-semibold text-neutral-950">
                   카테고리{" "}
@@ -307,7 +306,7 @@ export default async function BlogPage({
                   {selectedTag}
                 </span>
               )}{" "}
-              태그가 적용된 글을 보고 있습니다.
+              태그가 적용된 글
             </p>
 
             <div className="flex flex-wrap items-center gap-3">
