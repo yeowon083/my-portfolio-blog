@@ -330,9 +330,7 @@ export default async function BlogPage({
         ) : (
           <>
             <h1 className="text-4xl md:text-5xl font-bold tracking-tight leading-tight mb-6">
-              프로젝트를 만들며 배우고 기록한
-              <br />
-              생각과 과정을 정리합니다
+              글 목록
             </h1>
 
             <p className="text-lg text-gray-600 leading-8">
