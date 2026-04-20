@@ -29,7 +29,7 @@ export default async function HomePage() {
         <div className="hero-panel fade-up mb-8">
           <div className="mb-6 flex items-center gap-4">
             <Image
-              src="/profile.jpg"
+              src="/profile 2.jpg"
               alt="Yeowon profile"
               width={52}
               height={52}

@@ -13,7 +13,7 @@ export default function AboutPage() {
       <section className="grid gap-10 md:grid-cols-[220px_1fr]">
         <div className="fade-up flex flex-col">
           <Image
-            src="/profile.jpg"
+            src="/profile 2.jpg"
             alt="Yeowon profile"
             width={220}
             height={220}
