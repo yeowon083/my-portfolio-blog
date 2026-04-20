@@ -117,7 +117,7 @@ body::before {
 @keyframes fade-up {
   from {
     opacity: 0;
-    transform: translateY(22px);
+    transform: translateY(10px);
   }
 
   to {

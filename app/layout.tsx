@@ -44,6 +44,9 @@ export default function RootLayout({
 }>) {
   return (
     <html lang="ko">
+      <head>
+        <script dangerouslySetInnerHTML={{ __html: 'history.scrollRestoration="manual"' }} />
+      </head>
       <body className="bg-background text-foreground antialiased">
         <Navbar />
         <main>{children}</main>
