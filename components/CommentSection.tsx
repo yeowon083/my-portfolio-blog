@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useState } from "react";
+import { useCallback, useEffect, useState } from "react";
 
 type CommentTargetType = "post" | "project";
 
@@ -64,7 +64,9 @@ export default function CommentSection({
   const [isSubmitting, setIsSubmitting] = useState(false);
 
   // ✅ 내가 작성한 댓글 ID 목록
-  const [myCommentIds, setMyCommentIds] = useState<string[]>([]);
+  const [myCommentIds, setMyCommentIds] = useState<string[]>(() =>
+    getMyCommentIds()
+  );
 
   const [deleteCommentId, setDeleteCommentId] = useState("");
   const [deletePassword, setDeletePassword] = useState("");
@@ -75,12 +77,7 @@ export default function CommentSection({
   const [editContent, setEditContent] = useState("");
   const [isEditing, setIsEditing] = useState(false);
 
-  // ✅ 마운트 시 localStorage에서 내 댓글 ID 불러오기
-  useEffect(() => {
-    setMyCommentIds(getMyCommentIds());
-  }, []);
-
-  async function fetchComments() {
+  const fetchComments = useCallback(async () => {
     setIsLoading(true);
     try {
       const response = await fetch(
@@ -101,11 +98,15 @@ export default function CommentSection({
       setComments([]);
       setIsLoading(false);
     }
-  }
+  }, [targetId, targetType]);
 
   useEffect(() => {
-    fetchComments();
-  }, [targetType, targetId]);
+    const timeoutId = window.setTimeout(() => {
+      void fetchComments();
+    }, 0);
+
+    return () => window.clearTimeout(timeoutId);
+  }, [fetchComments]);
 
   async function handleSubmit(e: React.FormEvent) {
     e.preventDefault();
@@ -281,10 +282,10 @@ export default function CommentSection({
   }
 
   return (
-    <section className="mt-16 pt-10 border-t border-gray-200">
-      <h2 className="text-2xl font-semibold tracking-tight mb-6">댓글</h2>
+    <section className="mt-16 border-t border-slate-200 pt-10">
+      <h2 className="text-2xl font-semibold mb-6">댓글</h2>
 
-      <form onSubmit={handleSubmit} className="space-y-4 mb-10">
+      <form onSubmit={handleSubmit} className="surface-card mb-10 space-y-4 p-5">
         <div className="grid gap-4 md:grid-cols-2">
           <div>
             <label className="block text-sm font-medium text-gray-700 mb-2">
@@ -294,7 +295,7 @@ export default function CommentSection({
               value={authorName}
               onChange={(e) => setAuthorName(e.target.value)}
               placeholder="이름을 입력하세요"
-              className="w-full rounded-2xl border border-gray-300 px-4 py-3 outline-none focus:border-black"
+              className="field w-full"
             />
           </div>
           <div>
@@ -306,7 +307,7 @@ export default function CommentSection({
               value={authorPassword}
               onChange={(e) => setAuthorPassword(e.target.value)}
               placeholder="수정/삭제용 비밀번호"
-              className="w-full rounded-2xl border border-gray-300 px-4 py-3 outline-none focus:border-black"
+              className="field w-full"
             />
           </div>
         </div>
@@ -320,7 +321,7 @@ export default function CommentSection({
             onChange={(e) => setContent(e.target.value)}
             rows={4}
             placeholder="댓글을 입력하세요"
-            className="w-full rounded-2xl border border-gray-300 px-4 py-3 outline-none focus:border-black"
+            className="field w-full"
           />
         </div>
 
@@ -329,7 +330,7 @@ export default function CommentSection({
         <button
           type="submit"
           disabled={isSubmitting}
-          className="inline-flex items-center rounded-full bg-black px-5 py-3 text-sm font-semibold text-white transition hover:opacity-85 disabled:opacity-50"
+          className="button-primary"
         >
           {isSubmitting ? "등록 중..." : "댓글 작성"}
         </button>
@@ -346,7 +347,7 @@ export default function CommentSection({
             return (
               <article
                 key={comment.id}
-                className="rounded-3xl border border-gray-200 p-5"
+                className="surface-card p-5"
               >
                 <div className="flex flex-wrap items-center justify-between gap-3 mb-3">
                   <div className="flex flex-wrap items-center gap-3">
@@ -425,7 +426,7 @@ export default function CommentSection({
                 </p>
 
                 {editCommentId === comment.id && (
-                  <div className="mt-4 rounded-2xl border border-gray-200 bg-gray-50 p-4">
+                  <div className="mt-4 rounded-[8px] border border-slate-200 bg-slate-50 p-4">
                     <label className="block text-sm font-medium text-gray-700 mb-2">
                       수정할 댓글 내용
                     </label>
@@ -433,7 +434,7 @@ export default function CommentSection({
                       value={editContent}
                       onChange={(e) => setEditContent(e.target.value)}
                       rows={4}
-                      className="w-full rounded-2xl border border-gray-300 px-4 py-3 outline-none focus:border-black mb-3"
+                      className="field mb-3 w-full"
                     />
                     <label className="block text-sm font-medium text-gray-700 mb-2">
                       수정 비밀번호
@@ -444,13 +445,13 @@ export default function CommentSection({
                         value={editPassword}
                         onChange={(e) => setEditPassword(e.target.value)}
                         placeholder="비밀번호 입력"
-                        className="min-w-[220px] flex-1 rounded-2xl border border-gray-300 px-4 py-3 outline-none focus:border-black"
+                        className="field min-w-[220px] flex-1"
                       />
                       <button
                         type="button"
                         disabled={isEditing}
                         onClick={() => handleEdit(comment.id)}
-                        className="inline-flex items-center rounded-full border border-gray-300 px-4 py-3 text-sm font-semibold text-gray-800 transition hover:bg-gray-100 disabled:opacity-50"
+                        className="button-secondary px-4"
                       >
                         {isEditing ? "수정 중..." : "수정 확인"}
                       </button>
@@ -459,7 +460,7 @@ export default function CommentSection({
                 )}
 
                 {deleteCommentId === comment.id && (
-                  <div className="mt-4 rounded-2xl border border-red-200 bg-red-50 p-4">
+                  <div className="mt-4 rounded-[8px] border border-red-200 bg-red-50 p-4">
                     <label className="block text-sm font-medium text-gray-700 mb-2">
                       삭제 비밀번호
                     </label>
@@ -469,13 +470,13 @@ export default function CommentSection({
                         value={deletePassword}
                         onChange={(e) => setDeletePassword(e.target.value)}
                         placeholder="비밀번호 입력"
-                        className="min-w-[220px] flex-1 rounded-2xl border border-gray-300 px-4 py-3 outline-none focus:border-black"
+                        className="field min-w-[220px] flex-1"
                       />
                       <button
                         type="button"
                         disabled={isDeleting}
                         onClick={() => handleDelete(comment.id)}
-                        className="inline-flex items-center rounded-full border border-red-300 px-4 py-3 text-sm font-semibold text-red-600 transition hover:bg-red-100 disabled:opacity-50"
+                        className="inline-flex items-center justify-center rounded-[8px] border border-red-300 bg-white px-4 py-3 text-sm font-semibold text-red-600 transition duration-300 hover:bg-red-50 disabled:opacity-50"
                       >
                         {isDeleting ? "삭제 중..." : "삭제 확인"}
                       </button>
@@ -486,7 +487,7 @@ export default function CommentSection({
             );
           })
         ) : (
-          <div className="rounded-3xl border border-dashed border-gray-300 p-8 text-center">
+          <div className="surface-card border-dashed p-8 text-center">
             <p className="text-gray-500">아직 댓글이 없습니다.</p>
           </div>
         )}

@@ -40,9 +40,9 @@ export default async function ProjectsPage() {
 
   if (error) {
     return (
-      <main className="max-w-3xl mx-auto px-6 py-20">
-        <h1 className="text-4xl font-bold mb-6">Projects</h1>
-        <p className="text-red-600">프로젝트 목록을 불러오는 중 오류가 발생했습니다.</p>
+      <main className="narrow-shell">
+        <h1 className="text-4xl font-bold tracking-tight mb-6">Projects</h1>
+        <p className="text-red-500">프로젝트 목록을 불러오는 중 오류가 발생했습니다.</p>
       </main>
     );
   }
@@ -50,44 +50,48 @@ export default async function ProjectsPage() {
   const typedProjects: Project[] = projects ?? [];
 
   return (
-    <main className="max-w-3xl mx-auto px-6 py-20">
-      <section className="mb-14 max-w-3xl">
-        <p className="text-sm font-semibold tracking-[0.2em] text-gray-500 uppercase mb-4">
-          Projects
-        </p>
+    <main className="page-shell">
+      <section className="hero-panel fade-up mb-14 max-w-3xl">
+        <p className="kicker mb-4">Projects</p>
 
-        <h1 className="text-4xl md:text-5xl font-bold tracking-tight leading-tight mb-6">
-          프로젝트를 소개
-        </h1>
+        <h1 className="page-title mb-6">프로젝트 소개</h1>
 
-        <p className="text-lg text-gray-600 leading-8">
-          만든 것들을 정리했습니다.
-        </p>
+        <p className="body-copy">만든 것들을 정리했습니다.</p>
       </section>
 
       <section className="grid gap-6 md:grid-cols-2">
         {typedProjects.length > 0 ? (
-          typedProjects.map((project) => (
+          typedProjects.map((project, index) => (
             <article
               key={project.id}
-              className="rounded-3xl border border-gray-200 overflow-hidden bg-white shadow-sm transition hover:-translate-y-0.5 hover:shadow-md"
+              className={`surface-card hover-lift overflow-hidden fade-up ${
+                index === 0
+                  ? "anim-delay-75"
+                  : index === 1
+                  ? "anim-delay-150"
+                  : index === 2
+                  ? "anim-delay-225"
+                  : "anim-delay-300"
+              }`}
             >
               {project.thumbnail_url ? (
-                <div className="aspect-[16/9] w-full overflow-hidden bg-gray-100">
+                <div className="aspect-[16/9] w-full overflow-hidden bg-neutral-50">
                   <img
                     src={project.thumbnail_url}
                     alt={project.title}
-                    className="h-full w-full object-cover"
+                    className="h-full w-full object-cover transition-transform duration-500 hover:scale-105"
                   />
                 </div>
               ) : (
-                <div className="aspect-[16/9] w-full bg-gray-100 flex items-center justify-center text-sm text-gray-400">
-                  썸네일 없음
+                <div className="aspect-[16/9] w-full bg-neutral-50 flex items-center justify-center">
+                  <span className="text-xs font-medium uppercase tracking-widest text-neutral-300">
+                    No Image
+                  </span>
                 </div>
               )}
 
               <div className="p-6">
-                <p className="text-sm text-gray-500 mb-3">
+                <p className="text-xs font-semibold uppercase tracking-widest text-neutral-400 mb-3">
                   {formatDate(project.created_at)}
                 </p>
 
@@ -98,10 +102,7 @@ export default async function ProjectsPage() {
                 {project.tech_stack && project.tech_stack.length > 0 && (
                   <div className="flex flex-wrap gap-2 mb-5">
                     {project.tech_stack.map((tech) => (
-                      <span
-                        key={tech}
-                        className="rounded-full border border-gray-300 px-3 py-1 text-sm text-gray-700"
-                      >
+                      <span key={tech} className="chip">
                         {tech}
                       </span>
                     ))}
@@ -109,9 +110,9 @@ export default async function ProjectsPage() {
                 )}
 
                 {project.summary ? (
-                  <p className="text-gray-600 leading-8 mb-6">{project.summary}</p>
+                  <p className="text-neutral-500 leading-8 mb-6">{project.summary}</p>
                 ) : (
-                  <p className="text-gray-400 leading-8 mb-6">
+                  <p className="text-neutral-300 leading-8 mb-6">
                     아직 요약이 등록되지 않았습니다.
                   </p>
                 )}
@@ -119,7 +120,7 @@ export default async function ProjectsPage() {
                 <div className="flex flex-wrap gap-3">
                   <Link
                     href={`/projects/${project.slug}`}
-                    className="inline-flex items-center rounded-full bg-black px-4 py-2 text-sm font-semibold text-white transition hover:opacity-85"
+                    className="button-primary px-4 py-2"
                   >
                     상세 보기
                   </Link>
@@ -129,7 +130,7 @@ export default async function ProjectsPage() {
                       href={project.project_url}
                       target="_blank"
                       rel="noreferrer"
-                      className="inline-flex items-center rounded-full border border-gray-300 px-4 py-2 text-sm font-semibold text-gray-800 transition hover:bg-gray-100"
+                      className="button-secondary px-4 py-2"
                     >
                       프로젝트 링크
                     </a>
@@ -140,7 +141,7 @@ export default async function ProjectsPage() {
                       href={project.github_url}
                       target="_blank"
                       rel="noreferrer"
-                      className="inline-flex items-center rounded-full border border-gray-300 px-4 py-2 text-sm font-semibold text-gray-800 transition hover:bg-gray-100"
+                      className="button-secondary px-4 py-2"
                     >
                       GitHub
                     </a>
@@ -150,8 +151,8 @@ export default async function ProjectsPage() {
             </article>
           ))
         ) : (
-          <div className="md:col-span-2 rounded-3xl border border-dashed border-gray-300 p-10 text-center">
-            <p className="text-gray-600">아직 공개된 프로젝트가 없습니다.</p>
+          <div className="surface-card md:col-span-2 border-dashed p-10 text-center">
+            <p className="text-neutral-400">아직 공개된 프로젝트가 없습니다.</p>
           </div>
         )}
       </section>

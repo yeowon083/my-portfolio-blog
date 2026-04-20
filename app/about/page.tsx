@@ -9,32 +9,30 @@ import Image from "next/image";
 
 export default function AboutPage() {
   return (
-    <main className="max-w-3xl mx-auto px-6 py-20">
+    <main className="page-shell">
       <section className="grid gap-10 md:grid-cols-[240px_1fr] items-start">
-        <div>
+        <div className="fade-up">
           <Image
             src="/profile.jpg"
             alt="Yeowon profile"
             width={240}
             height={240}
-            className="rounded-3xl object-cover"
+            className="rounded-2xl border border-neutral-100 object-cover shadow-[0_8px_32px_rgba(0,0,0,0.08)]"
           />
 
-          <div className="mt-5 rounded-3xl border border-gray-200 p-5 shadow-sm bg-white">
+          <div className="surface-card mt-5 p-5">
             <div className="flex items-center justify-between mb-4">
               <div>
-                <h2 className="text-xl font-semibold">이여원</h2>
-                <p className="text-sm text-gray-500">Big Data & AI Student</p>
+                <h2 className="text-xl font-semibold tracking-tight">이여원</h2>
+                <p className="text-sm text-neutral-400">Big Data & AI Student</p>
               </div>
 
-              <span className="rounded-full bg-gray-100 px-3 py-1 text-xs font-semibold text-gray-700">
-                Building
-              </span>
+              <span className="chip text-xs font-semibold">Building</span>
             </div>
 
-            <div className="space-y-4 text-sm text-gray-700">
+            <div className="space-y-4 text-sm text-neutral-600">
               <div>
-                <p className="text-xs font-semibold tracking-[0.15em] text-gray-400 uppercase mb-1">
+                <p className="text-xs font-semibold uppercase tracking-widest text-neutral-400 mb-1">
                   Interest
                 </p>
                 <p className="leading-6">
@@ -44,14 +42,14 @@ export default function AboutPage() {
               </div>
 
               <div>
-                <p className="text-xs font-semibold tracking-[0.15em] text-gray-400 uppercase mb-1">
+                <p className="text-xs font-semibold uppercase tracking-widest text-neutral-400 mb-1">
                   Current Project
                 </p>
                 <p className="leading-6">충동소비 예측 앱</p>
               </div>
 
               <div>
-                <p className="text-xs font-semibold tracking-[0.15em] text-gray-400 uppercase mb-1">
+                <p className="text-xs font-semibold uppercase tracking-widest text-neutral-400 mb-1">
                   Contact
                 </p>
                 <p className="leading-6 break-all">yeowon083@gmail.com</p>
@@ -63,14 +61,14 @@ export default function AboutPage() {
                 href="https://github.com/yeowon083"
                 target="_blank"
                 rel="noreferrer"
-                className="inline-flex items-center rounded-full bg-black px-4 py-2 text-sm font-semibold text-white transition hover:opacity-85"
+                className="button-primary px-4 py-2"
               >
                 GitHub
               </a>
 
               <a
                 href="mailto:yeowon083@gmail.com"
-                className="inline-flex items-center rounded-full border border-gray-300 px-4 py-2 text-sm font-semibold text-gray-800 transition hover:bg-gray-100"
+                className="button-secondary px-4 py-2"
               >
                 Email
               </a>
@@ -78,16 +76,14 @@ export default function AboutPage() {
           </div>
         </div>
 
-        <div className="max-w-3xl">
-          <p className="text-sm font-semibold tracking-[0.2em] text-gray-500 uppercase mb-4">
-            About
-          </p>
+        <div className="hero-panel fade-up anim-delay-75 max-w-3xl">
+          <p className="kicker mb-4">About</p>
 
-          <h1 className="text-4xl font-bold tracking-tight mb-6">
+          <h1 className="page-title mb-6">
             데이터 기반으로 생각하고, 서비스로 구현합니다
           </h1>
 
-          <div className="space-y-5 text-lg text-gray-600 leading-8">
+          <div className="space-y-5 body-copy">
             <p>
               안녕하세요. 빅데이터와 인공지능을 공부하며, AI와 데이터를 활용한
               서비스 기획과 제품 개발에 관심을 가지고 있습니다.
@@ -114,9 +110,9 @@ export default function AboutPage() {
       </section>
 
       <section className="grid gap-6 md:grid-cols-2 mt-14">
-        <article className="rounded-3xl border border-gray-200 p-7 shadow-sm">
-          <h2 className="text-2xl font-semibold mb-4">Interest</h2>
-          <ul className="space-y-3 text-gray-600 leading-7">
+        <article className="surface-card hover-lift p-7 fade-up anim-delay-150">
+          <h2 className="text-2xl font-semibold tracking-tight mb-4">Interest</h2>
+          <ul className="space-y-3 text-neutral-500 leading-7">
             <li>AI Product Planning</li>
             <li>Mobile App Development</li>
             <li>Data-Driven Problem Solving</li>
@@ -124,30 +120,16 @@ export default function AboutPage() {
           </ul>
         </article>
 
-        <article className="rounded-3xl border border-gray-200 p-7">
-          <h2 className="text-2xl font-semibold mb-4">Tech Stack</h2>
+        <article className="surface-card hover-lift p-7 fade-up anim-delay-225">
+          <h2 className="text-2xl font-semibold tracking-tight mb-4">Tech Stack</h2>
           <div className="flex flex-wrap gap-2">
-            <span className="rounded-full border border-gray-300 px-3 py-1 text-sm text-gray-700">
-              Python
-            </span>
-            <span className="rounded-full border border-gray-300 px-3 py-1 text-sm text-gray-700">
-              React Native
-            </span>
-            <span className="rounded-full border border-gray-300 px-3 py-1 text-sm text-gray-700">
-              Expo
-            </span>
-            <span className="rounded-full border border-gray-300 px-3 py-1 text-sm text-gray-700">
-              TypeScript
-            </span>
-            <span className="rounded-full border border-gray-300 px-3 py-1 text-sm text-gray-700">
-              Supabase
-            </span>
-            <span className="rounded-full border border-gray-300 px-3 py-1 text-sm text-gray-700">
-              GitHub
-            </span>
-            <span className="rounded-full border border-gray-300 px-3 py-1 text-sm text-gray-700">
-              Node.js
-            </span>
+            <span className="chip">Python</span>
+            <span className="chip">React Native</span>
+            <span className="chip">Expo</span>
+            <span className="chip">TypeScript</span>
+            <span className="chip">Supabase</span>
+            <span className="chip">GitHub</span>
+            <span className="chip">Node.js</span>
           </div>
         </article>
       </section>

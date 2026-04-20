@@ -137,12 +137,13 @@ export default async function BlogPage({
 
   if (error) {
     return (
-      <main className="max-w-3xl mx-auto px-6 py-20">
+      <main className="narrow-shell">
         <h1 className="text-4xl font-bold mb-6">Blog</h1>
         <p className="text-red-600">글 목록을 불러오는 중 오류가 발생했습니다.</p>
-        <pre className="mt-4 whitespace-pre-wrap text-sm text-gray-700">
+        <pre className="mt-4 whitespace-pre-wrap text-sm text-neutral-600">
           {error.message}
         </pre>
+
       </main>
     );
   }
@@ -251,9 +252,9 @@ export default async function BlogPage({
   }
 
   return (
-    <main className="max-w-3xl mx-auto px-6 py-20">
-      <section className="mb-14 max-w-3xl">
-        <p className="text-sm font-semibold tracking-[0.2em] text-gray-500 uppercase mb-4">
+    <main className="page-shell">
+      <section className="hero-panel fade-up mb-10 max-w-3xl">
+        <p className="kicker mb-4">
           Blog
         </p>
 
@@ -262,10 +263,10 @@ export default async function BlogPage({
             <div className="flex flex-wrap items-center gap-3 mb-5">
               {selectedCategory && (
                 <>
-                  <span className="rounded-full bg-black px-3 py-1 text-xs font-semibold text-white">
+                  <span className="chip-active text-xs">
                     Category
                   </span>
-                  <span className="rounded-full border border-gray-300 px-3 py-1 text-sm text-gray-700">
+                  <span className="chip">
                     {selectedCategoryItem
                       ? getCategoryLabel(selectedCategoryItem, allCategories)
                       : selectedCategory}
@@ -275,24 +276,24 @@ export default async function BlogPage({
 
               {selectedTag && (
                 <>
-                  <span className="rounded-full bg-black px-3 py-1 text-xs font-semibold text-white">
+                  <span className="chip-active text-xs">
                     Tag
                   </span>
-                  <span className="rounded-full border border-gray-300 px-3 py-1 text-sm text-gray-700">
+                  <span className="chip">
                     {selectedTag}
                   </span>
                 </>
               )}
             </div>
 
-            <h1 className="text-4xl md:text-5xl font-bold tracking-tight leading-tight mb-6">
+            <h1 className="page-title mb-6">
               태그로 모은 글
             </h1>
 
-            <p className="text-lg text-gray-600 leading-8 mb-6">
+            <p className="body-copy mb-6">
               현재{" "}
               {selectedCategory && (
-                <span className="font-semibold text-gray-900">
+                <span className="font-semibold text-neutral-950">
                   카테고리{" "}
                   {selectedCategoryItem
                     ? getCategoryLabel(selectedCategoryItem, allCategories)
@@ -301,7 +302,7 @@ export default async function BlogPage({
               )}
               {selectedCategory && selectedTag && <span> · </span>}
               {selectedTag && (
-                <span className="font-semibold text-gray-900">
+                <span className="font-semibold text-neutral-950">
                   {selectedTag}
                 </span>
               )}{" "}
@@ -309,11 +310,11 @@ export default async function BlogPage({
             </p>
 
             <div className="flex flex-wrap items-center gap-3">
-              <span className="text-sm text-gray-500">총 {totalPosts}개의 글</span>
+              <span className="text-sm text-neutral-400">총 {totalPosts}개의 글</span>
 
               <Link
                 href="/blog"
-                className="inline-flex items-center rounded-full border border-gray-300 px-4 py-2 text-sm font-semibold text-gray-800 transition hover:bg-gray-100"
+                className="button-secondary px-4 py-2"
               >
                 전체 글 보기
               </Link>
@@ -321,25 +322,25 @@ export default async function BlogPage({
           </>
         ) : (
           <>
-            <h1 className="text-4xl md:text-5xl font-bold tracking-tight leading-tight mb-6">
+            <h1 className="page-title mb-6">
               블로그 글 목록
             </h1>
 
-            <p className="text-lg text-gray-600 leading-8">
+            <p className="body-copy">
               기록하고, 정리하고, 공유합니다.
             </p>
           </>
         )}
       </section>
 
-      <form action="/blog" className="mb-8">
+      <form action="/blog" className="surface-card mb-8 p-4">
         <div className="flex flex-wrap gap-3">
           <input
             type="text"
             name="q"
             defaultValue={keyword}
             placeholder="제목, 태그 검색"
-            className="min-w-[260px] flex-1 rounded-2xl border border-gray-300 px-4 py-3 outline-none focus:border-black"
+            className="field min-w-[260px] flex-1"
           />
 
           {selectedTag && <input type="hidden" name="tag" value={selectedTag} />}
@@ -349,7 +350,7 @@ export default async function BlogPage({
 
           <button
             type="submit"
-            className="inline-flex items-center rounded-full bg-black px-5 py-3 text-sm font-semibold text-white transition hover:opacity-85"
+            className="button-primary"
           >
             검색
           </button>
@@ -357,7 +358,7 @@ export default async function BlogPage({
           {keyword && (
             <Link
               href={buildResetSearchHref()}
-              className="inline-flex items-center rounded-full border border-gray-300 px-5 py-3 text-sm font-semibold text-gray-800 transition hover:bg-gray-100"
+              className="button-secondary"
             >
               검색 초기화
             </Link>
@@ -376,9 +377,9 @@ export default async function BlogPage({
                   nextQ: keyword || undefined,
                   nextPage: 1,
                 })}
-                className={`rounded-full px-4 py-2 text-sm font-semibold transition ${!selectedCategory
-                    ? "bg-black text-white"
-                    : "border border-gray-300 text-gray-800 hover:bg-gray-100"
+                className={`${!selectedCategory
+                    ? "chip-active px-4 py-2"
+                    : "chip px-4 py-2 font-semibold"
                   }`}
               >
                 전체 카테고리
@@ -396,9 +397,9 @@ export default async function BlogPage({
                       nextQ: keyword || undefined,
                       nextPage: 1,
                     })}
-                    className={`rounded-full px-4 py-2 text-sm font-semibold transition ${isActive
-                        ? "bg-black text-white"
-                        : "border border-gray-300 text-gray-800 hover:bg-gray-100"
+                    className={`${isActive
+                        ? "chip-active px-4 py-2"
+                        : "chip px-4 py-2 font-semibold"
                       }`}
                   >
                     {category.name}
@@ -421,9 +422,9 @@ export default async function BlogPage({
                         nextQ: keyword || undefined,
                         nextPage: 1,
                       })}
-                      className={`rounded-full px-4 py-2 text-sm font-semibold transition ${isActive
-                          ? "bg-black text-white"
-                          : "border border-gray-300 text-gray-800 hover:bg-gray-100"
+                      className={`${isActive
+                          ? "chip-active px-4 py-2"
+                          : "chip px-4 py-2 font-semibold"
                         }`}
                     >
                       {category.name}
@@ -438,7 +439,7 @@ export default async function BlogPage({
         <div className="flex flex-wrap items-center gap-3">
 
           {selectedCategory && (
-            <span className="inline-flex items-center rounded-full border border-gray-300 px-4 py-2 text-sm font-semibold text-gray-800">
+            <span className="chip px-4 py-2 font-semibold">
               선택된 카테고리 ·{" "}
               {selectedCategoryItem
                 ? getCategoryLabel(selectedCategoryItem, allCategories)
@@ -447,7 +448,7 @@ export default async function BlogPage({
           )}
 
           {keyword && (
-            <span className="inline-flex items-center rounded-full border border-gray-300 px-4 py-2 text-sm font-semibold text-gray-800">
+            <span className="chip px-4 py-2 font-semibold">
               검색어 · {keyword}
             </span>
           )}
@@ -460,12 +461,12 @@ export default async function BlogPage({
           paginatedPosts.map((post, index) => (
             <article
               key={post.id}
-              className={`rounded-3xl border border-gray-200 p-7 transition hover:-translate-y-0.5 hover:shadow-md ${index === 0 &&
+              className={`surface-card hover-lift p-7 fade-up ${index === 0 &&
                   safePage === 1 &&
                   !selectedTag &&
                   !keyword &&
                   !selectedCategory
-                  ? "shadow-sm"
+                  ? "border-neutral-300"
                   : ""
                 }`}
             >
@@ -475,18 +476,18 @@ export default async function BlogPage({
                   !selectedTag &&
                   !keyword &&
                   !selectedCategory && (
-                    <span className="rounded-full bg-black px-3 py-1 text-xs font-semibold text-white">
+                    <span className="chip-active text-xs">
                       Latest
                     </span>
                   )}
 
-                <p className="text-sm font-medium text-gray-500">
+                <p className="text-sm font-medium text-neutral-400">
                   {post.category?.slug && post.category?.name && (
                     <>
                       카테고리:{" "}
                       <Link
                         href={`/blog/category/${post.category.slug}`}
-                        className="underline underline-offset-4 hover:text-gray-800"
+                        className="underline underline-offset-4 transition-all duration-200 hover:text-neutral-950"
                       >
                         {getCategoryLabel(post.category, allCategories)}
                       </Link>{" "}
@@ -501,7 +502,7 @@ export default async function BlogPage({
               <h2 className="text-2xl md:text-3xl font-semibold tracking-tight mb-4">
                 <Link
                   href={`/blog/${post.slug}`}
-                  className="transition hover:text-gray-600"
+                  className="transition-all duration-200 hover:text-neutral-400"
                 >
                   {post.title}
                 </Link>
@@ -518,9 +519,9 @@ export default async function BlogPage({
                         nextPage: 1,
                         nextCategory: selectedCategory || undefined,
                       })}
-                      className={`rounded-full px-3 py-1 text-sm transition ${selectedTag === tag
-                          ? "bg-black text-white"
-                          : "border border-gray-300 text-gray-700 hover:bg-gray-100"
+                      className={`${selectedTag === tag
+                          ? "chip-active"
+                          : "chip"
                         }`}
                     >
                       {tag}
@@ -532,8 +533,8 @@ export default async function BlogPage({
             </article>
           ))
         ) : (
-          <div className="rounded-3xl border border-dashed border-gray-300 p-8 text-center">
-            <p className="text-gray-600 mb-4">
+          <div className="surface-card border-dashed p-8 text-center">
+            <p className="text-neutral-400 mb-4">
               {selectedCategory && selectedTag && keyword
                 ? `선택한 카테고리, 태그, 검색어에 해당하는 글이 없습니다.`
                 : selectedCategory && selectedTag
@@ -554,7 +555,7 @@ export default async function BlogPage({
             {(selectedCategory || selectedTag || keyword) && (
               <Link
                 href="/blog"
-                className="inline-flex items-center rounded-full border border-gray-300 px-5 py-3 text-sm font-semibold text-gray-800 transition hover:bg-gray-100"
+                className="button-secondary"
               >
                 전체 글 보러 가기
               </Link>
@@ -573,13 +574,13 @@ export default async function BlogPage({
                 nextPage: safePage - 1,
                 nextCategory: selectedCategory || undefined,
               })}
-              className="inline-flex items-center rounded-full border border-gray-300 px-4 py-2 text-sm font-semibold text-gray-800 transition hover:bg-gray-100"
+              className="button-secondary px-4 py-2"
             >
               이전
             </Link>
           )}
 
-          <span className="text-sm text-gray-500">
+          <span className="text-sm text-neutral-400">
             {safePage} / {totalPages}
           </span>
 
@@ -591,7 +592,7 @@ export default async function BlogPage({
                 nextPage: safePage + 1,
                 nextCategory: selectedCategory || undefined,
               })}
-              className="inline-flex items-center rounded-full border border-gray-300 px-4 py-2 text-sm font-semibold text-gray-800 transition hover:bg-gray-100"
+              className="button-secondary px-4 py-2"
             >
               다음
             </Link>

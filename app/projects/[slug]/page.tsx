@@ -43,7 +43,7 @@ const markdownComponents: Components = {
   pre({ children, ...props }) {
     return (
       <pre
-        className="rounded-md bg-gray-100 px-4 py-3 overflow-x-auto my-4 text-sm text-gray-800 leading-relaxed [&>code]:bg-transparent [&>code]:p-0 [&>code]:text-inherit [&>code]:rounded-none"
+        className="rounded-xl border border-neutral-200 bg-neutral-950 px-4 py-3 overflow-x-auto my-4 text-sm text-neutral-100 leading-relaxed shadow-[0_8px_32px_rgba(0,0,0,0.12)] [&>code]:bg-transparent [&>code]:p-0 [&>code]:text-inherit [&>code]:rounded-none"
         {...props}
       >
         {children}
@@ -60,7 +60,7 @@ const markdownComponents: Components = {
     }
     return (
       <code
-        className="rounded-md bg-gray-100 px-1.5 py-0.5 text-[0.9em] font-normal text-gray-800 before:content-none after:content-none"
+        className="rounded-md bg-neutral-100 px-1.5 py-0.5 text-[0.9em] font-normal text-neutral-700 before:content-none after:content-none"
         {...props}
       >
         {children}
@@ -136,20 +136,20 @@ export default async function ProjectDetailPage({
   const typedProject = project as Project;
 
   return (
-    <main className="max-w-3xl mx-auto px-6 py-20">
+    <main className="narrow-shell">
       <Link
         href="/projects"
-        className="inline-flex items-center text-sm font-semibold text-gray-500 underline underline-offset-4 mb-10"
+        className="back-link"
       >
         ← Projects로 돌아가기
       </Link>
 
-      <article>
-        <p className="text-sm text-gray-500 mb-5">
+      <article className="surface-card p-8 fade-up">
+        <p className="text-xs font-semibold uppercase tracking-widest text-neutral-400 mb-5">
           {formatDate(typedProject.created_at)}
         </p>
 
-        <h1 className="text-4xl md:text-5xl font-bold tracking-tight leading-tight mb-6">
+        <h1 className="page-title mb-6">
           {typedProject.title}
         </h1>
 
@@ -158,7 +158,7 @@ export default async function ProjectDetailPage({
             {typedProject.tech_stack.map((tech) => (
               <span
                 key={tech}
-                className="rounded-full border border-gray-300 px-3 py-1 text-sm text-gray-700"
+                className="chip"
               >
                 {tech}
               </span>
@@ -167,13 +167,13 @@ export default async function ProjectDetailPage({
         )}
 
         {typedProject.summary && (
-          <p className="text-lg text-gray-600 leading-8 mb-10">
+          <p className="body-copy mb-10">
             {typedProject.summary}
           </p>
         )}
 
         {typedProject.thumbnail_url && (
-          <div className="mb-10 overflow-hidden rounded-3xl border border-gray-200 bg-gray-100">
+          <div className="surface-card mb-10 overflow-hidden bg-neutral-50">
             <img
               src={typedProject.thumbnail_url}
               alt={typedProject.title}
@@ -188,7 +188,7 @@ export default async function ProjectDetailPage({
               href={typedProject.project_url}
               target="_blank"
               rel="noreferrer"
-              className="inline-flex items-center rounded-full bg-black px-5 py-3 text-sm font-semibold text-white transition hover:opacity-85"
+              className="button-primary"
             >
               프로젝트 링크
             </a>
@@ -199,7 +199,7 @@ export default async function ProjectDetailPage({
               href={typedProject.github_url}
               target="_blank"
               rel="noreferrer"
-              className="inline-flex items-center rounded-full border border-gray-300 px-5 py-3 text-sm font-semibold text-gray-800 transition hover:bg-gray-100"
+              className="button-secondary"
             >
               GitHub
             </a>
@@ -207,7 +207,7 @@ export default async function ProjectDetailPage({
         </div>
 
         {typedProject.description ? (
-          <div className="prose max-w-none prose-headings:mt-4 prose-h1:mb-3 prose-h2:mb-2 prose-h3:mb-2 prose-p:my-2 prose-hr:my-3 prose-code:rounded-md prose-code:bg-gray-100 prose-code:px-1.5 prose-code:py-0.5 prose-code:text-[0.9em] prose-code:font-normal prose-code:text-gray-800 prose-code:before:content-none prose-code:after:content-none">
+          <div className="content-prose">
             <ReactMarkdown
               components={markdownComponents}
               remarkPlugins={[remarkGfm]}
@@ -217,7 +217,7 @@ export default async function ProjectDetailPage({
             </ReactMarkdown>
           </div>
         ) : (
-          <p className="text-gray-400 leading-8">
+          <p className="text-neutral-300 leading-8">
             아직 상세 설명이 등록되지 않았습니다.
           </p>
         )}

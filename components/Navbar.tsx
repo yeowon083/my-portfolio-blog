@@ -15,20 +15,23 @@ export default function Navbar() {
   ];
 
   return (
-    <header className="border-b border-gray-200">
+    <header className="sticky top-0 z-40 border-b border-neutral-100 bg-white/95 backdrop-blur-xl">
       <nav
         className={`${
-          isAdminPage ? "max-w-5xl" : "max-w-3xl"
-        } mx-auto flex items-center justify-between px-6 py-5`}
+          isAdminPage ? "max-w-5xl" : "max-w-4xl"
+        } mx-auto flex items-center justify-between px-6 py-4`}
       >
         <Link
           href="/"
-          className="text-xl font-bold tracking-tight transition hover:opacity-70"
-      >
+          className="group inline-flex items-center gap-2.5 text-base font-bold tracking-tight text-neutral-950 transition-all duration-200 hover:text-neutral-600"
+        >
+          <span className="flex h-5 w-5 items-center justify-center rounded-md border-[1.5px] border-neutral-950 transition-all duration-200 group-hover:border-neutral-600">
+            <span className="h-1.5 w-1.5 rounded-sm bg-neutral-950 transition-all duration-200 group-hover:bg-neutral-600" />
+          </span>
           Yeowon
         </Link>
 
-        <div className="flex items-center gap-6 text-sm font-medium">
+        <div className="flex items-center gap-0.5 rounded-xl border border-neutral-100 bg-neutral-50 p-1 text-sm font-medium shadow-[0_1px_4px_rgba(0,0,0,0.05)]">
           {navItems.map((item) => {
             const isActive =
               item.href === "/"
@@ -39,10 +42,10 @@ export default function Navbar() {
               <Link
                 key={item.href}
                 href={item.href}
-                className={`transition ${
+                className={`rounded-lg px-4 py-2 transition-all duration-200 ${
                   isActive
-                    ? "text-black font-semibold"
-                    : "text-gray-600 hover:text-black"
+                    ? "bg-neutral-950 text-white shadow-sm"
+                    : "text-neutral-500 hover:bg-white hover:text-neutral-900 hover:shadow-[0_1px_4px_rgba(0,0,0,0.06)]"
                 }`}
               >
                 {item.label}

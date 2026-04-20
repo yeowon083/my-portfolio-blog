@@ -32,7 +32,7 @@ const markdownComponents: Components = {
   pre({ children, ...props }) {
     return (
       <pre
-        className="rounded-lg bg-gray-100 text-gray-800 p-4 overflow-x-auto my-6 text-sm leading-relaxed [&>code]:bg-transparent [&>code]:p-0 [&>code]:text-inherit [&>code]:rounded-none"
+        className="rounded-xl border border-neutral-200 bg-neutral-950 text-neutral-100 p-4 overflow-x-auto my-6 text-sm leading-relaxed shadow-[0_8px_32px_rgba(0,0,0,0.12)] [&>code]:bg-transparent [&>code]:p-0 [&>code]:text-inherit [&>code]:rounded-none"
         {...props}
       >
         {children}
@@ -51,7 +51,7 @@ const markdownComponents: Components = {
     // className 없으면 인라인 코드
     return (
       <code
-        className="rounded-md bg-gray-100 px-1.5 py-0.5 text-[0.9em] font-normal text-gray-800 before:content-none after:content-none"
+        className="rounded-md bg-neutral-100 px-1.5 py-0.5 text-[0.9em] font-normal text-neutral-700 before:content-none after:content-none"
         {...props}
       >
         {children}
@@ -234,31 +234,31 @@ export default async function BlogDetailPage({
   const allCategories = (categories ?? []) as Category[];
 
   return (
-    <main className="max-w-3xl mx-auto px-6 py-20">
+    <main className="narrow-shell">
       <Link
         href="/blog"
-        className="inline-flex items-center text-sm font-semibold text-gray-500 underline underline-offset-4 mb-10"
+        className="back-link"
       >
         ← Blog로 돌아가기
       </Link>
 
-      <article>
+      <article className="surface-card p-8 fade-up">
         <ViewTracker slug={typedPost.slug} />
 
-        <p className="text-sm text-gray-500 mb-5">
+        <p className="text-xs font-semibold uppercase tracking-widest text-neutral-400 mb-5">
           {formatDate(typedPost.created_at)} · 조회수 {typedPost.view_count ?? 0}
         </p>
 
         {category?.name && category?.slug && (
           <Link
             href={`/blog/category/${category.slug}`}
-            className="inline-block text-sm font-semibold tracking-[0.12em] text-gray-500 uppercase mb-4 underline underline-offset-4 hover:text-gray-800"
+            className="mb-4 inline-block text-xs font-semibold uppercase tracking-widest text-neutral-400 underline underline-offset-4 transition-all duration-200 hover:text-neutral-950"
           >
             {getCategoryLabel(category, allCategories)}
           </Link>
         )}
 
-        <h1 className="text-4xl md:text-5xl font-bold tracking-tight leading-tight mb-6">
+        <h1 className="page-title mb-6">
           {typedPost.title}
         </h1>
 
@@ -268,7 +268,7 @@ export default async function BlogDetailPage({
               <Link
                 key={tag}
                 href={`/blog?q=${encodeURIComponent(tag)}`}
-                className="rounded-full border border-gray-300 px-3 py-1 text-sm text-gray-700 transition hover:bg-gray-100"
+                className="chip"
               >
                 {tag}
               </Link>
@@ -276,7 +276,7 @@ export default async function BlogDetailPage({
           </div>
         )}
 
-        <div className="prose max-w-none prose-headings:mt-4 prose-h1:mb-3 prose-h2:mb-2 prose-h3:mb-2 prose-p:my-2 prose-hr:my-3 prose-code:before:content-none prose-code:after:content-none">
+        <div className="content-prose">
           <ReactMarkdown
             components={markdownComponents}
             remarkPlugins={[remarkGfm]}
@@ -286,10 +286,10 @@ export default async function BlogDetailPage({
           </ReactMarkdown>
         </div>
 
-        <div className="mt-16 pt-8 border-t border-gray-200">
+        <div className="mt-16 pt-8 border-t border-neutral-100">
           <Link
             href="/blog"
-            className="inline-flex items-center rounded-full border border-gray-300 px-5 py-3 text-sm font-semibold text-gray-800 transition hover:bg-gray-100"
+            className="button-secondary"
           >
             Blog 목록으로 돌아가기
           </Link>

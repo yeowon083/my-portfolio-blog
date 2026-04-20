@@ -164,7 +164,7 @@ export default async function CategoryBlogPage({
 
   if (postsError) {
     return (
-      <main className="max-w-4xl mx-auto px-6 py-20">
+      <main className="page-shell">
         <h1 className="text-4xl font-bold mb-6">{category.name}</h1>
         <p className="text-red-600">글 목록을 불러오는 중 오류가 발생했습니다.</p>
       </main>
@@ -174,24 +174,24 @@ export default async function CategoryBlogPage({
   const typedPosts: Post[] = (posts ?? []) as Post[];
 
   return (
-    <main className="max-w-4xl mx-auto px-6 py-20">
+    <main className="page-shell">
       <Link
         href="/blog"
-        className="inline-flex items-center text-sm font-semibold text-gray-500 underline underline-offset-4 mb-10"
+        className="back-link"
       >
         ← Blog로 돌아가기
       </Link>
 
-      <section className="mb-14 max-w-3xl">
-        <p className="text-sm font-semibold tracking-[0.2em] text-gray-500 uppercase mb-4">
+      <section className="hero-panel fade-up mb-14 max-w-3xl">
+        <p className="kicker mb-4">
           Category
         </p>
 
-        <h1 className="text-4xl md:text-5xl font-bold tracking-tight leading-tight mb-6">
+        <h1 className="page-title mb-6">
           {category.name}
         </h1>
 
-        <p className="text-lg text-gray-600 leading-8">
+        <p className="body-copy">
           {category.name} 카테고리에 속한 글을 모아봤어요.
         </p>
       </section>
@@ -201,18 +201,18 @@ export default async function CategoryBlogPage({
           typedPosts.map((post, index) => (
             <article
               key={post.id}
-              className={`rounded-3xl border border-gray-200 p-7 transition hover:-translate-y-0.5 hover:shadow-md ${
-                index === 0 ? "shadow-sm" : ""
+              className={`surface-card hover-lift p-7 fade-up ${
+                index === 0 ? "border-neutral-300" : ""
               }`}
             >
               <div className="flex flex-wrap items-center gap-3 mb-4">
                 {index === 0 && (
-                  <span className="rounded-full bg-black px-3 py-1 text-xs font-semibold text-white">
+                  <span className="chip-active text-xs">
                     Latest
                   </span>
                 )}
 
-                <p className="text-sm font-medium text-gray-500">
+                <p className="text-sm font-medium text-neutral-400">
                   작성일 · {formatDate(post.created_at)} · 조회수 {post.view_count ?? 0}
                 </p>
               </div>
@@ -220,7 +220,7 @@ export default async function CategoryBlogPage({
               <h2 className="text-2xl md:text-3xl font-semibold tracking-tight mb-4">
                 <Link
                   href={`/blog/${post.slug}`}
-                  className="transition hover:text-gray-600"
+                  className="transition-all duration-200 hover:text-neutral-400"
                 >
                   {post.title}
                 </Link>
@@ -232,7 +232,7 @@ export default async function CategoryBlogPage({
                     <Link
                       key={tag}
                       href={`/blog?tag=${encodeURIComponent(tag)}`}
-                      className="rounded-full px-3 py-1 text-sm border border-gray-300 text-gray-700 hover:bg-gray-100 transition"
+                      className="chip"
                     >
                       {tag}
                     </Link>
@@ -243,14 +243,14 @@ export default async function CategoryBlogPage({
             </article>
           ))
         ) : (
-          <div className="rounded-3xl border border-dashed border-gray-300 p-8 text-center">
-            <p className="text-gray-600 mb-4">
+          <div className="surface-card border-dashed p-8 text-center">
+            <p className="text-neutral-400 mb-4">
               이 카테고리에 아직 글이 없습니다.
             </p>
 
             <Link
               href="/blog"
-              className="inline-flex items-center rounded-full border border-gray-300 px-5 py-3 text-sm font-semibold text-gray-800 transition hover:bg-gray-100"
+              className="button-secondary"
             >
               전체 글 보러 가기
             </Link>
