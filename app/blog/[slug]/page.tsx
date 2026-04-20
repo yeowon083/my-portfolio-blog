@@ -198,7 +198,7 @@ export default async function BlogDetailPage({
         ← Blog로 돌아가기
       </Link>
 
-      <article className="surface-card p-8 fade-up">
+      <article className="surface-card overflow-hidden p-5 fade-up sm:p-8">
         <ViewTracker slug={typedPost.slug} />
 
         <p className="text-xs font-semibold uppercase tracking-widest text-neutral-400 mb-5">

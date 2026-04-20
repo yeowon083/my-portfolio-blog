@@ -1,12 +1,32 @@
-import { NextResponse } from "next/server";
+import { NextRequest, NextResponse } from "next/server";
 import { createClient } from "@/lib/supabase/server";
 
+const VIEW_COOLDOWN_SECONDS = 60 * 60 * 24;
+
+async function getPostViewCookieName(slug: string) {
+  const encoder = new TextEncoder();
+  const data = encoder.encode(slug);
+  const hashBuffer = await crypto.subtle.digest("SHA-256", data);
+  const hashArray = Array.from(new Uint8Array(hashBuffer));
+  const hash = hashArray
+    .map((byte) => byte.toString(16).padStart(2, "0"))
+    .join("")
+    .slice(0, 32);
+
+  return `post_viewed_${hash}`;
+}
+
 export async function POST(
-  _request: Request,
+  request: NextRequest,
   { params }: { params: Promise<{ slug: string }> }
 ) {
   const { slug } = await params;
   const supabase = await createClient();
+  const cookieName = await getPostViewCookieName(slug);
+
+  if (request.cookies.has(cookieName)) {
+    return NextResponse.json({ ok: true, skipped: true });
+  }
 
   const {
     data: { user },
@@ -42,5 +62,15 @@ export async function POST(
     );
   }
 
-  return NextResponse.json({ ok: true });
+  const response = NextResponse.json({ ok: true });
+
+  response.cookies.set(cookieName, "1", {
+    httpOnly: true,
+    maxAge: VIEW_COOLDOWN_SECONDS,
+    sameSite: "lax",
+    secure: process.env.NODE_ENV === "production",
+    path: "/",
+  });
+
+  return response;
 }
