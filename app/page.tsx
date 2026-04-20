@@ -25,7 +25,7 @@ export default async function HomePage() {
 
   return (
     <main className="min-h-[calc(100vh-73px)]">
-      <section className="narrow-shell pt-20">
+      <section className="page-shell pt-20">
         <div className="hero-panel fade-up mb-8">
           <div className="flex items-center gap-4 mb-6">
             <Image
