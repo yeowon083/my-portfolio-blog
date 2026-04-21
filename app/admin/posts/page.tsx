@@ -119,6 +119,7 @@ export default async function AdminPostsPage({
             defaultValue={keyword}
             placeholder="제목 또는 slug 검색"
             className="min-w-[260px] flex-1 rounded-2xl border border-gray-300 px-4 py-3 outline-none focus:border-black"
+            suppressHydrationWarning
           />
 
           {status && <input type="hidden" name="status" value={status} />}

@@ -6,6 +6,7 @@ import rehypeRaw from "rehype-raw";
 import rehypeSanitize, { defaultSchema } from "rehype-sanitize";
 import type { Components } from "react-markdown";
 import { Children, isValidElement, type ReactNode } from "react";
+import type { ComponentPropsWithoutRef, MouseEvent } from "react";
 import { Prism as SyntaxHighlighter } from "react-syntax-highlighter";
 import { vscDarkPlus } from "react-syntax-highlighter/dist/cjs/styles/prism";
 
@@ -34,7 +35,96 @@ function getTextContent(value: ReactNode): string {
     .join("");
 }
 
+function createHeadingId(text: string) {
+  return (
+    text
+      .toLowerCase()
+      .trim()
+      .replace(/[^\p{L}\p{N}]+/gu, " ")
+      .replace(/\s+/g, "-")
+      .replace(/-+/g, "-")
+      .replace(/^-|-$/g, "") || "section"
+  );
+}
+
+function createHeadingComponent(Tag: "h1" | "h2" | "h3" | "h4" | "h5" | "h6") {
+  function Heading({
+    children,
+    className,
+    ...props
+  }: ComponentPropsWithoutRef<typeof Tag>) {
+    const text = getTextContent(children).trim();
+    const id = createHeadingId(text);
+
+    return (
+      <Tag
+        id={id}
+        className={["scroll-mt-28", className].filter(Boolean).join(" ")}
+        {...props}
+      >
+        {children}
+      </Tag>
+    );
+  }
+
+  Heading.displayName = `Markdown${Tag.toUpperCase()}`;
+
+  return Heading;
+}
+
+function handleHashLinkClick(
+  event: MouseEvent<HTMLAnchorElement>,
+  targetId: string
+) {
+  const target = document.getElementById(targetId);
+
+  if (!target) {
+    const allIds = Array.from(document.querySelectorAll("[id]")).map((el) => el.id);
+    console.warn(`[TOC] ID not found: "${targetId}"`);
+    console.log("[TOC] All IDs on page:", allIds);
+    return;
+  }
+
+  event.preventDefault();
+  const navbarHeight = 80;
+  const top = target.getBoundingClientRect().top + window.scrollY - navbarHeight;
+  console.log(`[TOC] Scrolling to "${targetId}" at top=${top}`);
+  window.scrollTo({ top, behavior: "smooth" });
+  window.history.replaceState(null, "", `#${targetId}`);
+}
+
 const markdownComponents: Components = {
+  h1: createHeadingComponent("h1"),
+  h2: createHeadingComponent("h2"),
+  h3: createHeadingComponent("h3"),
+  h4: createHeadingComponent("h4"),
+  h5: createHeadingComponent("h5"),
+  h6: createHeadingComponent("h6"),
+  a({ href, children, ...props }) {
+    if (href?.startsWith("#")) {
+      const rawTarget = decodeURIComponent(href.slice(1));
+      const targetId = createHeadingId(rawTarget);
+
+      return (
+        <a
+          href={`#${targetId}`}
+          onClick={(event) => handleHashLinkClick(event, targetId)}
+          {...props}
+        >
+          {children}
+        </a>
+      );
+    }
+
+    return (
+      <a href={href} {...props}>
+        {children}
+      </a>
+    );
+  },
+  p({ children }) {
+    return <p>{children}</p>;
+  },
   pre({ children }) {
     const child = Children.toArray(children)[0];
     const childProps = isValidElement<{
@@ -47,9 +137,7 @@ const markdownComponents: Components = {
       /\n$/,
       ""
     );
-    const language = /language-([\w-]+)/.exec(
-      childProps?.className || ""
-    )?.[1];
+    const language = /language-([\w-]+)/.exec(childProps?.className || "")?.[1];
 
     if (language) {
       return (
