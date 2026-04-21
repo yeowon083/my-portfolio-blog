@@ -39,7 +39,7 @@ export async function GET(request: NextRequest) {
   const { data, error } = await supabase
     .from("comments")
     .select(
-      "id, author_name, content, target_type, target_id, created_at, updated_at"
+      "id, author_name, content, target_type, target_id, created_at, updated_at, parent_id"
     )
     .eq("target_type", targetType)
     .eq("target_id", targetId)
@@ -64,6 +64,7 @@ export async function POST(request: NextRequest) {
     content?: string;
     targetType?: string;
     targetId?: string;
+    parentId?: string;
   };
 
   try {
@@ -80,6 +81,7 @@ export async function POST(request: NextRequest) {
   const content = body.content?.trim() ?? "";
   const targetType = body.targetType?.trim() ?? "";
   const targetId = body.targetId?.trim() ?? "";
+  const parentId = body.parentId?.trim() ?? null;
 
   if (!authorName || !authorPassword || !content || !targetId) {
     return NextResponse.json(
@@ -105,9 +107,10 @@ export async function POST(request: NextRequest) {
       content,
       target_type: targetType,
       target_id: targetId,
+      parent_id: parentId || null,
     })
     .select(
-      "id, author_name, content, target_type, target_id, created_at, updated_at"
+      "id, author_name, content, target_type, target_id, created_at, updated_at, parent_id"
     )
     .single();
 
