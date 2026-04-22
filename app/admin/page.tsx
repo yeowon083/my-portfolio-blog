@@ -1,6 +1,7 @@
 import Link from "next/link";
 import { redirect } from "next/navigation";
 import { createClient } from "@/lib/supabase/server";
+import NewCommentsBadge from "@/components/NewCommentsBadge";
 
 export default async function AdminPage() {
   const supabase = await createClient();
@@ -46,6 +47,14 @@ export default async function AdminPage() {
               className="inline-flex items-center rounded-full border border-gray-300 px-5 py-3 text-sm font-semibold text-gray-800 transition hover:bg-gray-100"
             >
               프로젝트 관리
+            </Link>
+
+            <Link
+              href="/admin/comments"
+              className="inline-flex items-center rounded-full border border-gray-300 px-5 py-3 text-sm font-semibold text-gray-800 transition hover:bg-gray-100"
+            >
+              댓글 관리
+              <NewCommentsBadge />
             </Link>
 
             <Link
