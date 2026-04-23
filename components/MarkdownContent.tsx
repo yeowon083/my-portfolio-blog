@@ -12,10 +12,17 @@ import { vscDarkPlus } from "react-syntax-highlighter/dist/cjs/styles/prism";
 
 const sanitizeSchema = {
   ...defaultSchema,
-  tagNames: [...(defaultSchema.tagNames || []), "mark"],
+  tagNames: [...(defaultSchema.tagNames || []), "mark", "span"],
   attributes: {
     ...defaultSchema.attributes,
     code: [...(defaultSchema.attributes?.code || []), "className"],
+    span: [
+      ["className", "md-color-red"],
+      ["className", "md-color-blue"],
+      ["className", "md-color-green"],
+      ["className", "md-color-gray"],
+      ["className", "md-color-amber"],
+    ],
   },
 };
 
