@@ -26,6 +26,28 @@ const sanitizeSchema = {
   },
 };
 
+const LANGUAGE_LABELS: Record<string, string> = {
+  bash: "Bash",
+  css: "CSS",
+  dockerfile: "Dockerfile",
+  html: "HTML",
+  java: "Java",
+  js: "JavaScript",
+  json: "JSON",
+  jsx: "JSX",
+  md: "Markdown",
+  py: "Python",
+  python: "Python",
+  sh: "Shell",
+  sql: "SQL",
+  ts: "TypeScript",
+  tsx: "TSX",
+  txt: "Text",
+  xml: "XML",
+  yaml: "YAML",
+  yml: "YAML",
+};
+
 function getTextContent(value: ReactNode): string {
   return Children.toArray(value)
     .map((child) => {
@@ -40,6 +62,10 @@ function getTextContent(value: ReactNode): string {
       return "";
     })
     .join("");
+}
+
+function getLanguageLabel(language: string) {
+  return LANGUAGE_LABELS[language.toLowerCase()] ?? language.toUpperCase();
 }
 
 function createHeadingId(text: string) {
@@ -148,30 +174,35 @@ const markdownComponents: Components = {
 
     if (language) {
       return (
-        <SyntaxHighlighter
-          language={language}
-          style={vscDarkPlus}
-          PreTag="div"
-          customStyle={{
-            background: "#111827",
-            borderRadius: "0.75rem",
-            border: "1px solid #374151",
-            color: "#e5e7eb",
-            margin: "1.5rem 0",
-            padding: "1rem",
-            fontSize: "0.875rem",
-            lineHeight: "1.7",
-            overflowX: "auto",
-          }}
-          codeTagProps={{
-            style: {
+        <div className="my-6 overflow-hidden rounded-xl border border-neutral-200 bg-white shadow-[0_8px_32px_rgba(0,0,0,0.12)]">
+          <div className="flex items-center justify-end border-b border-neutral-200 bg-neutral-50 px-4 py-2 text-xs font-medium text-neutral-500">
+            {getLanguageLabel(language)}
+          </div>
+          <SyntaxHighlighter
+            language={language}
+            style={vscDarkPlus}
+            PreTag="div"
+            customStyle={{
+              background: "#111827",
+              borderRadius: 0,
+              border: "none",
               color: "#e5e7eb",
-              fontFamily: 'Consolas, "Courier New", monospace',
-            },
-          }}
-        >
-          {code}
-        </SyntaxHighlighter>
+              margin: 0,
+              padding: "1rem",
+              fontSize: "0.875rem",
+              lineHeight: "1.7",
+              overflowX: "auto",
+            }}
+            codeTagProps={{
+              style: {
+                color: "#e5e7eb",
+                fontFamily: 'Consolas, "Courier New", monospace',
+              },
+            }}
+          >
+            {code}
+          </SyntaxHighlighter>
+        </div>
       );
     }
 
