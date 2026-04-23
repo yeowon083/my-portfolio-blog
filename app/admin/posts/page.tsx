@@ -34,7 +34,7 @@ export default async function AdminPostsPage({
 
   let query = supabase
     .from("posts")
-    .select("id, title, slug, is_published, created_at, updated_at")
+    .select("id, title, slug, is_published, created_at, updated_at, view_count")
     .order("created_at", { ascending: false });
 
   if (status === "published") {
@@ -192,6 +192,7 @@ export default async function AdminPostsPage({
                     <p>상태: {post.is_published ? "발행됨" : "초안"}</p>
                     <p>작성일: {formatDate(post.created_at)}</p>
                     <p>수정일: {formatDate(post.updated_at)}</p>
+                    <p>조회수: {post.view_count ?? 0}</p>
                   </div>
                 </div>
 

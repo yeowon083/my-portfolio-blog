@@ -202,7 +202,7 @@ export default async function BlogDetailPage({
         <ViewTracker slug={typedPost.slug} />
 
         <p className="text-xs font-semibold uppercase tracking-widest text-neutral-400 mb-5">
-          {formatDate(typedPost.created_at)} · 조회수 {typedPost.view_count ?? 0}
+          {formatDate(typedPost.created_at)}
         </p>
 
         {category?.name && category?.slug && (

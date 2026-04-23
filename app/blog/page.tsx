@@ -495,8 +495,7 @@ export default async function BlogPage({
                       ·{" "}
                     </>
                   )}
-                  작성일: {formatDate(post.created_at)} · 조회수{" "}
-                  {post.view_count ?? 0}
+                  작성일: {formatDate(post.created_at)}
                 </p>
               </div>
 
