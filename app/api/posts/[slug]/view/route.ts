@@ -1,7 +1,7 @@
 import { NextRequest, NextResponse } from "next/server";
 import { createClient } from "@/lib/supabase/server";
 
-const VIEW_COOLDOWN_SECONDS = 60 * 60 * 24;
+const VIEW_COOKIE_MAX_AGE_SECONDS = 60 * 60 * 24 * 365 * 10;
 
 async function getPostViewCookieName(slug: string) {
   const encoder = new TextEncoder();
@@ -66,7 +66,7 @@ export async function POST(
 
   response.cookies.set(cookieName, "1", {
     httpOnly: true,
-    maxAge: VIEW_COOLDOWN_SECONDS,
+    maxAge: VIEW_COOKIE_MAX_AGE_SECONDS,
     sameSite: "lax",
     secure: process.env.NODE_ENV === "production",
     path: "/",

@@ -3,15 +3,14 @@
 import { useEffect } from "react";
 
 const VIEWED_POST_PREFIX = "viewed-post:";
-const VIEW_COOLDOWN_MS = 1000 * 60 * 60 * 24;
 const pendingViewSlugs = new Set<string>();
 
 export default function ViewTracker({ slug }: { slug: string }) {
   useEffect(() => {
     const storageKey = `${VIEWED_POST_PREFIX}${slug}`;
-    const lastViewedAt = Number(localStorage.getItem(storageKey) ?? 0);
+    const hasViewed = localStorage.getItem(storageKey) === "1";
 
-    if (Date.now() - lastViewedAt < VIEW_COOLDOWN_MS) {
+    if (hasViewed) {
       return;
     }
 
@@ -26,7 +25,7 @@ export default function ViewTracker({ slug }: { slug: string }) {
     })
       .then((response) => {
         if (response.ok) {
-          localStorage.setItem(storageKey, String(Date.now()));
+          localStorage.setItem(storageKey, "1");
         }
       })
       .catch(() => {
