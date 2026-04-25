@@ -10,6 +10,22 @@ type Project = {
   tech_stack: string[] | null;
 };
 
+type LatestPost = {
+  id: string;
+  title: string;
+  slug: string;
+  created_at: string;
+  tags: string[] | null;
+};
+
+function formatDate(dateString: string) {
+  return new Date(dateString).toLocaleDateString("ko-KR", {
+    year: "numeric",
+    month: "long",
+    day: "numeric",
+  });
+}
+
 export default async function HomePage() {
   const supabase = await createClient();
 
@@ -21,7 +37,16 @@ export default async function HomePage() {
     .limit(1)
     .maybeSingle();
 
+  const { data: latestBlogPost } = await supabase
+    .from("posts")
+    .select("id, title, slug, created_at, tags")
+    .eq("is_published", true)
+    .order("created_at", { ascending: false })
+    .limit(1)
+    .maybeSingle();
+
   const project = (featuredProject as Project | null) ?? null;
+  const latestPost = (latestBlogPost as LatestPost | null) ?? null;
 
   return (
     <main className="min-h-[calc(100vh-73px)]">
@@ -137,34 +162,67 @@ export default async function HomePage() {
           </article>
 
           <article className="surface-card hover-lift flex h-full flex-col p-5 fade-up anim-delay-225 sm:p-7">
-            <h2 className="mb-4 text-xl font-semibold tracking-tight sm:text-2xl">이 블로그에는</h2>
-
-            <ul className="space-y-3 text-neutral-500 leading-7">
-              <li>
-                프로젝트를 기획하고
-                <br />
-                구현해 나가는 과정을 기록합니다.
-              </li>
-              <li>
-                배운 기술을 정리하고
-                <br />
-                개선 과정도 함께 남깁니다.
-              </li>
-              <li>
-                앱을 만들며 고민한 점과
-                <br />
-                배운 점도 꾸준히 쌓아갑니다.
-              </li>
-            </ul>
-
-            <div className="mt-auto pt-8">
-              <Link
-                href="/blog"
-                className="text-sm font-semibold text-neutral-950 underline underline-offset-4 transition-all duration-200 hover:text-neutral-500"
-              >
-                글 보러 가기
-              </Link>
+            <div className="mb-4 flex flex-wrap items-center gap-3">
+              <h2 className="text-xl font-semibold tracking-tight sm:text-2xl">최신 블로그 글</h2>
+              <span className="chip">Latest</span>
             </div>
+
+            {latestPost ? (
+              <>
+                <p className="mb-3 text-sm font-medium text-neutral-400">
+                  작성일: {formatDate(latestPost.created_at)}
+                </p>
+
+                <h3 className="mb-3 text-xl font-semibold tracking-tight">
+                  {latestPost.title}
+                </h3>
+
+                {latestPost.tags && latestPost.tags.length > 0 && (
+                  <div className="mb-6 flex flex-wrap gap-2">
+                    {latestPost.tags.map((tag) => (
+                      <span key={tag} className="chip">
+                        {tag}
+                      </span>
+                    ))}
+                  </div>
+                )}
+
+                <div className="mt-auto flex flex-wrap items-center gap-4 pt-8">
+                  <Link
+                    href={`/blog/${latestPost.slug}`}
+                    className="text-sm font-semibold text-neutral-950 underline underline-offset-4 transition-all duration-200 hover:text-neutral-500"
+                  >
+                    최신 글 보기
+                  </Link>
+
+                  <Link
+                    href="/blog"
+                    className="text-sm font-semibold text-neutral-400 underline underline-offset-4 transition-all duration-200 hover:text-neutral-950"
+                  >
+                    블로그 전체 보기
+                  </Link>
+                </div>
+              </>
+            ) : (
+              <>
+                <h3 className="mb-3 text-xl font-semibold tracking-tight">
+                  아직 공개된 글이 없어요
+                </h3>
+
+                <p className="mb-5 leading-8 text-neutral-500">
+                  새 글을 발행하면 이 자리에서 가장 최근 글을 바로 볼 수 있어요.
+                </p>
+
+                <div className="mt-auto pt-8">
+                  <Link
+                    href="/blog"
+                    className="text-sm font-semibold text-neutral-950 underline underline-offset-4 transition-all duration-200 hover:text-neutral-500"
+                  >
+                    블로그 보러 가기
+                  </Link>
+                </div>
+              </>
+            )}
           </article>
         </section>
       </section>
