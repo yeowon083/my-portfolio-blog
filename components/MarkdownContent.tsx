@@ -174,8 +174,8 @@ const markdownComponents: Components = {
 
     if (language) {
       return (
-        <div className="my-6 overflow-hidden rounded-xl border border-neutral-200 bg-white shadow-[0_8px_32px_rgba(0,0,0,0.12)]">
-          <div className="flex items-center justify-end border-b border-neutral-200 bg-neutral-50 px-4 py-2 text-xs font-medium text-neutral-500">
+        <div className="my-6 overflow-hidden rounded-xl border border-neutral-800 bg-neutral-950 shadow-[0_8px_32px_rgba(0,0,0,0.12)]">
+          <div className="flex items-center justify-end border-b border-neutral-800 bg-neutral-950 px-4 py-2 text-[0.95rem] font-medium text-neutral-300">
             {getLanguageLabel(language)}
           </div>
           <SyntaxHighlighter
