@@ -174,8 +174,8 @@ const markdownComponents: Components = {
 
     if (language) {
       return (
-        <div className="my-6 overflow-hidden rounded-xl border border-neutral-800 bg-neutral-950 shadow-[0_8px_32px_rgba(0,0,0,0.12)]">
-          <div className="flex items-center justify-end border-b border-neutral-800 bg-neutral-950 px-4 py-2 text-[0.95rem] font-medium text-neutral-300">
+        <div className="my-6 overflow-hidden rounded-xl border border-neutral-200 bg-white shadow-[0_8px_32px_rgba(0,0,0,0.12)]">
+          <div className="flex items-center justify-end border-b border-neutral-200 bg-white px-4 py-1.5 text-[0.875rem] font-normal text-neutral-500">
             {getLanguageLabel(language)}
           </div>
           <SyntaxHighlighter
@@ -183,13 +183,13 @@ const markdownComponents: Components = {
             style={vscDarkPlus}
             PreTag="div"
             customStyle={{
-              background: "#111827",
+              background: "#0a0a0a",
               borderRadius: 0,
               border: "none",
               color: "#e5e7eb",
               margin: 0,
               padding: "1rem",
-              fontSize: "0.95rem",
+              fontSize: "1rem",
               lineHeight: "1.7",
               overflowX: "auto",
             }}
