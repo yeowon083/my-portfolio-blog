@@ -189,7 +189,7 @@ const markdownComponents: Components = {
               color: "#e5e7eb",
               margin: 0,
               padding: "1rem",
-              fontSize: "0.875rem",
+              fontSize: "0.95rem",
               lineHeight: "1.7",
               overflowX: "auto",
             }}
@@ -207,7 +207,7 @@ const markdownComponents: Components = {
     }
 
     return (
-      <pre className="my-6 overflow-x-auto whitespace-pre-wrap rounded-xl border border-neutral-200 bg-neutral-950 p-4 text-sm leading-relaxed text-neutral-100 shadow-[0_8px_32px_rgba(0,0,0,0.12)]">
+      <pre className="my-6 overflow-x-auto whitespace-pre-wrap rounded-xl border border-neutral-200 bg-neutral-950 p-4 text-[0.95rem] leading-relaxed text-neutral-100 shadow-[0_8px_32px_rgba(0,0,0,0.12)]">
         <code>{code}</code>
       </pre>
     );
