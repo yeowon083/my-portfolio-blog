@@ -178,7 +178,7 @@ export default function PostForm({
   }
 
   return (
-    <main className="mx-auto max-w-3xl px-6 py-20">
+    <main className="mx-auto max-w-5xl px-6 py-20">
       <p className="mb-4 text-sm font-semibold uppercase tracking-[0.2em] text-gray-500">
         Admin
       </p>
